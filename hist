@@ -1,0 +1,758 @@
+    1  sudo rmmod ftdi_sio
+    2  export DAQOPSERVER=jspc29:90
+    3  trbcmd 
+    4  sudo rmmod ftdi_sio
+    5  cd /d/jspc29/lattice/diamond/3.6_x64/bin/lin64/
+    6  ls
+    7  ls -rtl
+    8  nano synpwrap 
+    9  cd /d/jspc29/lattice/diamond/3.5_x64/bin/lin64/
+   10  ls -rtl
+   11  cd /d/jspc29/lattice/diamond/3.4_x64/bin/lin64/
+   12  ls -rtl
+   13  cd /d/jspc29/lattice/diamond/3.3_x64/bin/lin64/
+   14  ls -rtl
+   15  cd /d/jspc29/lattice/diamond/3.2_x64/bin/lin64/
+   16  ls -rtl
+   17  nano mpartrce
+   18  cd /d/jspc29/lattice/diamond/3.1_x64/bin/lin64/
+   19  cd /d/jspc29/lattice/diamond/3.0_x64/bin/lin64/
+   20  ls
+   21  ls -rtl
+   22  cd /d/jspc29/lattice/synplify/J-2014.09-SP2/bin/
+   23  ls
+   24  ls -rtl
+   25  exit
+   26  cd /local/Elektronik/
+   27  ls
+   28  cd /local/Elektronik/
+   29  cd ..
+   30  cd /local
+   31  sudo chmod -R a+r Elektronik
+   32  cd Elektronik/
+   33  sudo chmod a+x Elektronik
+   34  cd Elektronik/
+   35  ls
+   36  cd spice/
+   37  ls
+   38  cd mdc
+   39  ls
+   40  cd ..
+   41  nano /d/jspc29/lattice/37_settings.sh
+   42  exit
+   43  telnet jspc62 5989
+   44  x11vnc -display :-
+   45  x11vnc -display :0
+   46  su
+   47  sudo su
+   48  exit
+   49  ls
+   50  pwd
+   51  mkdir mwiebusch
+   52  cd mwiebusch/
+   53  ls
+   54  wget http://jspc29.x-matter.uni-frankfurt.de/bitfiles/trb3_central_cts_20160126.bit
+   55  ls
+   56  wget 
+   57  hadaq@jspc22:~/mwiebusch> 
+   58  wget http://jspc29.x-matter.uni-frankfurt.de/bitfiles/trb3_periph_padiwa_20150810.bit
+   59  ls
+   60  ls -lah
+   61  vncviewer -via wendisch@lxi001.gsi.de lxg0484:88
+   62  programmer
+   63  . /d/jspc29/lattice/37_settings.sh 
+   64  programmer
+   65  bg
+   66  ps
+   67  kill -9 7476 26722
+   68  ps
+   69  programmer
+   70  bg
+   71  ps
+   72  kill -9 21148 26778
+   73  programmer
+   74  kill %1
+   75  programmer
+   76  kill %1
+   77  programmer
+   78  kill %1
+   79  programmer
+   80  bg
+   81  kill %1
+   82  programmer
+   83  kill %1
+   84  ps
+   85  kill 32586
+   86  kill -9 32586
+   87  dmesg
+   88  sudo rmmod ftdi_sio
+   89  sudo apt-get update
+   90  su
+   91  exit
+   92  x11vnc -display :0
+   93  exit
+   94  sudo su
+   95  ls
+   96  pwd
+   97  cd /local/
+   98  ls
+   99  cd trb/git/
+  100  ls
+  101  cd mdcfee/
+  102  ls
+  103  cd mboasd8/
+  104  ls
+  105  pwd
+  106  readlink -f readdata2.pl
+  107  nano /d/jspc29/lattice/37_settings.sh
+  108  exit
+  109  emacs -nw .ssh/authorized_keys 
+  110  ls
+  111  ls -lrta
+  112  cd /home/
+  113  ls
+  114  ls -lrta
+  115  hexdump -C image.img | less
+  116  trbcmdu --device /dev/FTDI_FT232R_USB_UART_AI02WLHP r 0xb140
+  117  exit
+  118  sudo rmmod ftdi_sio
+  119  sudo less /var/log/messages
+  120  journalctl 
+  121  dmesg
+  122  sudo rmmod ftdi_sio
+  123  dmesg
+  124  sudo rmmod ftdi_sio
+  125  ls -rtl /dev
+  126  picocom -b 115200 /dev/FTDI_FT232R_USB_UART_AI02WLHP
+  127  sudo apt-get install picocom
+  128  sudo zypper install picocom
+  129  picocom -b 115200 /dev/FTDI_FT232R_USB_UART_AI02WLHP
+  130  picocom -b 115200 -l /dev/FTDI_FT232R_USB_UART_AI02WLHP
+  131  man picocom
+  132  picocom -b 115200 -l /dev/FTDI_FT232R_USB_UART_AI02WLHP
+  133  less /d/jspc22/trb/git/mdcfee/mboasd8/readdata2.pl
+  134  man stty
+  135  picocom -b 115200 -l /dev/FTDI_FT232R_USB_UART_AI02WLHP -imap crcrlf
+  136  picocom -b 115200 -l /dev/FTDI_FT232R_USB_UART_AI02WLHP --imap crcrlf
+  137  picocom -b 115200 -l /dev/FTDI_FT232R_USB_UART_AI02WLHP --imap lfcrlf
+  138  scp jspc22:/home/jmichel/bin/trbcmdu .
+  139  chmod 775 trbcmd
+  140  chmod 775 trbcmdu
+  141  nano trbcmdu
+  142  trbcmdu 
+  143  nano trbcmdu 
+  144  perl
+  145  trbcmdu 
+  146  which perl
+  147  hexdump  trbcmdu | less
+  148  dos2unix trbcmdu
+  149  trbcmdu 
+  150  trbcmdu --device /dev/FTDI_FT232R_USB_UART_AI02WLHP r 0xb140
+  151  reset
+  152  trbcmdu --device /dev/FTDI_FT232R_USB_UART_AI02WLHP r 0xb140
+  153  trbcmdu --device /dev/FTD1
+  154  trbcmdu --device /dev/FTDI_FT232R_USB_UART_AI02WLHP r 0xb141
+  155  bash
+  156  exit
+  157  trbcmdu --device /dev/FTDI_FT232R_USB_UART_AI02WLHP r 0xb140
+  158  trbcmdu --device /dev/FTDI_FT232R_USB_UART_AI02WLHP r 0xb14
+  159  trbcmdu --device /dev/FTDI_FT232R_USB_UART_AI02WLHP r 0xb140
+  160  cd /d/jspc22/trb/git/dirich
+  161  ls
+  162  ls -lrta
+  163  cd dirich/
+  164  ls
+  165  cd workdir/
+  166  ls
+  167  ls -lrta
+  168  less dirich.bgn
+  169  less dirich.pad
+  170  cd /d
+  171  cd jspc22/
+  172  cd trb/git/trbnet
+  173  cd lattice/ecp5/
+  174  ll
+  175  cd /d/jspc22/trb/git/dirich/combiner/workdir/
+  176  ls
+  177  cd ..
+  178  ls
+  179  cd ..
+  180  ls
+  181  ls **/*.lpf
+  182  e combiner/combiner.lpf
+  183  emacs -nw combiner/combiner.lpf
+  184  emacs -nw pinout/combiner.lpf 
+  185  nano /d/jspc29/lattice/ModelSim/localsettings.sh
+  186  exit
+  187  nano /d/jspc29/lattice/ModelSim/localsettings.sh
+  188  exit
+  189  nano
+  190  ls
+  191  htop
+  192  nano uartcommands.txt 
+  193  ls
+  194  ls ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+  195  ls -rtl /dev
+  196  trbcmdu --device /dev/ttyUSB2 r 0xb140
+  197  trbcmdu --device /dev/ttyUSB2 mr 0xb140 4
+  198  nano trbcmdu
+  199  trbcmdu --device /dev/ttyUSB2 mr 0xb140 4
+  200  nano trbcmdu
+  201  trbcmdu --device /dev/ttyUSB2 mr b140 4
+  202  nano trbcmdu
+  203  trbcmdu --device /dev/ttyUSB2 mr b140 4
+  204  which trbcmdu
+  205  trbcmdu --device /dev/ttyUSB2 mr b140 4
+  206  trbcmdu --device /dev/ttyUSB2 r b017
+  207  trbcmdu --device /dev/ttyUSB2 mr b140 4
+  208  trbcmdu --device /dev/ttyUSB2 mr b017 4
+  209  trbcmdu --device /dev/ttyUSB2 mr b140 4
+  210  trbcmdu --device /dev/ttyUSB2 mr b017 1
+  211  trbcmdu --device /dev/ttyUSB2 mr b140 4
+  212  trbcmdu --device /dev/ttyUSB2 mr b017 1
+  213  trbcmdu --device /dev/ttyUSB2 mr b140 4
+  214  trbcmdu --device /dev/ttyUSB2 mr b017 1
+  215  trbcmdu --device /dev/ttyUSB2 mr b140 4
+  216  programmer &
+  217  . /d/jspc29/lattice/37_settings.sh 
+  218  programmer &
+  219  fg
+  220  bg
+  221  ps
+  222  kill %3
+  223  programmer &
+  224  sudo rmmod ftdi_sio
+  225  kill %3
+  226  kill %2
+  227  kill %1
+  228  programmer &
+  229  ps
+  230  kill 22075
+  231  ps
+  232  programmer &
+  233  kill %1
+  234  programmer &
+  235  trbcmd i 0xffff
+  236  ls -rtl /dev
+  237  picocom -b 115200 /dev/Xmatter_LogicBox_DJ98RSX
+  238  picocom -b 115200 -l /dev/Xmatter_LogicBox_DJ98RSX
+  239  fg
+  240  ps
+  241  kill 25143
+  242  kill -9 25143
+  243  programmer &
+  244  nano
+  245  htop
+  246  ssh jspc29
+  247  x11vnc -display :0
+  248  okular /home/jmichel/Schematics/dirich1.pdf &
+  249  exit
+  250  /sbin/ifconfig
+  251  ping gsi.de
+  252  uptime
+  253  su
+  254  okular /home/jmichel/Schematics/dirich1.pdf &
+  255  exit
+  256  htop
+  257  who
+  258  exit
+  259  /d/salt/bin/tigervnc jspc57:89
+  260  /d/salt/bin/tigervnc jspc57:88
+  261  ssh jspc48
+  262  iptables-save
+  263  ls -rtl
+  264  uptime
+  265  cd /etc/iptables/
+  266  ls
+  267  sudo iptables-restore rules.v4
+  268  ssh root@salt
+  269  ssh-keygen -f "/u/hadaq/.ssh/known_hosts" -R salt
+  270  ssh root@salt
+  271  exit
+  272  ls /d/
+  273  ls /local/
+  274  ls /local/maps/
+  275  ls /local/maps/beamtimeDemonstrator/
+  276  su maps
+  277  exit
+  278  cd /local
+  279  ls
+  280  cd maps
+  281  ls
+  282  cd Beamtime/
+  283  ls
+  284  cd ..
+  285  exit
+  286  cd /local
+  287  ls
+  288  cd home_2010_05_04/
+  289  ls
+  290  ls -rtl
+  291  cd ..
+  292  ssh jspc56
+  293  ls
+  294  ls data_recovered/
+  295  ls data_recovered/maps
+  296  ls data
+  297  ls data_recovered/data
+  298  ls
+  299  ls data_recovered/
+  300  ls home_recovered/
+  301  ls -rtl home_recovered/
+  302  ls
+  303  exit
+  304  sudo zypper in iperf
+  305  iperf3 -c jspc29 -p 5201
+  306  exit
+  307  iperf -c jspc48
+  308  iperf3 -c jspc48
+  309  exit
+  310  iperf3 -c jspc55
+  311  iperf3 -c jspc29
+  312  ifconfig
+  313  sudo /sbin/iftop 
+  314  zypper se iftop
+  315  sudo su
+  316  exit
+  317  sudo zypper in iperf3
+  318  sudo zypper in iperf
+  319  ssh-keygen -R jspc48 -f /home/hadaq/.ssh/known_hosts
+  320  iperf3 -c jspc29
+  321  iperf3 -c jspc55
+  322  iperf3 -s
+  323  sudo /sbin/yast firewall
+  324  iperf3 -s
+  325  iperf3 -c jspc55
+  326  iperf3 -c jspc29
+  327  exit
+  328  okular /home/jmichel/Schematics/dirich1.pdf &
+  329  okular /home/jmichel/Schematics/dirich_concentrator1.pdf &
+  330  okular /home/jmichel/Schematics/dirich1.pdf &
+  331  ls
+  332  lsusb
+  333  pwd
+  334  ls
+  335  cd ~
+  336  ls
+  337  cd mwiebusch/
+  338  ls
+  339  pwd
+  340  ls
+  341  pwd
+  342  ls
+  343  ./readdata2.pl -d /dev/ttyUSB0 -v -i
+  344  su
+  345  exit
+  346  cd mwiebusch/
+  347  ls
+  348  ./readdata2.pl -d /dev/ttyUSB0 -v
+  349  ./readdata2.pl -d /dev/ttyUSB0 -v -t 2
+  350  ./readdata2.pl -d /dev/ttyUSB0 -v -t 2 -i
+  351  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  352  timeout 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > direct_ch0_vs_trigger.dat
+  353  timeout 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  354  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  355  ls
+  356  head -n 100 direct_ch0_vs_trigger.dat 
+  357  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  358  timeout 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > direct_ch0_vs_trigger_inv.dat
+  359  wc -l direct_ch0_vs_trigger.dat 
+  360  wc -l direct_ch0_vs_trigger_inv.dat 
+  361  timeout 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > direct_ch0_vs_trigger_inv.dat
+  362  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  363  timeout 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > direct_ch0-7_vs_trigger.dat
+  364  picocom -b 921600 /dev/ttyUSB0 
+  365  sudo picocom -b 921600 /dev/ttyUSB0 
+  366  su
+  367  Maps
+  368  su
+  369  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > direct_ch0-7_vs_trigger.dat
+  370  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  371  timeout 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > direct_ch0-7_vs_trigger.dat
+  372  sudo picocom -b 921600 /dev/ttyUSB0 
+  373  timeout 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > direct_ch0_ao_disabled_vs_trigger.dat
+  374  ./readdata2.pl -d /dev/ttyUSB0
+  375  .
+  376  ./readdata2.pl -d /dev/ttyUSB0 
+  377  sudo picocom -b 921600 /dev/ttyUSB0 
+  378  ./readdata2.pl -d /dev/ttyUSB0 
+  379  sudo picocom -b 921600 /dev/ttyUSB0 
+  380  ./readdata2.pl -d /dev/ttyUSB0 
+  381  ./readdata2.pl -d /dev/ttyUSB0 -v
+  382  sudo picocom -b 921600 /dev/ttyUSB0 
+  383  ./readdata2.pl -d /dev/ttyUSB0 -v
+  384  timeout 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > direct_ch0_ao_disabled_vs_trigger.dat
+  385  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  386  sudo picocom -b 921600 /dev/ttyUSB0 
+  387  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  388  sudo picocom -b 921600 /dev/ttyUSB0 
+  389  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  390  ./readdata2.pl -d /dev/ttyUSB0 -v -t 0 -i
+  391  ./readdata2.pl -d /dev/ttyUSB0 -v -t 0 
+  392  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  393  timeout 240 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > ch0-7_no_trig.dat
+  394  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i 
+  395  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8
+  396  timeout 240 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > ch0-7_inv_trig.dat
+  397  sudo picocom -b 921600 /dev/ttyUSB0 
+  398  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i 
+  399  timeout 60 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > ch0_1-7dis_vs_trig.dat
+  400  sudo picocom -b 921600 /dev/ttyUSB0 
+  401  timeout 60 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > ch0-1_2-7dis_vs_trig.dat
+  402  cd mwiebusch/
+  403  export DAQOPSERVER=localhost:1290
+  404  trbcmd i 0xffff
+  405  export DAQOPSERVER=localhost:129
+  406  trbcmd i 0xffff
+  407  export DAQOPSERVER=localhost:90
+  408  trbcmd i 0xffff
+  409  export DAQOPSERVER=jspc29:90
+  410  trbcmd i 0xffff
+  411  trbcmd r 0xf61 0xf3cc 
+  412  trbcmd r 0xfe61 0xf3cc 
+  413  trbcmd r 0xf3cc 0xf3cc 
+  414  trbcmd r 0xf3cc 0xa000
+  415  trbcmd w 0xf3cc 0xa000 0x0
+  416  trbcmd w 0xf3cc 0xa000 0x000001ff
+  417  trbcmd w 0xf3cc 0xa000 0x0
+  418  trbcmd w 0xf3cc 0xa000 0x000001ff
+  419  trbcmd w 0xf3cc 0xa000 0x0
+  420  trbcmd w 0xf3cc 0xa000 0x000001ff && sleep 1.5 && trbcmd w 0xf3cc 0xa000 0x0
+  421  cat <<EOF > pulse_burst.sh
+  422  trbcmd w 0xf3cc 0xa000 0x000001ff
+  423  sleep 1.5
+  424  trbcmd w 0xf3cc 0xa000 0x0
+  425  EOF
+  426  chmod +x pulse_burst.sh 
+  427  ./pulse_burst.sh 
+  428  cd mwiebusch/
+  429  ls
+  430  sudo picocom -b 921600 /dev/ttyUSB0 
+  431  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v
+  432  ./readdata2.pl -d /dev/ttyUSB0 -t 0 -v
+  433  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v
+  434  timeout 60 ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v > pulser_addon_test.dat
+  435  timeout 60 ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v > pulser_addon_test2.dat
+  436  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v
+  437  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v -p
+  438  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v
+  439  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v -p
+  440  vim readdata2.pl 
+  441  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v -p
+  442  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v 
+  443  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v -p
+  444  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v 
+  445  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v -p
+  446  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v
+  447  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v -p
+  448  cat /dev/ttyUSB0 
+  449  stty -F /dev/ttyUSB0 
+  450  cat /dev/ttyUSB0 
+  451  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v 
+  452  ls
+  453  cd mwiebusch/
+  454  ls
+  455  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v 
+  456  timeout -s SIGINT 120 ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v > delme
+  457  timeout -s SIGINT
+  458  ./readdata2.pl -d /dev/ttyUSB0 -t 8 -v
+  459  history
+  460  exit
+  461  ls
+  462  cd mwiebusch/
+  463  ls
+  464  ./readdata2.pl 
+  465  ./readdata2.pl -d /dev/ttyUSB0 
+  466  ./readdata2.pl -d /dev/ttyUSB0 -v
+  467  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8
+  468  ./readdata2.pl -d /dev/ttyUSB0 -v -t 0 -i
+  469  ./readdata2.pl -d /dev/ttyUSB0 -v -t 0
+  470  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i
+  471  timeout 120 -s SIGINT ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > pasttrec_vs_pulser.dat
+  472  timeout -s SIGINT 120 ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i > pasttrec_vs_pulser.dat
+  473  pwd
+  474  ls
+  475  cd mwiebusch/
+  476  ls
+  477  pwd
+  478  ls
+  479  vim acquisition.sh
+  480  c
+  481  chmod +x acquisition.sh 
+  482  ./acquisition.sh 
+  483  ./acquisition.sh 10
+  484  ls
+  485  vim acquisition.sh 
+  486  rm acquisition.sh 
+  487  cd /d/jspc22/talks/Grafiken/Elektronik/
+  488  ls
+  489  readlink -f clocksamplingtdc.png
+  490  cd ..
+  491  ls
+  492  cd ..
+  493  ls
+  494  pwd
+  495  ls
+  496  cd *Power*
+  497  ls
+  498  readlink -f PowerWeekElectronics.odp
+  499  exit
+  500  ls /dev/ttyU*
+  501  cd ~
+  502  cd mwiebusch/
+  503  ls
+  504  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i 
+  505  pwd
+  506  ls
+  507  pwd
+  508  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i 
+  509  sudo reboot
+  510  cd mwie
+  511  cd mwiebusch/
+  512  ls
+  513  ./readdata2.pl -d /dev/ttyUSB0 -v -t 8 -i 
+  514  exit
+  515  pwd
+  516  ls
+  517  pwd
+  518  cd ~
+  519  ls
+  520  pwd /hom
+  521  cd /home
+  522  ls
+  523  cd padiwa/
+  524  ls
+  525  cd coral/
+  526  ls
+  527  pwd
+  528  ls
+  529  git status
+  530  ls
+  531  cd user_interface/
+  532  ls
+  533  pwd
+  534  cd /home/
+  535  ls
+  536  cd /u/hadaq/
+  537  ls
+  538  cd miew
+  539  cd mwiebusch/
+  540  ls
+  541  ls -lah
+  542  du . -h
+  543  ls
+  544  git status
+  545  git commit -a -m "snapshot, seems to work well now"
+  546  pwd
+  547  /sbin/ifconfig
+  548  netcat -l 50002
+  549  netcat -l -u 50002
+  550  netcat -u -l  50002
+  551  /sbin/ifconfig
+  552  netcat -u -l  50002
+  553  /sbin/ifconfig
+  554  netcat -u -l  50002
+  555  /sbin/ifconfig
+  556  netcat -u -l  50002
+  557  exit
+  558  vncserver :57
+  559  exit
+  560  cd plugins/
+  561  ls
+  562  . ./dabclogin 
+  563  make
+  564  svn update
+  565  make
+  566  less README.txt 
+  567  cd ..
+  568  ls
+  569  cd aweber/
+  570  ls
+  571  cd git
+  572  cd trbsoft/
+  573  ls
+  574  mkdir trb3
+  575  cd trb3/
+  576  ls
+  577  svn co https://subversion.gsi.de/dabc/trb3 trb3
+  578  cd ..
+  579  rmdir  trb3
+  580  ls
+  581  rm -rf trb3/
+  582  svn co https://subversion.gsi.de/dabc/trb3 trb3
+  583  cd /local/dabc
+  584  ls
+  585  cd../
+  586  cd ../
+  587  ls
+  588  cd aweber/
+  589  mkdir trbsoft
+  590  ls
+  591  mkdir trbsoft
+  592  cd trbsoft/
+  593  git clone git@jspc29:daqtools
+  594  ls
+  595  cd daqtools/
+  596  ls
+  597  cd users/
+  598  ls
+  599  cd gsi_dlab_hades41/
+  600  ls
+  601  git pull
+  602  ls
+  603  cp first.C second.C TdcEventBuilder.xml /local/aweber/trbsoft/daqtools/users/frankfurt_tdc/
+  604  cd ../
+  605  cd frankfurt_tdc/
+  606  ls
+  607  nano first.C 
+  608  cd ../../../../../dabc/
+  609  dabc_exe
+  610  ls
+  611  . dabclogin 
+  612  dabc_exe
+  613  dabc_exe ../aweber/trbsoft/daqtools/users/frankfurt_tdc/TdcEventBuilder.xml 
+  614  . dabclogin 
+  615  dabc_exe ../aweber/trbsoft/daqtools/users/frankfurt_tdc/TdcEventBuilder.xml 
+  616  cd base/src/
+  617  ls
+  618  nano Factory.cxx 
+  619  cd ../../
+  620  find -name libDabc
+  621  find -name libDabc*
+  622  make with-stream=1
+  623  make clean
+  624  make with-stream=1
+  625  . dabclogin
+  626  dabc_exe ../aweber/trbsoft/daqtools/users/frankfurt_tdc/TdcEventBuilder.xml 
+  627  ls
+  628  svn co subversion.gsi.de/go4/app/stream/ stream
+  629  svn co https://subversion.gsi.de/go4/app/stream/ stream
+  630  ld
+  631  ls
+  632  cd stream/
+  633  ls
+  634  make all
+  635  cd ../
+  636  make
+  637  make with-stream=1
+  638  . dabclogin
+  639  dabc_exe ../aweber/trbsoft/daqtools/users/frankfurt_tdc/TdcEventBuilder.xml 
+  640  find -name libDabc*
+  641  cd lib/
+  642  ls
+  643  cd ../
+  644  make with-stream=1
+  645  make WITH-STREAM=1
+  646  make with-stream=1
+  647  make --with-stream=1
+  648  make with-stream=1
+  649  ls
+  650  cd ..
+  651  cd aweber/
+  652  ls
+  653  cd trbsoft/trb3/
+  654  ls
+  655  make -j7
+  656  htop
+  657  ls
+  658  . /local/aweber/trbsoft/trb3/dabclogin 
+  659  . /local/aweber/trbsoft/trb3/trb3login 
+  660  LANG=C go4
+  661  ls /local/aweber/trbsoft/trb3/stream/lib/
+  662  e /local/aweber/trbsoft/trb3/trb3login
+  663  ls ibGo4UserAnalysis 
+  664  LANG=C go4
+  665  ls -lrta
+  666  rm ~/.config/GSI/go4.conf 
+  667  LANG=C go4
+  668  bg
+  669  gcc -v
+  670  g++ -v
+  671  e second
+  672  e second.C 
+  673  g++ second.C 
+  674  g++ -h second.C 
+  675  man gcc
+  676  man g++
+  677  g++ -fsyntax-only second.C 
+  678  man g++
+  679  fg
+  680  bg
+  681  e second.C 
+  682  g++ -fsyntax-only second.C 
+  683  fg
+  684  bg
+  685  g++ -I /local/aweber/trbsoft/trb3/go4/include/ -fsyntax-only second.C 
+  686  ls /local/aweber/trbsoft/trb3/go4/include/
+  687  g++ -I /local/aweber/trbsoft/trb3/go4/include/ -fsyntax-only second.C 
+  688  cd /local/aweber/trbsoft/trb3/
+  689  find . -iname EventProc.h
+  690  g++ -I /local/aweber/trbsoft/trb3/stream/include/ -fsyntax-only second.C 
+  691  d
+  692  env| grep CO
+  693  env| grep COL
+  694  env| grep COLU
+  695  cd -
+  696  g++ -I /local/aweber/trbsoft/trb3/stream/include/ -fsyntax-only second.C 
+  697  e first.C 
+  698  LANG=C go4 adrian1.hotstart 
+  699  bg
+  700  e first.C 
+  701  i
+  702  trbcmd info 0x201
+  703  trbflash info 0x201
+  704  fg
+  705  go4analysis --help
+  706  go4analysis -user -num 100000 -h /local/tmp/test_adrian16316160124.hld
+  707  go4analysis -user -number 100000 -h /local/tmp/test_adrian16316160124.hld
+  708  go4analysis -h
+  709  go4analysis -number 100000 -user /local/tmp/test_adrian16316160124.hld
+  710  CALMODE=-1 go4analysis -number 100000 -user /local/tmp/test_adrian16316160124.hld
+  711  ls -lrta test_020*
+  712  diff test_0201.cal test_0202.cal
+  713  e second.C 
+  714  g++ -I /local/aweber/trbsoft/trb3/stream/include/ -fsyntax-only second.C 
+  715  fg
+  716  e second.C 
+  717  fg
+  718  e second.C 
+  719  sdiff second.C ../gsi_ee_trb84/second.C 
+  720  tkdiff second.C ../gsi_ee_trb84/second.C 
+  721  g++ -I /local/aweber/trbsoft/trb3/stream/include/ -fsyntax-only second.C 
+  722  e second.c
+  723  ls
+  724  e second.C 
+  725  trbflash info 0xc002
+  726  trbflash program 0xc002 ~/Downloads/trb3_central_cts_gbe3_20160810_a.bit
+  727  trbcmd reload 0xc002
+  728  ./startup.sh 
+  729  export FN=$(ls /local/tmp/test_*.hld | tail -1); CALMODE=-1 go4analysis -number 100000 -user $FN; rm *.root; CALMODE=0 go4analysis -number 100000 -user $FN; LANG=C go4 Go4AutoSave.root 
+  730  ls -lrta
+  731  tkdiff second.C ../gsi_ee_trb84/second.C 
+  732  diff test_0201.cal test_0202.cal 
+  733  export FN=$(ls /local/tmp/test_*.hld | tail -1); CALTRIG=0 CALMODE=-1 go4analysis -number 100000 -user $FN; rm *.root; CALTIG=0 CALMODE=0 go4analysis -number 100000 -user $FN; LANG=C go4 Go4AutoSave.root 
+  734  diff test_0201.cal test_0202.cal 
+  735  fg
+  736  bg
+  737  ps aux| grep wm
+  738  ps aux| grep kde
+  739  ps aux| grep xfce
+  740  ps aux| grep lxde
+  741  openbox --config
+  742  less ~/.vnc/xstartup 
+  743  ps aux| grep kwin
+  744  cat /proc/26077/environ | srings| grep DISP
+  745  cat /proc/26077/environ | strings| grep DISP
+  746  kde4-config 
+  747  openbox
+  748  openbox --replace
+  749  bg
+  750  disown
+  751  e ~/.vnc/xstartup 
+  752  fg
+  753  xkill
+  754  ls -lrta /local/tmp/test_adrian163161
+  755  ls -lrta /local/tmp/test_adrian163161*
+  756  history 
+  757  export FN=/local/tmp/test_adrian16316160124.hld; CALTRIG=0 CALMODE=-1 go4analysis -number 100000 -user $FN; rm *.root; CALTIG=0 CALMODE=0 go4analysis -number 100000 -user $FN; LANG=C go4 Go4AutoSave.root 
+  758  history > hist

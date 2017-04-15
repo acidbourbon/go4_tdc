@@ -1,0 +1,55 @@
+
+# DO NOT DELETE
+
+./second_C.so: /home/hadaq/mdctest/root/include/TTree.h
+./second_C.so: /home/hadaq/mdctest/root/include/TBranch.h
+./second_C.so: /home/hadaq/mdctest/root/include/TNamed.h
+./second_C.so: /home/hadaq/mdctest/root/include/TObject.h
+./second_C.so: /home/hadaq/mdctest/root/include/Rtypes.h
+./second_C.so: /home/hadaq/mdctest/root/include/RConfig.h
+./second_C.so: /home/hadaq/mdctest/root/include/RVersion.h
+./second_C.so: /home/hadaq/mdctest/root/include/DllImport.h
+./second_C.so: /home/hadaq/mdctest/root/include/Rtypeinfo.h
+./second_C.so: /home/hadaq/mdctest/root/include/snprintf.h
+./second_C.so: /home/hadaq/mdctest/root/include/strlcpy.h
+./second_C.so: /home/hadaq/mdctest/root/include/TGenericClassInfo.h
+./second_C.so: /home/hadaq/mdctest/root/include/TSchemaHelper.h
+./second_C.so: /home/hadaq/mdctest/root/include/TStorage.h
+./second_C.so: /home/hadaq/mdctest/root/include/TVersionCheck.h
+./second_C.so: /home/hadaq/mdctest/root/include/Riosfwd.h
+./second_C.so: /home/hadaq/mdctest/root/include/TBuffer.h
+./second_C.so: /home/hadaq/mdctest/root/include/TString.h
+./second_C.so: /home/hadaq/mdctest/root/include/TMathBase.h
+./second_C.so: /home/hadaq/mdctest/root/include/TObjArray.h
+./second_C.so: /home/hadaq/mdctest/root/include/TSeqCollection.h
+./second_C.so: /home/hadaq/mdctest/root/include/TCollection.h
+./second_C.so: /home/hadaq/mdctest/root/include/TIterator.h
+./second_C.so: /home/hadaq/mdctest/root/include/TAttFill.h
+./second_C.so: /home/hadaq/mdctest/root/include/TDataType.h
+./second_C.so: /home/hadaq/mdctest/root/include/TDictionary.h
+./second_C.so: /home/hadaq/mdctest/root/include/Property.h
+./second_C.so: /home/hadaq/mdctest/root/include/ESTLType.h
+./second_C.so: /home/hadaq/mdctest/root/include/TAttLine.h
+./second_C.so: /home/hadaq/mdctest/root/include/TAttMarker.h
+./second_C.so: /home/hadaq/mdctest/root/include/TArrayD.h
+./second_C.so: /home/hadaq/mdctest/root/include/TArray.h
+./second_C.so: /home/hadaq/mdctest/root/include/TArrayI.h
+./second_C.so: /home/hadaq/mdctest/root/include/TClass.h
+./second_C.so: /home/hadaq/mdctest/root/include/TObjString.h
+./second_C.so: /home/hadaq/mdctest/root/include/ThreadLocalStorage.h
+./second_C.so: /home/hadaq/mdctest/root/include/RConfigure.h
+./second_C.so: /home/hadaq/mdctest/root/include/TVirtualTreePlayer.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/EventProc.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/Processor.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/ProcMgr.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/defines.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/Buffer.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/TimeStamp.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/Markers.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/Queue.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/Event.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/base/SubEvent.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/hadaq/TdcSubEvent.h
+./second_C.so: /home/hadaq/mdctest/trb3/stream/include/hadaq/TdcMessage.h
+./second_C.so: /home/hadaq/mdctest/root/include/cintdictversion.h /home/hadaq/mdctest/root/include/RVersion.h
+second_C__ROOTBUILDVERSION= 5.34/37
