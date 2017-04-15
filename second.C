@@ -94,12 +94,15 @@ class SecondProc : public base::EventProc {
             unsigned chid = ext.msg().getHitChannel();
             unsigned time = ext.msg().getHitTmFine();
             bool rising   = ext.msg().isHitRisingEdge();
+            printf("message, ch %d\n",(chid-1));
+            
             if (chid==0) { ch0tm = ext.GetGlobalTime(); continue; }
 
             // full time
             double tm = ext.GetGlobalTime() + ch0tm;
             if((chid-1) >= CHANNELS) {continue;} // channel out of range of analysis
             if(rising){
+              printf("got rising  edge, ch %d\n",(chid-1));
 //               switch(chid) {
 //                 case 1: ch1tm = tm; break;
 //                 case 2: ch2tm = tm; break;
@@ -110,12 +113,13 @@ class SecondProc : public base::EventProc {
                 t1[chid-1] = tm;
               }
             }else{ // if falling edge
+              printf("got falling edge, ch %d\n",(chid-1));
               if(got_rising){
                 if(not(got_falling[chid-1])){
                   got_falling[chid-1] = true;
                   t2[chid-1] = tm;
                   tot[chid-1] = t2[chid-1] - t1[chid-1];
-//                   printf("got hit, tot = %f ns\n", tot[chid-1]*1e9);
+                  printf("got hit, ch %d, tot = %f ns\n",(chid-1), tot[chid-1]*1e9);
                 }
               }
             }
@@ -161,6 +165,7 @@ class SecondProc : public base::EventProc {
 void second()
 {
    //hadaq::TdcProcessor::SetDefaults(700);
-   new SecondProc("S", "TDC_1483");
+   new SecondProc("S_PTRC", "TDC_1482");
+   new SecondProc("S_ASD8", "TDC_1483");
 }
 
