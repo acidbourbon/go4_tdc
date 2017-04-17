@@ -6,8 +6,8 @@
 #include "base/Event.h"
 #include "hadaq/TdcSubEvent.h"
 
-#define CHANNELS 8
-#define REFCHAN 0
+#define CHANNELS 10
+#define REFCHAN 8
 
 class SecondProc : public base::EventProc {
    protected:
@@ -45,11 +45,11 @@ class SecondProc : public base::EventProc {
          for( unsigned i=0; i<CHANNELS; i++ ) {
            char chno[16];
            sprintf(chno,"Ch%02d_t1",i);
-           t1_h[i] = MakeH1(chno,chno, 1000, -20, 20, "ns");
+           t1_h[i] = MakeH1(chno,chno, 1000, -300, 300, "ns");
            sprintf(chno,"Ch%02d_tot",i);
-           tot_h[i] = MakeH1(chno,chno, 20000, -10, 200, "ns");
+           tot_h[i] = MakeH1(chno,chno, 20000, -10, 1000, "ns");
            sprintf(chno,"Ch%02d_potato",i);
-           potato_h[i] = MakeH2(chno,chno,1000,-20,20,5000, -10, 200, "t1 (ns);tot (ns)");
+           potato_h[i] = MakeH2(chno,chno,500,-300,300,500, -10, 1000, "t1 (ns);tot (ns)");
          }
          
          // enable storing already in constructor
@@ -65,6 +65,7 @@ class SecondProc : public base::EventProc {
 
       virtual bool Process(base::Event* ev)
       {
+//          printf("### DEBUG ###\n");
          for (unsigned n=0;n<8;n++) fHits[n] = 0.;
 
          hadaq::TdcSubEvent* sub =
@@ -92,9 +93,9 @@ class SecondProc : public base::EventProc {
             const hadaq::TdcMessageExt& ext = sub->msg(cnt);
 
             unsigned chid = ext.msg().getHitChannel();
-            unsigned time = ext.msg().getHitTmFine();
-            bool rising   = ext.msg().isHitRisingEdge();
-            printf("message, ch %d\n",(chid-1));
+//             unsigned time = ext.msg().getHitTmFine();
+            bool rising   = not(ext.msg().isHitRisingEdge());
+//             printf("message, ch %d\n",(chid-1));
             
             if (chid==0) { ch0tm = ext.GetGlobalTime(); continue; }
 
@@ -102,7 +103,7 @@ class SecondProc : public base::EventProc {
             double tm = ext.GetGlobalTime() + ch0tm;
             if((chid-1) >= CHANNELS) {continue;} // channel out of range of analysis
             if(rising){
-              printf("got rising  edge, ch %d\n",(chid-1));
+//               printf("got rising  edge, ch %d\n",(chid-1));
 //               switch(chid) {
 //                 case 1: ch1tm = tm; break;
 //                 case 2: ch2tm = tm; break;
@@ -113,23 +114,23 @@ class SecondProc : public base::EventProc {
                 t1[chid-1] = tm;
               }
             }else{ // if falling edge
-              printf("got falling edge, ch %d\n",(chid-1));
+//               printf("got falling edge, ch %d\n",(chid-1));
               if(got_rising){
                 if(not(got_falling[chid-1])){
                   got_falling[chid-1] = true;
                   t2[chid-1] = tm;
                   tot[chid-1] = t2[chid-1] - t1[chid-1];
-                  printf("got hit, ch %d, tot = %f ns\n",(chid-1), tot[chid-1]*1e9);
+//                   printf("got hit, ch %d, tot = %f ns\n",(chid-1), tot[chid-1]*1e9);
                 }
               }
             }
             
 //             FillH1(hNumHits, time);
             
-            if (time>= 600)  {
-               //printf("  ch:%3d tm:%d\n", chid, time);}//tm);
-               num+=1;
-            }
+//             if (time>= 600)  {
+//                //printf("  ch:%3d tm:%d\n", chid, time);}//tm);
+//                num+=1;
+//             }
          }
 //          FillH2(h2D, (ch2tm-ch1tm)*1e9, (ch3tm-ch2tm)*1e9);
          
@@ -165,7 +166,7 @@ class SecondProc : public base::EventProc {
 void second()
 {
    //hadaq::TdcProcessor::SetDefaults(700);
-   new SecondProc("S_PTRC", "TDC_1482");
-   new SecondProc("S_ASD8", "TDC_1483");
+//    new SecondProc("Sec_1482", "TDC_1482");
+   new SecondProc("Sec_1483", "TDC_1483");
 }
 

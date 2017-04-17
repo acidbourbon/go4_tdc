@@ -23,7 +23,7 @@ echo "distribute addresses"
 
 
 #disable unwanted FPGAs
-bm=$[ 1*8 + 0*4 + 1*2 + 1*1 ]
+bm=$[ 0*8 + 0*4 + 0*2 + 0*1 ]
 hub=0xc148
 
 trbcmd clearbit $hub 0xc0 $bm
