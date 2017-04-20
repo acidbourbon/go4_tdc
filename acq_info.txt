@@ -1,0 +1,4 @@
+#parameters and notes for acquisition
+timeout=10
+
+#comment: erster Verfahrtest

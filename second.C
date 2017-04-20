@@ -45,11 +45,11 @@ class SecondProc : public base::EventProc {
          for( unsigned i=0; i<CHANNELS; i++ ) {
            char chno[16];
            sprintf(chno,"Ch%02d_t1",i);
-           t1_h[i] = MakeH1(chno,chno, 1000, -10, 30, "ns");
+           t1_h[i] = MakeH1(chno,chno, 2000, -60, 60, "ns");
            sprintf(chno,"Ch%02d_tot",i);
-           tot_h[i] = MakeH1(chno,chno, 20000, -10, 200, "ns");
+           tot_h[i] = MakeH1(chno,chno, 2000, -10, 200, "ns");
            sprintf(chno,"Ch%02d_potato",i);
-           potato_h[i] = MakeH2(chno,chno,500,-300,300,500, -10, 1000, "t1 (ns);tot (ns)");
+           potato_h[i] = MakeH2(chno,chno,500,-30,30,500, -10, 200, "t1 (ns);tot (ns)");
          }
          
          // enable storing already in constructor
