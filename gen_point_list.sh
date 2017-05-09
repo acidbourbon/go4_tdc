@@ -1,7 +1,7 @@
 #!/bin/bash
 
 xlist=$(seq 4750 4750)
-ylist=$(seq 1700 200 5200)
+ylist="$(seq 2300 400 5000)"
 zlist=$(seq 4500 4500)
 
 for x in $xlist; do

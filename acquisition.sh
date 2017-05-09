@@ -19,13 +19,13 @@ killall dabc_exe
 rm $dump_dir/*.hld
 
 echo "re-setting threshold:"
-curl http://localhost:1148/commands/put.pl?1483-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
+#curl http://localhost:1148/commands/put.pl?1483-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
 
 timeout $timeout dabc_exe TdcEventBuilder.xml
 mv $dump_dir/*.hld $outdir/
 
 cp $acq_info $outdir/acq_info.txt
-
 echo -e "\n\nlaser position:\n" >> $outdir/acq_info.txt
+./check_connection.sh
 cat $laser_pos>> $outdir/acq_info.txt
 

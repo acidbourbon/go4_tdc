@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+#$1 defines interface ...
+#$2 defines file to send
+
+while read line; do
+echo trbcmd w $line
+trbcmd w $line
+done < $1

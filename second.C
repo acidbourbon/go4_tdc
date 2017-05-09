@@ -47,7 +47,7 @@ class SecondProc : public base::EventProc {
            sprintf(chno,"Ch%02d_t1",i);
            t1_h[i] = MakeH1(chno,chno, 2000, -60, 60, "ns");
            sprintf(chno,"Ch%02d_tot",i);
-           tot_h[i] = MakeH1(chno,chno, 2000, -10, 200, "ns");
+           tot_h[i] = MakeH1(chno,chno, 4000, -10, 500, "ns");
            sprintf(chno,"Ch%02d_potato",i);
            potato_h[i] = MakeH2(chno,chno,500,-30,30,500, -10, 200, "t1 (ns);tot (ns)");
          }
@@ -94,8 +94,12 @@ class SecondProc : public base::EventProc {
 
             unsigned chid = ext.msg().getHitChannel();
 //             unsigned time = ext.msg().getHitTmFine();
-//             bool rising   = not(ext.msg().isHitRisingEdge()); // use this line for falling edge first/negative pulses
-            bool rising   = ext.msg().isHitRisingEdge(); // use this line for rising edge first/positive pulses
+            bool rising   = not(ext.msg().isHitRisingEdge()); // use this line for falling edge first/negative pulses
+//            bool rising   = ext.msg().isHitRisingEdge(); // use this line for rising edge first/positive pulses
+//            if((chid-1) == 8) {
+//		    // positive polarity only for trigger input
+//		    rising   = ext.msg().isHitRisingEdge(); // use this line for rising edge first/positive pulses
+//	    }
 //             printf("message, ch %d\n",(chid-1));
             
             if (chid==0) { ch0tm = ext.GetGlobalTime(); continue; }

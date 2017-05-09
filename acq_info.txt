@@ -1,4 +1,9 @@
 #parameters and notes for acquisition
-timeout=10
+timeout=30
 
-#comment: erster Verfahrtest
+HV=1700V
+Gas_mixture=70_30
+LaserRate=100Hz
+PrimariesPerPulse=200
+
+#comment: pasttrec precision scan with all points from asd8 prec y scan
