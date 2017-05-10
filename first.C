@@ -14,7 +14,7 @@ void first()
    hadaq::TdcMessage::SetFineLimits(10, 510);
 
    // default channel numbers and edges mask
-   hadaq::TrbProcessor::SetDefaults(17, 2);
+   hadaq::TrbProcessor::SetDefaults(33, 2);
 //    hadaq::TdcProcessor::SetDefaults(1000);
    //hadaq::TdcProcessor::DisableCalibrationFor(0,8);
    // [min..max] range for TDC ids

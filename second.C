@@ -6,7 +6,7 @@
 #include "base/Event.h"
 #include "hadaq/TdcSubEvent.h"
 
-#define CHANNELS 10
+#define CHANNELS 32
 #define REFCHAN 8
 
 #define t1_L -200
