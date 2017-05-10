@@ -9,6 +9,11 @@
 #define CHANNELS 10
 #define REFCHAN 8
 
+#define t1_L -200
+#define t1_R 200
+#define tot_L -10
+#define tot_R 200
+
 class SecondProc : public base::EventProc {
    protected:
 
@@ -45,11 +50,11 @@ class SecondProc : public base::EventProc {
          for( unsigned i=0; i<CHANNELS; i++ ) {
            char chno[16];
            sprintf(chno,"Ch%02d_t1",i);
-           t1_h[i] = MakeH1(chno,chno, 2000, -200, 200, "ns");
+           t1_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
            sprintf(chno,"Ch%02d_tot",i);
-           tot_h[i] = MakeH1(chno,chno, 4000, -10, 500, "ns");
+           tot_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
            sprintf(chno,"Ch%02d_potato",i);
-           potato_h[i] = MakeH2(chno,chno,500,-200,200,500, -10, 200, "t1 (ns);tot (ns)");
+           potato_h[i] = MakeH2(chno,chno,500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
          }
          
          // enable storing already in constructor
@@ -114,10 +119,12 @@ class SecondProc : public base::EventProc {
 //                 case 2: ch2tm = tm; break;
 //                 case 3: ch3tm = tm; break;
 //               }
-              if(not(got_rising[chid-1])){
+              
+//               if(not(got_rising[chid-1])){
                 got_rising[chid-1] = true;
+                got_falling[chid-1] = false;
                 t1[chid-1] = tm;
-              }
+//               }
             }else{ // if falling edge
 //               printf("got falling edge, ch %d\n",(chid-1));
               if(got_rising){
@@ -144,12 +151,15 @@ class SecondProc : public base::EventProc {
          
          for( unsigned i=0; i<CHANNELS; i++ ) {
             if(got_falling[i]){
-              FillH1(tot_h[i],tot[i]*1e9);
               
               if(got_falling[REFCHAN]){ // t1 information only makes sense if you have 
                 // a hit in the reference channel
-                FillH2(potato_h[i],(t1[i]-t1[REFCHAN])*1e9,tot[i]*1e9);
-                FillH1(t1_h[i],(t1[i]-t1[REFCHAN])*1e9);
+                double t1_vs_ref = (t1[i]-t1[REFCHAN])*1e9 ;
+                if( (t1_vs_ref > t1_L) && (t1_vs_ref < t1_R))  {
+                  FillH1(tot_h[i],tot[i]*1e9);
+                  FillH2(potato_h[i],(t1[i]-t1[REFCHAN])*1e9,tot[i]*1e9);
+                  FillH1(t1_h[i],(t1[i]-t1[REFCHAN])*1e9);
+                }
               }
             }
          }
