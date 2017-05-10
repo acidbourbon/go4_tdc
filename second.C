@@ -45,11 +45,11 @@ class SecondProc : public base::EventProc {
          for( unsigned i=0; i<CHANNELS; i++ ) {
            char chno[16];
            sprintf(chno,"Ch%02d_t1",i);
-           t1_h[i] = MakeH1(chno,chno, 2000, -60, 60, "ns");
+           t1_h[i] = MakeH1(chno,chno, 2000, -200, 200, "ns");
            sprintf(chno,"Ch%02d_tot",i);
            tot_h[i] = MakeH1(chno,chno, 4000, -10, 500, "ns");
            sprintf(chno,"Ch%02d_potato",i);
-           potato_h[i] = MakeH2(chno,chno,500,-30,30,500, -10, 200, "t1 (ns);tot (ns)");
+           potato_h[i] = MakeH2(chno,chno,500,-200,200,500, -10, 200, "t1 (ns);tot (ns)");
          }
          
          // enable storing already in constructor
@@ -94,8 +94,8 @@ class SecondProc : public base::EventProc {
 
             unsigned chid = ext.msg().getHitChannel();
 //             unsigned time = ext.msg().getHitTmFine();
-            bool rising   = not(ext.msg().isHitRisingEdge()); // use this line for falling edge first/negative pulses
-//            bool rising   = ext.msg().isHitRisingEdge(); // use this line for rising edge first/positive pulses
+//           bool rising   = not(ext.msg().isHitRisingEdge()); // use this line for falling edge first/negative pulses
+           bool rising   = ext.msg().isHitRisingEdge(); // use this line for rising edge first/positive pulses
 //            if((chid-1) == 8) {
 //		    // positive polarity only for trigger input
 //		    rising   = ext.msg().isHitRisingEdge(); // use this line for rising edge first/positive pulses
