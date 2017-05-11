@@ -9,8 +9,8 @@
 #define CHANNELS 32
 #define REFCHAN 8
 
-#define t1_L -200
-#define t1_R 200
+#define t1_L -300
+#define t1_R 100
 #define tot_L -10
 #define tot_R 200
 

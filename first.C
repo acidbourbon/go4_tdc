@@ -102,8 +102,8 @@ extern "C" void after_create(hadaq::HldProcessor* hld)
 
       // if (tdc->GetID() == 0x1130);
       
-      for (int n=2;n<17;++n)
-         tdc->SetRefChannel(n,1, 0xffff, 6000, -20, 20); // LED DIFF
+      for (int n=1;n<25;++n)
+         tdc->SetRefChannel(n,9, 0xffff, 6000, -20, 20); // LED DIFF
    }
 }
 

@@ -118,7 +118,7 @@ When starting analysis from the go4 gui, one should specify stream server with p
 	urlopt="udpbuf=20000&mtu=64512&flush=3.0&observer=false&debug&resort"/>
    -->
    
-       <InputPort name="Input*" queue="30" urlopt="udpbuf=20000&mtu=64512&flush=3.0&observer=false&debug"/>
+       <InputPort name="Input*" queue="30" urlopt="udpbuf=400000&mtu=64512&flush=1&observer=false&debug"/>
 
        <ExtraDebug value="false"/>
 
@@ -126,11 +126,12 @@ When starting analysis from the go4 gui, one should specify stream server with p
        <OutputPort name="Output0" url="mbs://Stream:6789?iter=hadaq_iter&subid=0x1f"/>
 
        <!--  this is example of HLD file storage - local and RFIO -->
-       <OutputPort name="Output1" url="hld:///home/hadaq/mdctest/tmp/test_hzdr.hld?maxsize=2000"/>
+       <OutputPort name="Output1" url="hld:///home/hadaq/mdctest/tmp/test_DLAB.hld?maxsize=2000"/>
        <!--OutputPort name="Output1" url="hld:///linev/path/dabc.hld?maxsize=1900&rfio"/-->
 
        <DoShmControl value="false"/>  
-       <FlushTimeout value="2.0"/>   
+       <FlushTimeout value="1.0"/>   
+       <BuildDropTimeout value="1000"/> 
 
        <!-- take event sequence number from vulom/roc sync message at cts -->
        <UseSyncSequenceNumber value="false"/>
