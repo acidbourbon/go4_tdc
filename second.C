@@ -31,6 +31,7 @@ class SecondProc : public base::EventProc {
       base::H1handle  tot_h[CHANNELS]; 
       base::H1handle  t1_h[CHANNELS]; 
       base::H1handle  potato_h[CHANNELS];
+      base::H1handle  coinc_matrix;
       
    public:
       SecondProc(const char* procname, const char* _tdcid) :
@@ -56,6 +57,8 @@ class SecondProc : public base::EventProc {
            sprintf(chno,"Ch%02d_potato",i);
            potato_h[i] = MakeH2(chno,chno,500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
          }
+         
+        coinc_matrix = MakeH2("coinc_matrix","coinc_matrix",8,-0.5,7.5,8,16-0.5,23+0.5, "channels 0-7;channels 16-23;coincidences");
          
          // enable storing already in constructor
          SetStoreEnabled();
@@ -163,6 +166,32 @@ class SecondProc : public base::EventProc {
               }
             }
          }
+         
+         
+        // fill the coincidence coinc_matrix
+        if(got_falling[REFCHAN]){ 
+           
+          for( unsigned i=0; i<8; i++ ) {
+              if(got_falling[i]){
+                  double t1_vs_ref_a = (t1[i]-t1[REFCHAN])*1e9 ;
+                  if( (t1_vs_ref_a > t1_L) && (t1_vs_ref_a < t1_R))  {
+                  
+                    for( unsigned j=16; j<24; j++ ) {
+                        if(got_falling[j]){
+                            double t1_vs_ref_b = (t1[j]-t1[REFCHAN])*1e9 ;
+                            if( (t1_vs_ref_b > t1_L) && (t1_vs_ref_b < t1_R))  {
+                              FillH2(coinc_matrix,i,j);
+                            }
+                        }
+                    }
+                    
+                  }
+              }
+          }
+            
+            
+            
+        }
          
 //          if(got_falling[0]){
 //           FillH1(totCh1,tot[0]*1e9);
