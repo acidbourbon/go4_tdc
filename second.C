@@ -64,10 +64,20 @@ class SecondProc : public base::EventProc {
         coinc_matrix = MakeH2("coinc_matrix","coinc_matrix",8,-0.5,7.5,8,16-0.5,23+0.5, "channels 0-7;channels 16-23");
         meta_fish = MakeH2("meta_fish","meta_fish",250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
         
-        for (unsigned i=0; i<FISHES; i++ ) {
-          char chno[16];
-          sprintf(chno,"fish%02d",i);
-          fishes[i] = MakeH2(chno,chno,250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
+//         for (unsigned i=0; i<FISHES; i++ ) {
+//         }
+        for( unsigned i=0; i<8; i++ ) {
+          for( unsigned j=16; j<24; j++ ) {
+            if((i==(j-16)) || (i==(j-16 + 1))) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
+              unsigned fish_index = i; // for diagonal elements
+              if( i==(j-16 + 1) ) { // next to diagonal elements
+                fish_index = i + 8;
+              }
+              char chno[64];
+              sprintf(chno,"fish_%02d_vs_%02d",j,i);
+              fishes[fish_index] = MakeH2(chno,chno,250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
+            }
+          }
         }
          
          // enable storing already in constructor
