@@ -7,7 +7,7 @@
 #include "hadaq/TdcSubEvent.h"
 
 #define CHANNELS 32
-#define FISHES   16
+#define FISHES   32
 #define REFCHAN 8
 
 #define t1_L -300
@@ -68,10 +68,13 @@ class SecondProc : public base::EventProc {
 //         }
         for( unsigned i=0; i<8; i++ ) {
           for( unsigned j=16; j<24; j++ ) {
-            if((i==(j-16)) || (i==(j-16 + 1))) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
+            if((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 -1))  ) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
               unsigned fish_index = i; // for diagonal elements
               if( i==(j-16 + 1) ) { // next to diagonal elements
                 fish_index = i + 8;
+              }
+              if( i==(j-16 - 1) ) { // next to diagonal elements, other side
+                fish_index = i + 16;
               }
               char chno[64];
               sprintf(chno,"fish_%02d_vs_%02d",j,i);
@@ -202,11 +205,14 @@ class SecondProc : public base::EventProc {
                             if( (t1_vs_ref_b > t1_L) && (t1_vs_ref_b < t1_R))  {
                               FillH2(coinc_matrix,i,j);
                               
-                              if((i==(j-16)) || (i==(j-16 + 1))) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
+                              if((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 - 1))) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
                                 FillH2(meta_fish,(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
                                 unsigned fish_index = i; // for diagonal elements
                                 if( i==(j-16 + 1) ) { // next to diagonal elements
                                   fish_index = i + 8;
+                                }
+                                if( i==(j-16 - 1) ) { // next to diagonal elements, other side
+                                  fish_index = i + 16;
                                 }
                                 FillH2(fishes[fish_index],(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
                               }
