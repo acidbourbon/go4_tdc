@@ -15,6 +15,8 @@
 #define tot_L -10
 #define tot_R 200
 
+#define fish_proj_cut 20
+
 class SecondProc : public base::EventProc {
    protected:
 
@@ -35,6 +37,44 @@ class SecondProc : public base::EventProc {
       base::H1handle  coinc_matrix;
       base::H1handle  meta_fish;
       base::H1handle  fishes[FISHES];
+      base::H1handle  fish_proj[FISHES];
+      
+      /*
+      int overlaps[32][2] = { //contains geometrical overlaps. -1 means not connected 
+        // if two 
+        {-1,16} , //0
+        {16,17} ,
+        {17,18} ,
+        {18,19} ,
+        {19,20} ,
+        {20,21} ,
+        {21,22} ,
+        {22,23} , //7
+        {-1,-1} , //8
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} , //15
+        {0,1} , //16
+        {1,2} ,
+        {2,3} ,
+        {3,4} ,
+        {4,5} ,
+        {5,6} ,
+        {6,7} ,
+        {7,-1} , //23
+        {-1,-1} , //24
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} ,
+        {-1,-1} //31
+     }; */
       
    public:
       SecondProc(const char* procname, const char* _tdcid) :
@@ -78,7 +118,9 @@ class SecondProc : public base::EventProc {
               }
               char chno[64];
               sprintf(chno,"fish_%02d_vs_%02d",j,i);
-              fishes[fish_index] = MakeH2(chno,chno,250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
+              fishes[fish_index]    = MakeH2(chno,chno,250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
+              sprintf(chno,"fish_proj_%02d_vs_%02d",j,i);
+              fish_proj[fish_index] = MakeH1(chno,chno,250,-400,100, "T_A+T_B;counts");
             }
           }
         }
@@ -215,6 +257,9 @@ class SecondProc : public base::EventProc {
                                   fish_index = i + 16;
                                 }
                                 FillH2(fishes[fish_index],(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
+                                if( abs(t1_vs_ref_b - t1_vs_ref_a) < fish_proj_cut){ // cut on drift time difference
+                                  FillH1(fish_proj[fish_index],(t1_vs_ref_a + t1_vs_ref_b));
+                                }
                               }
                               
                             }
