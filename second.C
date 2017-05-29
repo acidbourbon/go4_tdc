@@ -1,6 +1,9 @@
 #include <stdio.h>
 
 #include "TTree.h"
+#include "TH1.h"
+#include "TGo4AnalysisObjectManager.h"
+
 
 #include "base/EventProc.h"
 #include "base/Event.h"
@@ -38,43 +41,9 @@ class SecondProc : public base::EventProc {
       base::H1handle  meta_fish;
       base::H1handle  fishes[FISHES];
       base::H1handle  fish_proj[FISHES];
-      
-      /*
-      int overlaps[32][2] = { //contains geometrical overlaps. -1 means not connected 
-        // if two 
-        {-1,16} , //0
-        {16,17} ,
-        {17,18} ,
-        {18,19} ,
-        {19,20} ,
-        {20,21} ,
-        {21,22} ,
-        {22,23} , //7
-        {-1,-1} , //8
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} , //15
-        {0,1} , //16
-        {1,2} ,
-        {2,3} ,
-        {3,4} ,
-        {4,5} ,
-        {5,6} ,
-        {6,7} ,
-        {7,-1} , //23
-        {-1,-1} , //24
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} ,
-        {-1,-1} //31
-     }; */
+      base::H1handle  efficiency_h;
+      base::H1handle  ref_counts_h;
+      base::H1handle  dut_counts_h;
       
    public:
       SecondProc(const char* procname, const char* _tdcid) :
@@ -91,15 +60,25 @@ class SecondProc : public base::EventProc {
          
          
          
-         for( unsigned i=0; i<CHANNELS; i++ ) {
-           char chno[16];
-           sprintf(chno,"Ch%02d_t1",i);
-           t1_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
-           sprintf(chno,"Ch%02d_tot",i);
-           tot_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
-           sprintf(chno,"Ch%02d_potato",i);
-           potato_h[i] = MakeH2(chno,chno,500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
-         }
+        for( unsigned i=0; i<CHANNELS; i++ ) {
+          char chno[16];
+          sprintf(chno,"Ch%02d_t1",i);
+          t1_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
+          sprintf(chno,"Ch%02d_tot",i);
+          tot_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
+          sprintf(chno,"Ch%02d_potato",i);
+          potato_h[i] = MakeH2(chno,chno,500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
+        }
+        
+        ref_counts_h = MakeH1("ref_counts","ref_counts", CHANNELS, -0.5, CHANNELS-0.5, "channel #");
+        dut_counts_h = MakeH1("dut_counts","dut_counts", CHANNELS, -0.5, CHANNELS-0.5, "channel #");
+        efficiency_h = MakeH1("efficiency","efficiency", CHANNELS, -0.5, CHANNELS-0.5, "channel #;kind:F");
+        
+//         TGo4AnalysisObjectManager* taom = new TGo4AnalysisObjectManager;
+        
+//         efficiency_h = taom->MakeTH1("F","Histograms","efficiency", CHANNELS, -0.5, CHANNELS -0.5, "Efficiency", "channel", "efficiency");
+// //         efficiency_h = new TH1F("efficiency","channel # ",CHANNELS, -0.5, CHANNELS-0.5);
+// //         AddHistogram(efficiency_h, "", true);
          
         coinc_matrix = MakeH2("coinc_matrix","coinc_matrix",8,-0.5,7.5,8,16-0.5,23+0.5, "channels 0-7;channels 16-23");
         meta_fish = MakeH2("meta_fish","meta_fish",250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
@@ -149,6 +128,64 @@ class SecondProc : public base::EventProc {
 
 //         printf("%s process sub %d %s\n", GetName(), sub->Size(), fTdcId.c_str());
 
+         static int overlaps[32][2] = {
+           //contains geometrical overlaps. index 1 is the channel (cell) number, the value pairs stored here
+           // are the channels of the cells that it overlaps with.
+           //-1 means not connected 
+           // this is also a list of DUTs 
+           {-1,16} , //0
+           {16,17} ,
+           {17,18} ,
+           {18,19} ,
+           {19,20} ,
+           {20,21} ,
+           {21,22} ,
+           {22,23} , //7
+           {-1,-1} , //8
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} , //15
+           {0,1} , //16
+           {1,2} ,
+           {2,3} ,
+           {3,4} ,
+           {4,5} ,
+           {5,6} ,
+           {6,7} ,
+           {7,-1} , //23
+           {-1,-1} , //24
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} ,
+           {-1,-1} //31
+        };
+        
+        static int ref_counts[32];
+        static int dut_counts[32];
+        static bool is_dut[32];
+        
+        
+        // this is only run once --
+        static bool is_initialized=false;
+        if(not(is_initialized)){
+          for( int i = 0; i<31; i++){
+            ref_counts[i] = 0;
+            dut_counts[i] = 0;
+            is_dut[i] = false;
+            if((overlaps[i][0] >= 0) && (overlaps[i][1] >= 0)){
+              is_dut[i] = true;
+            }
+          }
+          is_initialized = true;
+        }
+        // ------
 
          double num(0), ch0tm(0), ch1tm(0), ch2tm(0), ch3tm(0);
          double t1[CHANNELS];
@@ -224,9 +261,35 @@ class SecondProc : public base::EventProc {
                 // a hit in the reference channel
                 double t1_vs_ref = (t1[i]-t1[REFCHAN])*1e9 ;
                 if( (t1_vs_ref > t1_L) && (t1_vs_ref < t1_R))  {
+                  
+                  // fill histograms
                   FillH1(tot_h[i],tot[i]*1e9);
                   FillH2(potato_h[i],(t1[i]-t1[REFCHAN])*1e9,tot[i]*1e9);
                   FillH1(t1_h[i],(t1[i]-t1[REFCHAN])*1e9);
+                  
+                  
+                  // efficiency estimation ... this cell, cell #i, is a reference detector
+                  ref_counts[i]++; // count up reference counts
+//                   FillH1(counts_h,i-0.5);
+                  if(is_dut[i]){ // is there a cell pair forming a DUT (detector under test) overlapping with the reference?
+                    
+                    int dut_a = overlaps[i][0];
+                    int dut_b = overlaps[i][1];
+                    
+                    if(got_falling[ dut_a ]){ // is there a DUT hit in the first cell overlapping with the reference?
+                      double t1_dut_a_vs_ref = (t1[dut_a]-t1[REFCHAN])*1e9 ; // is in coincidence window?
+                      if( (t1_dut_a_vs_ref > t1_L) && (t1_dut_a_vs_ref < t1_R))  {
+                        dut_counts[i]++; // count up dut counts
+                      }
+                    } else if(got_falling[ dut_b ]){  // is there a DUT hit in the second cell overlapping with the reference?
+                      double t1_dut_b_vs_ref = (t1[dut_b]-t1[REFCHAN])*1e9 ; // is in coincidence window?
+                      if( (t1_dut_b_vs_ref > t1_L) && (t1_dut_b_vs_ref < t1_R))  {
+                        dut_counts[i]++; // count up dut counts
+                      }
+                    }
+                    
+                    
+                  }
                 }
               }
             }
@@ -269,19 +332,29 @@ class SecondProc : public base::EventProc {
                   }
               }
           }
-            
-            
-            
         }
+        
+        
+        for (int i = 0 ; i<CHANNELS; i++) {
+          ((TH1F*) ref_counts_h)->SetBinContent(i+1,ref_counts[i]);
+          ((TH1F*) dut_counts_h)->SetBinContent(i+1,dut_counts[i]);
+          if( is_dut[i] && (ref_counts[i] > 0)){
+            ((TH1F*) efficiency_h)->SetBinContent(i+1,((float) dut_counts[i])/((float) ref_counts[i]));
+          }
+        }
+        
+        
+        
          
 //          if(got_falling[0]){
 //           FillH1(totCh1,tot[0]*1e9);
 //          }
 //          if(got_falling[1]){
-//           FillH1(totCh2,tot[1]*1e9);
+//           FillH1(totCh2,tot[1]*1e9);ref_counts[i]
 //          }
 
 //         FillH1(hNumHits, num);
+
 
          return true;
       }
