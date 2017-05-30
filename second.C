@@ -18,6 +18,8 @@
 #define tot_L -10
 #define tot_R 200
 
+#define spike_rejection 20 //ns
+
 #define fish_proj_cut 20
 
 class SecondProc : public base::EventProc {
@@ -188,14 +190,18 @@ class SecondProc : public base::EventProc {
         // ------
 
          double num(0), ch0tm(0), ch1tm(0), ch2tm(0), ch3tm(0);
+         double t1_candidate[CHANNELS];
+         double t2_candidate[CHANNELS];
          double t1[CHANNELS];
          double t2[CHANNELS];
          bool   got_rising[CHANNELS];
          bool   got_falling[CHANNELS];
+         bool   got_real_hit[CHANNELS];
          double tot[CHANNELS];
          for (unsigned i=0; i<CHANNELS; i++) {
            got_rising[i] = false;
            got_falling[i] = false;
+           got_real_hit[i] = false;
          }
          
 
@@ -228,15 +234,22 @@ class SecondProc : public base::EventProc {
 //               if(not(got_rising[chid-1])){
                 got_rising[chid-1] = true;
                 got_falling[chid-1] = false;
-                t1[chid-1] = tm;
+                t1_candidate[chid-1] = tm;
 //               }
             }else{ // if falling edge
 //               printf("got falling edge, ch %d\n",(chid-1));
               if(got_rising){
                 if(not(got_falling[chid-1])){
                   got_falling[chid-1] = true;
-                  t2[chid-1] = tm;
-                  tot[chid-1] = t2[chid-1] - t1[chid-1];
+                  t2_candidate[chid-1] = tm;
+                  
+                  if( (t2_candidate[chid-1] - t1_candidate[chid-1])*1e9 > spike_rejection ){
+                    // hit is long enough not to be rejected
+                    t1[chid-1] = t1_candidate[chid-1];
+                    t2[chid-1] = t2_candidate[chid-1];
+                    tot[chid-1] = t2[chid-1] - t1[chid-1];
+                    got_real_hit[chid-1] = true;
+                  }
 //                   printf("got hit, ch %d, tot = %f ns\n",(chid-1), tot[chid-1]*1e9);
                 }
               }
@@ -255,9 +268,9 @@ class SecondProc : public base::EventProc {
          
          
          for( unsigned i=0; i<CHANNELS; i++ ) {
-            if(got_falling[i]){
+            if(got_real_hit[i]){
               
-              if(got_falling[REFCHAN]){ // t1 information only makes sense if you have 
+              if(got_real_hit[REFCHAN]){ // t1 information only makes sense if you have 
                 // a hit in the reference channel
                 double t1_vs_ref = (t1[i]-t1[REFCHAN])*1e9 ;
                 if( (t1_vs_ref > t1_L) && (t1_vs_ref < t1_R))  {
@@ -276,12 +289,12 @@ class SecondProc : public base::EventProc {
                     int dut_a = overlaps[i][0];
                     int dut_b = overlaps[i][1];
                     
-                    if(got_falling[ dut_a ]){ // is there a DUT hit in the first cell overlapping with the reference?
+                    if(got_real_hit[ dut_a ]){ // is there a DUT hit in the first cell overlapping with the reference?
                       double t1_dut_a_vs_ref = (t1[dut_a]-t1[REFCHAN])*1e9 ; // is in coincidence window?
                       if( (t1_dut_a_vs_ref > t1_L) && (t1_dut_a_vs_ref < t1_R))  {
                         dut_counts[i]++; // count up dut counts
                       }
-                    } else if(got_falling[ dut_b ]){  // is there a DUT hit in the second cell overlapping with the reference?
+                    } else if(got_real_hit[ dut_b ]){  // is there a DUT hit in the second cell overlapping with the reference?
                       double t1_dut_b_vs_ref = (t1[dut_b]-t1[REFCHAN])*1e9 ; // is in coincidence window?
                       if( (t1_dut_b_vs_ref > t1_L) && (t1_dut_b_vs_ref < t1_R))  {
                         dut_counts[i]++; // count up dut counts
@@ -297,15 +310,15 @@ class SecondProc : public base::EventProc {
          
          
         // fill the coincidence coinc_matrix
-        if(got_falling[REFCHAN]){ 
+        if(got_real_hit[REFCHAN]){ 
            
           for( unsigned i=0; i<8; i++ ) {
-              if(got_falling[i]){
+              if(got_real_hit[i]){
                   double t1_vs_ref_a = (t1[i]-t1[REFCHAN])*1e9 ;
                   if( (t1_vs_ref_a > t1_L) && (t1_vs_ref_a < t1_R))  {
                   
                     for( unsigned j=16; j<24; j++ ) {
-                        if(got_falling[j]){
+                        if(got_real_hit[j]){
                             double t1_vs_ref_b = (t1[j]-t1[REFCHAN])*1e9 ;
                             if( (t1_vs_ref_b > t1_L) && (t1_vs_ref_b < t1_R))  {
                               FillH2(coinc_matrix,i,j);
@@ -346,10 +359,10 @@ class SecondProc : public base::EventProc {
         
         
          
-//          if(got_falling[0]){
+//          if(got_real_hit[0]){
 //           FillH1(totCh1,tot[0]*1e9);
 //          }
-//          if(got_falling[1]){
+//          if(got_real_hit[1]){
 //           FillH1(totCh2,tot[1]*1e9);ref_counts[i]
 //          }
 
