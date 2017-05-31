@@ -18,7 +18,7 @@
 #define tot_L -10
 #define tot_R 200
 
-#define spike_rejection 20 //ns
+#define spike_rejection 60 //ns
 
 #define fish_proj_cut 20
 
@@ -41,6 +41,7 @@ class SecondProc : public base::EventProc {
       base::H1handle  potato_h[CHANNELS];
       base::H1handle  coinc_matrix;
       base::H1handle  meta_fish;
+      base::H1handle  meta_fish_proj;
       base::H1handle  fishes[FISHES];
       base::H1handle  fish_proj[FISHES];
       base::H1handle  efficiency_h;
@@ -84,6 +85,8 @@ class SecondProc : public base::EventProc {
          
         coinc_matrix = MakeH2("coinc_matrix","coinc_matrix",8,-0.5,7.5,8,16-0.5,23+0.5, "channels 0-7;channels 16-23");
         meta_fish = MakeH2("meta_fish","meta_fish",250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
+        
+        meta_fish_proj = MakeH1("meta_fish_proj","meta_fish_proj",250,-400,100, "T_A+T_B;counts");
         
 //         for (unsigned i=0; i<FISHES; i++ ) {
 //         }
@@ -335,6 +338,7 @@ class SecondProc : public base::EventProc {
                                 FillH2(fishes[fish_index],(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
                                 if( abs(t1_vs_ref_b - t1_vs_ref_a) < fish_proj_cut){ // cut on drift time difference
                                   FillH1(fish_proj[fish_index],(t1_vs_ref_a + t1_vs_ref_b));
+                                  FillH1(meta_fish_proj,(t1_vs_ref_a + t1_vs_ref_b));
                                 }
                               }
                               
