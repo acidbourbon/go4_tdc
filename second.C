@@ -18,11 +18,11 @@
 #define tot_L -10
 #define tot_R 200
 
-#define ref_channel_offset -75 //ns
+#define ref_channel_offset -75 //ns fine measured ref channel relative to coarse measured cts trigger channel
 
 #define spike_rejection 60 //ns
-#define t1_accept_L -1000 //+ ref_channel_offset //ns
-#define t1_accept_R 1000 //+ ref_channel_offset//ns
+#define t1_accept_L (-250 + ref_channel_offset) //ns
+#define t1_accept_R (-50 + ref_channel_offset)//ns
 
 #define fish_proj_cut 20
 
@@ -252,12 +252,11 @@ class SecondProc : public base::EventProc {
 //               if(not(got_rising[chid-1])){
                 
               
-//                 if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )) {
-//                 if (false) {
+                if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )  || (chid-1) == REFCHAN) { // this condition sets another coincidence window, except for REFCHAN
                   got_rising[chid-1] = true;
                   got_falling[chid-1] = false;
                   t1_candidate[chid-1] = tm;
-//                 }
+                }
 //               }
             }else{ // if falling edge
 //               printf("got falling edge, ch %d\n",(chid-1));
