@@ -14,13 +14,18 @@
 #define REFCHAN 8
 
 #define t1_L -300
-#define t1_R 100
+#define t1_R 300
 #define tot_L -10
 #define tot_R 200
 
+#define ref_channel_offset -75 //ns
+
 #define spike_rejection 60 //ns
+#define t1_accept_L -1000 //+ ref_channel_offset //ns
+#define t1_accept_R 1000 //+ ref_channel_offset//ns
 
 #define fish_proj_cut 20
+
 
 class SecondProc : public base::EventProc {
    protected:
@@ -39,6 +44,9 @@ class SecondProc : public base::EventProc {
       base::H1handle  tot_h[CHANNELS]; 
       base::H1handle  t1_h[CHANNELS]; 
       base::H1handle  potato_h[CHANNELS];
+      base::H1handle  meta_potato_h;
+      base::H1handle  meta_t1_h;
+      base::H1handle  meta_tot_h;
       base::H1handle  coinc_matrix;
       base::H1handle  meta_fish;
       base::H1handle  meta_fish_proj;
@@ -72,6 +80,10 @@ class SecondProc : public base::EventProc {
           sprintf(chno,"Ch%02d_potato",i);
           potato_h[i] = MakeH2(chno,chno,500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
         }
+        
+        meta_t1_h = MakeH1("meta_t1","meta_t1", 2000, t1_L, t1_R, "ns");
+        meta_tot_h = MakeH1("meta_tot","meta_tot", 4000, tot_L, tot_R, "ns");
+        meta_potato_h = MakeH2("meta_potato","meta_potato",500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
         
         ref_counts_h = MakeH1("ref_counts","ref_counts", CHANNELS, -0.5, CHANNELS-0.5, "channel #");
         dut_counts_h = MakeH1("dut_counts","dut_counts", CHANNELS, -0.5, CHANNELS-0.5, "channel #");
@@ -227,7 +239,10 @@ class SecondProc : public base::EventProc {
             double tm = ext.GetGlobalTime() + ch0tm;
             if((chid-1) >= CHANNELS) {continue;} // channel out of range of analysis
             if(rising){
-//               printf("got rising  edge, ch %d\n",(chid-1));
+              
+//               if(chid-1 == 8){
+//               printf("got rising  edge, ch %d\n, relative time: %f\n",(chid-1), (tm-ch0tm)*1e9);
+//            }
 //               switch(chid) {
 //                 case 1: ch1tm = tm; break;
 //                 case 2: ch2tm = tm; break;
@@ -235,13 +250,18 @@ class SecondProc : public base::EventProc {
 //               }
               
 //               if(not(got_rising[chid-1])){
-                got_rising[chid-1] = true;
-                got_falling[chid-1] = false;
-                t1_candidate[chid-1] = tm;
+                
+              
+//                 if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )) {
+//                 if (false) {
+                  got_rising[chid-1] = true;
+                  got_falling[chid-1] = false;
+                  t1_candidate[chid-1] = tm;
+//                 }
 //               }
             }else{ // if falling edge
 //               printf("got falling edge, ch %d\n",(chid-1));
-              if(got_rising){
+              if(got_rising[chid-1]){
                 if(not(got_falling[chid-1])){
                   got_falling[chid-1] = true;
                   t2_candidate[chid-1] = tm;
@@ -283,6 +303,11 @@ class SecondProc : public base::EventProc {
                   FillH2(potato_h[i],(t1[i]-t1[REFCHAN])*1e9,tot[i]*1e9);
                   FillH1(t1_h[i],(t1[i]-t1[REFCHAN])*1e9);
                   
+                  if( i != REFCHAN ) {
+                    FillH2(meta_potato_h,(t1[i]-t1[REFCHAN])*1e9,tot[i]*1e9);
+                    FillH1(meta_tot_h,tot[i]*1e9);
+                    FillH1(meta_t1_h,(t1[i]-t1[REFCHAN])*1e9);
+                  }
                   
                   // efficiency estimation ... this cell, cell #i, is a reference detector
                   ref_counts[i]++; // count up reference counts
