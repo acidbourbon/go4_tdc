@@ -2,6 +2,8 @@
 
 #include "TTree.h"
 #include "TH1.h"
+#include "TH2.h"
+#include "TCanvas.h"
 #include "TGo4AnalysisObjectManager.h"
 
 
@@ -22,9 +24,12 @@
 
 #define spike_rejection 60 //ns
 #define t1_accept_L (-250 + ref_channel_offset) //ns
-#define t1_accept_R (-50 + ref_channel_offset)//ns
+#define t1_accept_R (100 + ref_channel_offset)//ns
 
 #define fish_proj_cut 20
+
+
+
 
 
 class SecondProc : public base::EventProc {
@@ -396,6 +401,8 @@ class SecondProc : public base::EventProc {
 
 //         FillH1(hNumHits, num);
 
+
+//          draw_and_save((TH2F*) meta_fish, "meta_fish","./","colz");
 
          return true;
       }
