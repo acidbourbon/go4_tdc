@@ -24,9 +24,12 @@
 
 #define spike_rejection 60 //ns
 #define t1_accept_L (-250 + ref_channel_offset) //ns
-#define t1_accept_R (100 + ref_channel_offset)//ns
+#define t1_accept_R (0 + ref_channel_offset)//ns
 
 #define fish_proj_cut 20
+
+// #define coincidence_rejection 7
+#define accept_hits_per_layer 2
 
 
 
@@ -291,6 +294,42 @@ class SecondProc : public base::EventProc {
          }
 //          FillH2(h2D, (ch2tm-ch1tm)*1e9, (ch3tm-ch2tm)*1e9);
          
+         
+         
+         
+//          // reject events where too many channels fire at once
+//          unsigned hits_at_once = 0;
+//          for( unsigned i=0; i<CHANNELS; i++ ) {
+//             if(got_real_hit[i]){
+//               hits_at_once++;
+//             }
+//          }
+//          if( hits_at_once > coincidence_rejection) {
+//           for( unsigned i=0; i<CHANNELS; i++ ) {
+//             got_real_hit[i] = false;
+//           }
+//          }
+        
+        
+         unsigned hits_layer_a = 0;
+         unsigned hits_layer_b = 0;
+         
+         for( unsigned i=0; i<8; i++ ) {
+            if(got_real_hit[i]){
+              hits_layer_a++;
+            }
+         }
+         for( unsigned i=16; i<24; i++ ) {
+            if(got_real_hit[i]){
+              hits_layer_b++;
+            }
+         }
+        
+         if( hits_layer_a > accept_hits_per_layer || hits_layer_b > accept_hits_per_layer) {
+          for( unsigned i=0; i<CHANNELS; i++ ) {
+            got_real_hit[i] = false;
+          }
+         }
          
          
          
