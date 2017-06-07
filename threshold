@@ -1,8 +1,7 @@
 #!/bin/bash
 
-#$1 defines interface
-#$2 defines chip on board
-#$3 defines threshold
+#$1 defines chip on board
+#$2 defines threshold
 
 
 chip=$1
