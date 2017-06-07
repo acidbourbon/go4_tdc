@@ -13,6 +13,10 @@ if [ $chip == "0" ]; then
 trbcmd w 0x1482 0xa000 "0x523"$(printf "%02x" $thresh)
 elif [ $chip == "1" ]; then
 trbcmd w 0x1482 0xa000 "0x543"$(printf "%02x" $thresh)
+elif [ $chip == "2" ]; then
+trbcmd w 0x1482 0xa000 "0xd23"$(printf "%02x" $thresh)
+elif [ $chip == "3" ]; then
+trbcmd w 0x1482 0xa000 "0xd43"$(printf "%02x" $thresh)
 else
 echo "invalid chip number, usage: ./threshold <chip> <thresh>"
 echo " chip = 0|1, thresh = 0-127"
