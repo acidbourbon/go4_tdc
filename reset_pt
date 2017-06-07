@@ -1,0 +1,5 @@
+#!/bin/bash
+
+trbcmd reload 0x1482
+sleep 3
+./addresses.sh

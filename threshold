@@ -5,8 +5,8 @@
 #$3 defines threshold
 
 
-chip=$2
-thresh=$3
+chip=$1
+thresh=$2
 
 
 if [ $chip == "0" ]; then

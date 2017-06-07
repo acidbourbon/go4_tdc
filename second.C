@@ -18,11 +18,11 @@
 #define t1_L -300
 #define t1_R 300
 #define tot_L -10
-#define tot_R 200
+#define tot_R 500
 
 #define ref_channel_offset -75 //ns fine measured ref channel relative to coarse measured cts trigger channel
 
-#define spike_rejection 60 //ns
+#define spike_rejection 10 //ns
 #define t1_accept_L (-250 + ref_channel_offset) //ns
 #define t1_accept_R (0 + ref_channel_offset)//ns
 
@@ -453,5 +453,6 @@ void second()
    //hadaq::TdcProcessor::SetDefaults(700);
 //    new SecondProc("Sec_1482", "TDC_1482");
    new SecondProc("Sec_1483", "TDC_1483");
+   new SecondProc("Sec_1482", "TDC_1482");
 }
 
