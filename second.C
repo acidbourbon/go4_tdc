@@ -22,7 +22,7 @@
 
 #define ref_channel_offset -75 //ns fine measured ref channel relative to coarse measured cts trigger channel
 
-#define spike_rejection 10 //ns
+#define spike_rejection 80 //ns
 #define t1_accept_L (-250 + ref_channel_offset) //ns
 #define t1_accept_R (0 + ref_channel_offset)//ns
 
@@ -55,6 +55,7 @@ class SecondProc : public base::EventProc {
       base::H1handle  meta_potato_h;
       base::H1handle  meta_t1_h;
       base::H1handle  meta_tot_h;
+      base::H1handle  meta_tot_2d;
       base::H1handle  coinc_matrix;
       base::H1handle  meta_fish;
       base::H1handle  meta_fish_proj;
@@ -91,6 +92,7 @@ class SecondProc : public base::EventProc {
         
         meta_t1_h = MakeH1("meta_t1","meta_t1", 2000, t1_L, t1_R, "ns");
         meta_tot_h = MakeH1("meta_tot","meta_tot", 4000, tot_L, tot_R, "ns");
+        meta_tot_2d = MakeH2("meta_tot_2d","meta_tot_2d", 200, tot_L, tot_R,CHANNELS,-0.5,CHANNELS-0.5, "ns;channel#");
         meta_potato_h = MakeH2("meta_potato","meta_potato",500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
         
         ref_counts_h = MakeH1("ref_counts","ref_counts", CHANNELS, -0.5, CHANNELS-0.5, "channel #");
@@ -350,6 +352,7 @@ class SecondProc : public base::EventProc {
                     FillH2(meta_potato_h,(t1[i]-t1[REFCHAN])*1e9,tot[i]*1e9);
                     FillH1(meta_tot_h,tot[i]*1e9);
                     FillH1(meta_t1_h,(t1[i]-t1[REFCHAN])*1e9);
+                    FillH2(meta_tot_2d,tot[i]*1e9,i);
                   }
                   
                   // efficiency estimation ... this cell, cell #i, is a reference detector

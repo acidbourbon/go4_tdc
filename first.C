@@ -19,7 +19,7 @@ void first()
    //hadaq::TdcProcessor::DisableCalibrationFor(0,8);
    // [min..max] range for TDC ids
    //hadaq::TrbProcessor::SetTDCRange(0x610, 0x613);
-   hadaq::TrbProcessor::SetTDCRange(0x1482, 0x1482);
+   hadaq::TrbProcessor::SetTDCRange(0x1482, 0x1483);
    //hadaq::T
    // [min..max] range for HUB ids
    hadaq::TrbProcessor::SetHUBRange(0xc001, 0xcfff);
