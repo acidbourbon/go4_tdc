@@ -17,7 +17,7 @@ void draw_things(TString fname){
   TFile *f = new TFile(fname);
 //   f->cd("Histograms/TDC_1483");
   
-  
+  TString fpga = "1482";
   
   
   cout << "contents: "<< endl; 
@@ -31,18 +31,20 @@ void draw_things(TString fname){
   
   list.push_back("meta_fish");
   list.push_back("meta_potato");
+  list.push_back("meta_t1_2d");
+  list.push_back("meta_tot_2d");
   list.push_back("coinc_matrix");
   list.push_back("meta_fish_proj");
   list.push_back("efficiency");
   list.push_back("ref_counts");
-  list.push_back("Ch00_t1");
-  list.push_back("Ch00_tot");
-  list.push_back("Ch00_potato");
+//   list.push_back("Ch00_t1");
+//   list.push_back("Ch00_tot");
+//   list.push_back("Ch00_potato");
   
 
 //   ((TH1F*)f->Get("Histograms/TDC_1483/Ch2/TDC_1483_Ch2_RisingRef"))->Draw()  
   for (Int_t i = 0; i< list.size(); i++){
-    draw_and_save(f->Get("Histograms/Sec_1483/Sec_1483_"+list[i]),list[i],outdir,"colz" );
+    draw_and_save(f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+list[i]),list[i],outdir,"colz" );
   }
   
 //   new TBrowser();
