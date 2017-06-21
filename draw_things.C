@@ -39,7 +39,7 @@ void draw_things(TString fname){
   list.push_back("meta_tot_2d");
   list.push_back("coinc_matrix");
 //   list.push_back("meta_fish_proj");
-  list.push_back("efficiency");
+//   list.push_back("efficiency");
   list.push_back("ref_counts");
 //   list.push_back("Ch00_t1");
 //   list.push_back("Ch00_tot");
@@ -72,17 +72,37 @@ void draw_things(TString fname){
   
   TH1F* meta_fish_proj = (TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+"meta_fish_proj");
   draw_and_save(meta_fish_proj,"meta_fish_proj",outdir,"colz" );
+  
+  gStyle->SetOptFit();
+  
   meta_fish_proj->Fit("gaus");
   TF1 *fit = meta_fish_proj->GetFunction("gaus");
   Double_t chi2 = fit->GetChisquare();
   Double_t p2 = fit->GetParameter(2);
   Double_t e2 = fit->GetParError(2);
   cout << "Gauss fit sigma: " << p2 << " +- " << e2 << "ns" << endl;
+ 
+  
+  TH1F* efficiency = (TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+"efficiency");
+  draw_and_save(efficiency,"efficiency",outdir,"colz text" );
+  Float_t avg_efficiency = 0;
+  avg_efficiency += efficiency->GetBinContent(1+4);
+  avg_efficiency += efficiency->GetBinContent(1+5);
+//     avg_efficiency += efficiency->GetBinContent(1+6); // broken channel
+  avg_efficiency += efficiency->GetBinContent(1+7);
+  
+  avg_efficiency += efficiency->GetBinContent(1+19);
+  avg_efficiency += efficiency->GetBinContent(1+20);
+  
+  avg_efficiency /= 5;
+  cout << "avg_efficiency:  " << avg_efficiency << endl;
   
   
-  ofstream myfile (outdir + "/" + "meta_fish_proj_fit.txt");
+  
+  ofstream myfile (outdir + "/" + "results.txt");
   if (myfile.is_open()){
     myfile << "Gauss fit sigma: " << p2 << " +- " << e2 << "ns" << endl;
+    myfile << "avg_efficiency:  " << avg_efficiency << endl;
   }
   
   draw_and_save(meta_fish_proj,"meta_fish_proj_fit",outdir,"colz" );

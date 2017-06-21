@@ -26,6 +26,7 @@
 
 // #define spike_rejection 50 //ns for PASTTREC pt10
 #define spike_rejection 90 //ns for PASTTREC pt15
+// #define spike_rejection 100 //ns for PASTTREC pt20
 
 #define t1_accept_L (-250 + ref_channel_offset) //ns
 #define t1_accept_R (0 + ref_channel_offset)//ns
