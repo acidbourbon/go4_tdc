@@ -24,7 +24,9 @@
 
 #define ref_channel_offset -75 //ns fine measured ref channel relative to coarse measured cts trigger channel
 
-#define spike_rejection 50 //ns
+// #define spike_rejection 50 //ns for PASTTREC pt10
+#define spike_rejection 90 //ns for PASTTREC pt15
+
 #define t1_accept_L (-250 + ref_channel_offset) //ns
 #define t1_accept_R (0 + ref_channel_offset)//ns
 
@@ -114,7 +116,7 @@ class SecondProc : public base::EventProc {
 // //         efficiency_h = new TH1F("efficiency","channel # ",CHANNELS, -0.5, CHANNELS-0.5);
 // //         AddHistogram(efficiency_h, "", true);
          
-        coinc_matrix = MakeH2("coinc_matrix","coinc_matrix",8,-0.5,7.5,8,16-0.5,23+0.5, "channels 0-7;channels 16-23");
+        coinc_matrix = MakeH2("coinc_matrix","coinc_matrix",12,-2.5,9.5,10,15-0.5,24+0.5, "channels 0-7;channels 16-23");
         meta_fish = MakeH2("meta_fish","meta_fish",250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
         
         meta_fish_proj = MakeH1("meta_fish_proj","meta_fish_proj",250,-400,100, "T_A+T_B;counts");
@@ -430,7 +432,7 @@ class SecondProc : public base::EventProc {
                             if( (t1_vs_ref_b > t1_L) && (t1_vs_ref_b < t1_R))  {
                               FillH2(coinc_matrix,i,j);
                               
-                              if((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 - 1))) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
+                              if(((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 - 1)) ) && (i > 3) ) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
                                 FillH2(meta_fish,(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
                                 unsigned fish_index = i; // for diagonal elements
                                 if( i==(j-16 + 1) ) { // next to diagonal elements
@@ -440,7 +442,7 @@ class SecondProc : public base::EventProc {
                                   fish_index = i + 16;
                                 }
                                 FillH2(fishes[fish_index],(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
-                                if( abs(t1_vs_ref_b - t1_vs_ref_a) < fish_proj_cut){ // cut on drift time difference
+                                if( abs(t1_vs_ref_b - t1_vs_ref_a) < fish_proj_cut  ){ // cut on drift time difference
                                   FillH1(fish_proj[fish_index],(t1_vs_ref_a + t1_vs_ref_b));
                                   FillH1(meta_fish_proj,(t1_vs_ref_a + t1_vs_ref_b));
                                 }

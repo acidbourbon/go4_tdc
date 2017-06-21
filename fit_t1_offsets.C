@@ -2,7 +2,7 @@
 #include <fstream>
 
 
-
+#define CONSTANT_OFFSET 150
 
 void draw_and_save(TObject *hist,TString name,TString outdir,TString draw_options) {
   
@@ -135,7 +135,7 @@ void fit_t1_offsets(TString fname){
   //    TH1* cumul = ((TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+list[i]))->GetCumulative();
   //     draw_and_save(cumul,list[i]+"_cumul",outdir,"colz" );
       
-      Float_t offset = get_toa_offset(  (TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+list[i]) );
+      Float_t offset = get_toa_offset(  (TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+list[i]) )  + CONSTANT_OFFSET;
       
       cout << "\n\n offset : " << offset << "\n\n"<< endl;
       myfile << offset << endl;

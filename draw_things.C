@@ -1,3 +1,7 @@
+
+#include <iostream>
+#include <fstream>
+
 void draw_and_save(TObject *hist,TString name,TString outdir,TString draw_options) {
   
 //   if(DRAW_PNG) {
@@ -34,7 +38,7 @@ void draw_things(TString fname){
   list.push_back("meta_t1_2d");
   list.push_back("meta_tot_2d");
   list.push_back("coinc_matrix");
-  list.push_back("meta_fish_proj");
+//   list.push_back("meta_fish_proj");
   list.push_back("efficiency");
   list.push_back("ref_counts");
 //   list.push_back("Ch00_t1");
@@ -65,6 +69,23 @@ void draw_things(TString fname){
 //     TH1* cumul = ((TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+list[i]))->GetCumulative();
 //     draw_and_save(cumul,list[i]+"_cumul",outdir,"colz" );
   }
+  
+  TH1F* meta_fish_proj = (TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+"meta_fish_proj");
+  draw_and_save(meta_fish_proj,"meta_fish_proj",outdir,"colz" );
+  meta_fish_proj->Fit("gaus");
+  TF1 *fit = meta_fish_proj->GetFunction("gaus");
+  Double_t chi2 = fit->GetChisquare();
+  Double_t p2 = fit->GetParameter(2);
+  Double_t e2 = fit->GetParError(2);
+  cout << "Gauss fit sigma: " << p2 << " +- " << e2 << "ns" << endl;
+  
+  
+  ofstream myfile (outdir + "/" + "meta_fish_proj_fit.txt");
+  if (myfile.is_open()){
+    myfile << "Gauss fit sigma: " << p2 << " +- " << e2 << "ns" << endl;
+  }
+  
+  draw_and_save(meta_fish_proj,"meta_fish_proj_fit",outdir,"colz" );
   
 //   new TBrowser();
 }
