@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
 
 #include "TTree.h"
 #include "TH1.h"
@@ -22,7 +24,7 @@
 
 #define ref_channel_offset -75 //ns fine measured ref channel relative to coarse measured cts trigger channel
 
-#define spike_rejection 80 //ns
+#define spike_rejection 50 //ns
 #define t1_accept_L (-250 + ref_channel_offset) //ns
 #define t1_accept_R (0 + ref_channel_offset)//ns
 
@@ -32,6 +34,11 @@
 #define accept_hits_per_layer 2
 
 
+Bool_t file_exists(TString fname){
+  
+  fstream src_file(fname.Data());
+  return src_file.good();
+}
 
 
 
@@ -196,6 +203,8 @@ class SecondProc : public base::EventProc {
            {-1,-1} //31
         };
         
+        static float t1_offsets[32];
+        
         static int ref_counts[32];
         static int dut_counts[32];
         static bool is_dut[32];
@@ -207,11 +216,32 @@ class SecondProc : public base::EventProc {
           for( int i = 0; i<31; i++){
             ref_counts[i] = 0;
             dut_counts[i] = 0;
+            t1_offsets[i] = 0;
             is_dut[i] = false;
             if((overlaps[i][0] >= 0) && (overlaps[i][1] >= 0)){
               is_dut[i] = true;
             }
           }
+          
+          if( file_exists("t1_offsets.txt") ){
+            cout << "found t1 offset correction file!" << endl;
+            
+            ifstream in;
+            in.open("t1_offsets.txt");
+            Int_t nlines = 0;
+            string line;
+            while (1) {
+              in >> line;
+              if (!in.good()) break;
+              Float_t offset;
+              if(sscanf(line.c_str(),"%f",&offset)){
+                t1_offsets[nlines] = offset;
+                nlines++;
+              }
+            }
+          }
+          
+          
           is_initialized = true;
         }
         // ------
@@ -347,15 +377,15 @@ class SecondProc : public base::EventProc {
                   
                   // fill histograms
                   FillH1(tot_h[i],tot[i]*1e9);
-                  FillH2(potato_h[i],(t1[i]-t1[REFCHAN])*1e9,tot[i]*1e9);
-                  FillH1(t1_h[i],(t1[i]-t1[REFCHAN])*1e9);
+                  FillH2(potato_h[i],t1_vs_ref - t1_offsets[i],tot[i]*1e9);
+                  FillH1(t1_h[i],t1_vs_ref - t1_offsets[i]);
                   
                   if( i != REFCHAN ) {
-                    FillH2(meta_potato_h,(t1[i]-t1[REFCHAN])*1e9,tot[i]*1e9);
+                    FillH2(meta_potato_h,t1_vs_ref - t1_offsets[i],tot[i]*1e9);
                     FillH1(meta_tot_h,tot[i]*1e9);
-                    FillH1(meta_t1_h,(t1[i]-t1[REFCHAN])*1e9);
+                    FillH1(meta_t1_h,t1_vs_ref - t1_offsets[i]);
                     FillH2(meta_tot_2d,tot[i]*1e9,i);
-                    FillH2(meta_t1_2d,(t1[i]-t1[REFCHAN])*1e9,i);
+                    FillH2(meta_t1_2d,t1_vs_ref - t1_offsets[i],i);
                   }
                   
                   // efficiency estimation ... this cell, cell #i, is a reference detector
@@ -391,12 +421,12 @@ class SecondProc : public base::EventProc {
            
           for( unsigned i=0; i<8; i++ ) {
               if(got_real_hit[i]){
-                  double t1_vs_ref_a = (t1[i]-t1[REFCHAN])*1e9 ;
+                  double t1_vs_ref_a = (t1[i]-t1[REFCHAN])*1e9 - t1_offsets[i] ;
                   if( (t1_vs_ref_a > t1_L) && (t1_vs_ref_a < t1_R))  {
                   
                     for( unsigned j=16; j<24; j++ ) {
                         if(got_real_hit[j]){
-                            double t1_vs_ref_b = (t1[j]-t1[REFCHAN])*1e9 ;
+                            double t1_vs_ref_b = (t1[j]-t1[REFCHAN])*1e9 - t1_offsets[j];
                             if( (t1_vs_ref_b > t1_L) && (t1_vs_ref_b < t1_R))  {
                               FillH2(coinc_matrix,i,j);
                               
