@@ -17,6 +17,12 @@
 #define FISHES   32
 #define REFCHAN 8
 
+// #define t1_L -300
+// #define t1_R 300
+// #define tot_L -10
+// #define tot_R 500
+
+// Muentz-Torte
 #define t1_L -300
 #define t1_R 300
 #define tot_L -10
@@ -24,14 +30,36 @@
 
 #define ref_channel_offset -75 //ns fine measured ref channel relative to coarse measured cts trigger channel
 
-// #define spike_rejection 50 //ns for PASTTREC pt10
-#define spike_rejection 90 //ns for PASTTREC pt15
+// in the first iteration, scanning through data in the coincidence window, rejecting hits (fuzzy edges)
+
+#define spike_rejection 60 //ns for PASTTREC pt10 // for fish projection
+// #define spike_rejection 90 //ns for PASTTREC pt10 // for t1 calibration
+// #define spike_rejection 60 //ns for PASTTREC pt10 
+// #define spike_rejection 90 //ns for PASTTREC pt15
 // #define spike_rejection 100 //ns for PASTTREC pt20
+// #define spike_rejection 30 //ns for ASD8 0xA9
+// #define spike_rejection 60 //ns for ASD8 0x72
+// #define spike_rejection 75 //ns for ASD8 0x52
+
+
+
 
 #define t1_accept_L (-250 + ref_channel_offset) //ns
+// #define t1_accept_L (-150 + ref_channel_offset) //ns // Muentz-Torte
 #define t1_accept_R (0 + ref_channel_offset)//ns
+// #define t1_accept_R (-130 + ref_channel_offset)//ns // Muentz-Torte
+// #define t1_accept_R (-90 + ref_channel_offset)//ns // ASD8 with thr 0x52
 
 #define fish_proj_cut 20
+
+
+
+// real cuts on selected data
+
+#define max_tot 1000 // Muentz-Torte
+#define t1_cut_L -250
+#define t1_cut_R -0
+
 
 // #define coincidence_rejection 7
 #define accept_hits_per_layer 2
@@ -309,8 +337,11 @@ class SecondProc : public base::EventProc {
                 if(not(got_falling[chid-1])){
                   got_falling[chid-1] = true;
                   t2_candidate[chid-1] = tm;
+                  Double_t candidate_tot_ns = (t2_candidate[chid-1] - t1_candidate[chid-1])*1e9;
                   
-                  if( (t2_candidate[chid-1] - t1_candidate[chid-1])*1e9 > spike_rejection ){
+//                   if( (candidate_tot_ns > spike_rejection) ){
+                  if( (candidate_tot_ns > spike_rejection) ){
+//                   if( (candidate_tot_ns > spike_rejection) &&  ((t2_candidate[chid-1] - t1_candidate[chid-1])*1e9 < max_tot )    ){
                     // hit is long enough not to be rejected
                     t1[chid-1] = t1_candidate[chid-1];
                     t2[chid-1] = t2_candidate[chid-1];
@@ -376,7 +407,7 @@ class SecondProc : public base::EventProc {
               if(got_real_hit[REFCHAN]){ // t1 information only makes sense if you have 
                 // a hit in the reference channel
                 double t1_vs_ref = (t1[i]-t1[REFCHAN])*1e9 ;
-                if( (t1_vs_ref > t1_L) && (t1_vs_ref < t1_R))  {
+                if( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) )  {
                   
                   // fill histograms
                   FillH1(tot_h[i],tot[i]*1e9);
@@ -401,12 +432,12 @@ class SecondProc : public base::EventProc {
                     
                     if(got_real_hit[ dut_a ]){ // is there a DUT hit in the first cell overlapping with the reference?
                       double t1_dut_a_vs_ref = (t1[dut_a]-t1[REFCHAN])*1e9 ; // is in coincidence window?
-                      if( (t1_dut_a_vs_ref > t1_L) && (t1_dut_a_vs_ref < t1_R))  {
+                      if( (t1_dut_a_vs_ref > t1_cut_L) && (t1_dut_a_vs_ref < t1_cut_R))  {
                         dut_counts[i]++; // count up dut counts
                       }
                     } else if(got_real_hit[ dut_b ]){  // is there a DUT hit in the second cell overlapping with the reference?
                       double t1_dut_b_vs_ref = (t1[dut_b]-t1[REFCHAN])*1e9 ; // is in coincidence window?
-                      if( (t1_dut_b_vs_ref > t1_L) && (t1_dut_b_vs_ref < t1_R))  {
+                      if( (t1_dut_b_vs_ref > t1_cut_L) && (t1_dut_b_vs_ref < t1_cut_R))  {
                         dut_counts[i]++; // count up dut counts
                       }
                     }
@@ -425,15 +456,17 @@ class SecondProc : public base::EventProc {
           for( unsigned i=0; i<8; i++ ) {
               if(got_real_hit[i]){
                   double t1_vs_ref_a = (t1[i]-t1[REFCHAN])*1e9 - t1_offsets[i] ;
-                  if( (t1_vs_ref_a > t1_L) && (t1_vs_ref_a < t1_R))  {
+                  if( (t1_vs_ref_a > t1_cut_L) && (t1_vs_ref_a < t1_cut_R))  {
                   
                     for( unsigned j=16; j<24; j++ ) {
                         if(got_real_hit[j]){
                             double t1_vs_ref_b = (t1[j]-t1[REFCHAN])*1e9 - t1_offsets[j];
-                            if( (t1_vs_ref_b > t1_L) && (t1_vs_ref_b < t1_R))  {
+                            if( (t1_vs_ref_b > t1_cut_L) && (t1_vs_ref_b < t1_cut_R))  {
                               FillH2(coinc_matrix,i,j);
                               
-                              if(((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 - 1)) ) && (i > 3) ) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
+                              if(((i==(j-16)) || (i==(j-16 + 1)) ) && (i > 3) ) { // last four cells, PASTTREC
+//                               if(((i==(j-16)) || (i==(j-16 + 1)) ) && (i < 4) ) { // first four cells - ASD8
+                                //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
                                 FillH2(meta_fish,(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
                                 unsigned fish_index = i; // for diagonal elements
                                 if( i==(j-16 + 1) ) { // next to diagonal elements
