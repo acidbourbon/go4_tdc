@@ -88,7 +88,7 @@ void draw_things(TString fname){
   Float_t avg_efficiency = 0;
   
   // pasttrec average
-  /*
+  
   avg_efficiency += efficiency->GetBinContent(1+4);
   avg_efficiency += efficiency->GetBinContent(1+5);
 //     avg_efficiency += efficiency->GetBinContent(1+6); // broken channel
@@ -99,18 +99,18 @@ void draw_things(TString fname){
   
   avg_efficiency /= 5;
   
-  */
   
-  // asd8 average
-  avg_efficiency += efficiency->GetBinContent(1+1);
-  avg_efficiency += efficiency->GetBinContent(1+2); 
-  avg_efficiency += efficiency->GetBinContent(1+3);
   
-  avg_efficiency += efficiency->GetBinContent(1+16);
-  avg_efficiency += efficiency->GetBinContent(1+17);
-  avg_efficiency += efficiency->GetBinContent(1+18);
-  
-  avg_efficiency /= 6;
+//   // asd8 average
+//   avg_efficiency += efficiency->GetBinContent(1+1);
+//   avg_efficiency += efficiency->GetBinContent(1+2); 
+//   avg_efficiency += efficiency->GetBinContent(1+3);
+//   
+//   avg_efficiency += efficiency->GetBinContent(1+16);
+//   avg_efficiency += efficiency->GetBinContent(1+17);
+//   avg_efficiency += efficiency->GetBinContent(1+18);
+//   
+//   avg_efficiency /= 6;
   
   cout << "avg_efficiency:  " << avg_efficiency << endl;
   

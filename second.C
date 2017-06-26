@@ -32,7 +32,7 @@
 
 // in the first iteration, scanning through data in the coincidence window, rejecting hits (fuzzy edges)
 
-#define spike_rejection 60 //ns for PASTTREC pt10 // for fish projection
+#define spike_rejection 45 //ns for PASTTREC 
 // #define spike_rejection 90 //ns for PASTTREC pt10 // for t1 calibration
 // #define spike_rejection 60 //ns for PASTTREC pt10 
 // #define spike_rejection 90 //ns for PASTTREC pt15
@@ -41,12 +41,14 @@
 // #define spike_rejection 60 //ns for ASD8 0x72
 // #define spike_rejection 75 //ns for ASD8 0x52
 
+#define individual_spike_rejection 1
+
 
 
 
 #define t1_accept_L (-250 + ref_channel_offset) //ns
 // #define t1_accept_L (-150 + ref_channel_offset) //ns // Muentz-Torte
-#define t1_accept_R (0 + ref_channel_offset)//ns
+#define t1_accept_R (100 + ref_channel_offset)//ns
 // #define t1_accept_R (-130 + ref_channel_offset)//ns // Muentz-Torte
 // #define t1_accept_R (-90 + ref_channel_offset)//ns // ASD8 with thr 0x52
 
@@ -56,9 +58,9 @@
 
 // real cuts on selected data
 
-#define max_tot 1000 // Muentz-Torte
+#define max_tot 10000 // Muentz-Torte
 #define t1_cut_L -250
-#define t1_cut_R -0
+#define t1_cut_R 100
 
 
 // #define coincidence_rejection 7
@@ -234,6 +236,41 @@ class SecondProc : public base::EventProc {
            {-1,-1} //31
         };
         
+        static float channel_spike_rejection[32] = {
+          70, //spike_rejection, //0
+          60, //spike_rejection,
+          60, //spike_rejection,
+          60, //spike_rejection,
+          70, //spike_rejection,
+          70, //spike_rejection, //5
+          spike_rejection,
+          70, //spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection, //10
+          spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection, //15
+          spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection, //20
+          spike_rejection,
+          50, //spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection, //25
+          spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection, //30
+          spike_rejection
+        };
+        
         static float t1_offsets[32];
         
         static int ref_counts[32];
@@ -340,7 +377,7 @@ class SecondProc : public base::EventProc {
                   Double_t candidate_tot_ns = (t2_candidate[chid-1] - t1_candidate[chid-1])*1e9;
                   
 //                   if( (candidate_tot_ns > spike_rejection) ){
-                  if( (candidate_tot_ns > spike_rejection) ){
+                  if( (individual_spike_rejection == 0) && (candidate_tot_ns > spike_rejection)  || (individual_spike_rejection == 1) && (candidate_tot_ns > channel_spike_rejection[chid -1])  ){
 //                   if( (candidate_tot_ns > spike_rejection) &&  ((t2_candidate[chid-1] - t1_candidate[chid-1])*1e9 < max_tot )    ){
                     // hit is long enough not to be rejected
                     t1[chid-1] = t1_candidate[chid-1];
