@@ -4,8 +4,9 @@
 fname=$1
 
 dir=$(dirname $fname)
+rm $dir/all_results.txt $dir/events.txt
 
-for i in $(seq 0 250 10000); do
+for i in $(seq 0 200 18000); do
 
 {
   . trb3login_x230
@@ -20,6 +21,8 @@ for i in $(seq 0 250 10000); do
 subdir=$dir/$(printf "%06d" $i)
 mkdir -p $subdir
 mv $dir/*.png $subdir/
+cat $dir/results.txt >> $dir/all_results.txt
+echo $i >> $dir/events.txt
 
 done
 

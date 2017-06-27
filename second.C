@@ -35,6 +35,7 @@
 #define spike_rejection 45 //ns for PASTTREC 
 // #define spike_rejection 90 //ns for PASTTREC pt10 // for t1 calibration
 // #define spike_rejection 60 //ns for PASTTREC pt10 
+// #define spike_rejection 45 //ns for PASTTREC with all the nice filters
 // #define spike_rejection 90 //ns for PASTTREC pt15
 // #define spike_rejection 100 //ns for PASTTREC pt20
 // #define spike_rejection 30 //ns for ASD8 0xA9
@@ -43,7 +44,7 @@
 
 #define individual_spike_rejection 1
 
-
+#define ref_spike_rejection 100
 
 
 #define t1_accept_L (-250 + ref_channel_offset) //ns
@@ -65,6 +66,10 @@
 
 // #define coincidence_rejection 7
 #define accept_hits_per_layer 2
+
+#define enable_single_hits       1
+#define enable_one_hit_per_layer 1
+#define enable_two_to_one_hits   1
 
 
 Bool_t file_exists(TString fname){
@@ -237,14 +242,14 @@ class SecondProc : public base::EventProc {
         };
         
         static float channel_spike_rejection[32] = {
-          70, //spike_rejection, //0
-          60, //spike_rejection,
-          60, //spike_rejection,
-          60, //spike_rejection,
-          70, //spike_rejection,
-          70, //spike_rejection, //5
+          spike_rejection +5, //0
+          spike_rejection +5,
           spike_rejection,
-          70, //spike_rejection,
+          spike_rejection,
+          spike_rejection,
+          spike_rejection +5 , //5
+          spike_rejection,
+          spike_rejection +5,
           spike_rejection,
           spike_rejection,
           spike_rejection, //10
@@ -259,7 +264,7 @@ class SecondProc : public base::EventProc {
           spike_rejection,
           spike_rejection, //20
           spike_rejection,
-          50, //spike_rejection,
+          spike_rejection,
           spike_rejection,
           spike_rejection,
           spike_rejection, //25
@@ -419,23 +424,69 @@ class SecondProc : public base::EventProc {
          unsigned hits_layer_a = 0;
          unsigned hits_layer_b = 0;
          
+         int hit_channels_layer_a[8];
+         int hit_channels_layer_b[8];
+         
          for( unsigned i=0; i<8; i++ ) {
             if(got_real_hit[i]){
+              hit_channels_layer_a[hits_layer_a] = i;
               hits_layer_a++;
             }
          }
          for( unsigned i=16; i<24; i++ ) {
             if(got_real_hit[i]){
+              hit_channels_layer_b[hits_layer_b] = i;
               hits_layer_b++;
             }
          }
         
-         if( hits_layer_a > accept_hits_per_layer || hits_layer_b > accept_hits_per_layer) {
+//          if( hits_layer_a > accept_hits_per_layer || hits_layer_b > accept_hits_per_layer) {
+//           for( unsigned i=0; i<CHANNELS; i++ ) {
+//             got_real_hit[i] = false;
+//           }
+//          }
+         
+         bool keep_event = false;
+         
+         if( enable_two_to_one_hits ) {
+          if( hits_layer_a == 2 && hits_layer_b == 1 ){
+            if( hit_channels_layer_a[0] == hit_channels_layer_a[1] -1){ // cells are next to each other in layer
+              if( hit_channels_layer_a[0] == hit_channels_layer_b[0]-16 ) { // overlap is correct
+                keep_event = true;
+              }
+            }
+          }
+          
+          if( hits_layer_a == 1 && hits_layer_b == 2 ){
+            if( hit_channels_layer_b[0] == hit_channels_layer_b[1] -1){ // cells are next to each other in layer
+              if( hit_channels_layer_a[0] == hit_channels_layer_b[0]-15 ) { // overlap is correct
+                keep_event = true;
+              }
+            }
+          }
+         }
+         
+         if(enable_one_hit_per_layer && hits_layer_a == 1 && hits_layer_b == 1 ){
+           if( hit_channels_layer_a[0] == hit_channels_layer_b[0]-16 || hit_channels_layer_a[0] == hit_channels_layer_b[0]-15 ){
+            keep_event = true;
+           }
+         }
+         
+         
+         if( enable_single_hits ) {
+          if( hits_layer_a == 0 && hits_layer_b == 1 ){
+            keep_event = true;
+          }
+          if( hits_layer_a == 1 && hits_layer_b == 0 ){
+            keep_event = true;
+          }
+         }
+         
+         if( keep_event == false ) {
           for( unsigned i=0; i<CHANNELS; i++ ) {
             got_real_hit[i] = false;
           }
          }
-         
          
          
          for( unsigned i=0; i<CHANNELS; i++ ) {
