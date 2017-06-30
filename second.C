@@ -42,9 +42,9 @@
 // #define spike_rejection 60 //ns for ASD8 0x72
 // #define spike_rejection 75 //ns for ASD8 0x52
 
-#define individual_spike_rejection 1
+#define individual_spike_rejection 0
 
-#define ref_spike_rejection 100
+//#define ref_spike_rejection 100
 
 
 #define t1_accept_L (-250 + ref_channel_offset) //ns

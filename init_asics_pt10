@@ -1,0 +1,5 @@
+#!/bin/bash
+./spi chip0_blue_settings_pt10_thr127
+./spi chip1_blue_settings_pt10_thr127
+./spi chip2_blue_settings_pt10_thr127
+./spi chip3_blue_settings_pt10_thr127
