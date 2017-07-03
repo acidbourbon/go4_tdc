@@ -10,4 +10,5 @@ trbcmd w 0x1482 0xc804 100
 # set trigger windows +- 250 ns
 trbcmd w 0x1482 0xc801 0x80320032
 # enable relevant TDC channels
-trbcmd w 0x1482 0xc802 0x00ff01bf
+#trbcmd w 0x1482 0xc802 0x00ff01bf ## if PT board 2 is connected to ch 0-7
+trbcmd w 0x1482 0xc802 0x00ff01ff ## if PT board 2 is connected to ch 0-7
