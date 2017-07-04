@@ -1,9 +1,9 @@
 #parameters and notes for acquisition
-timeout=30
+timeout=10
 
 HV=1700V
 Gas_mixture=70_30
-LaserRate=100Hz
-PrimariesPerPulse=200
+LaserRate=500Hz
+PrimariesPerPulse=unknown
+CorrespondingSenseWire=2
 
-#comment: pasttrec precision scan with all points from asd8 prec y scan

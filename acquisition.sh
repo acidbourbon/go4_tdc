@@ -26,6 +26,6 @@ mv $dump_dir/*.hld $outdir/
 
 cp $acq_info $outdir/acq_info.txt
 echo -e "\n\nlaser position:\n" >> $outdir/acq_info.txt
-./check_connection.sh
-cat $laser_pos>> $outdir/acq_info.txt
+#./check_connection.sh
+#cat $laser_pos>> $outdir/acq_info.txt
 
