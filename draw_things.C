@@ -14,14 +14,19 @@ void draw_and_save(TObject *hist,TString name,TString outdir,TString draw_option
 //     c->Print(outdir+name+".svg");
 }
 
-
+TString from_env(TString env_var,TString default_val){
+  if(gSystem->Getenv(env_var)){
+    return gSystem->Getenv(env_var);
+  } 
+  return default_val;
+}
 
 
 void draw_things(TString fname){
   TFile *f = new TFile(fname);
 //   f->cd("Histograms/TDC_1483");
   
-  TString fpga = "1482";
+  TString TDC=from_env("TDC","1482");
   
   
   cout << "contents: "<< endl; 
@@ -33,16 +38,29 @@ void draw_things(TString fname){
   
   std::vector<TString> list;
   
-  list.push_back("meta_fish");
+  //list.push_back("meta_fish");
   list.push_back("meta_potato");
   list.push_back("meta_t1_2d");
   list.push_back("meta_tot_2d");
-  list.push_back("coinc_matrix");
+  //list.push_back("coinc_matrix");
 //   list.push_back("meta_fish_proj");
 //   list.push_back("efficiency");
   list.push_back("ref_counts");
-//   list.push_back("Ch00_t1");
-//   list.push_back("Ch00_tot");
+  list.push_back("Ch03_t1");
+  list.push_back("Ch03_tot");
+  list.push_back("Ch03_potato");
+  list.push_back("Ch04_t1");
+  list.push_back("Ch04_tot");
+  list.push_back("Ch04_potato");
+  list.push_back("Ch05_t1");
+  list.push_back("Ch05_tot");
+  list.push_back("Ch05_potato");
+  list.push_back("Ch06_t1");
+  list.push_back("Ch06_tot");
+  list.push_back("Ch06_potato");
+  list.push_back("Ch07_t1");
+  list.push_back("Ch07_tot");
+  list.push_back("Ch07_potato");
 //   list.push_back("Ch00_potato");
 /*  
   list.push_back("Ch00_t1");
@@ -65,13 +83,15 @@ void draw_things(TString fname){
 
 //   ((TH1F*)f->Get("Histograms/TDC_1483/Ch2/TDC_1483_Ch2_RisingRef"))->Draw()  
   for (Int_t i = 0; i< list.size(); i++){
-    draw_and_save(f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+list[i]),list[i],outdir,"colz" );
-//     TH1* cumul = ((TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+list[i]))->GetCumulative();
+    draw_and_save(f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_"+list[i]),list[i],outdir,"colz" );
+//     TH1* cumul = ((TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_"+list[i]))->GetCumulative();
 //     draw_and_save(cumul,list[i]+"_cumul",outdir,"colz" );
   }
   
-  TH1F* meta_fish_proj = (TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+"meta_fish_proj");
-  draw_and_save(meta_fish_proj,"meta_fish_proj",outdir,"colz" );
+  /*
+  TH1F* meta_fish_proj = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_"+"meta_fish_proj");
+  //draw_and_save(meta_fish_proj,"meta_fish_proj",outdir,"colz" );
+  
   
   gStyle->SetOptFit();
   
@@ -83,7 +103,7 @@ void draw_things(TString fname){
   cout << "Gauss fit sigma: " << p2 << " +- " << e2 << "ns" << endl;
  
   
-  TH1F* efficiency = (TH1F*) f->Get("Histograms/Sec_"+fpga+"/Sec_"+fpga+"_"+"efficiency");
+  TH1F* efficiency = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_"+"efficiency");
   draw_and_save(efficiency,"efficiency",outdir,"colz text" );
   Float_t avg_efficiency = 0;
   
@@ -115,15 +135,16 @@ void draw_things(TString fname){
   cout << "avg_efficiency:  " << avg_efficiency << endl;
   
   
-  
   ofstream myfile (outdir + "/" + "results.txt");
   if (myfile.is_open()){
     myfile << "Gauss fit sigma: " << p2 << " +- " << e2 << "ns" << endl;
     myfile << "avg_efficiency:  " << avg_efficiency << endl;
   }
   
-  draw_and_save(meta_fish_proj,"meta_fish_proj_fit",outdir,"colz" );
+  //draw_and_save(meta_fish_proj,"meta_fish_proj_fit",outdir,"colz" );
   
 //   new TBrowser();
+
+*/
 }
 
