@@ -15,8 +15,13 @@ while read line <&3; do
     #thresh=$(printf "%04x" $line)
     #curl http://localhost:1148/commands/put.pl?1483-d400-30${thresh}-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
     #./set_asd8_thresh.sh $line
+    if [ -z $pktime ]; then
     ./init_asics
-    ./threshold 0 0 $line 
+    else
+	    echo $(./init_asics_pt$pktime)
+	    echo "set pktime $pktime"
+    fi
+    ./threshold_all $line 
     ./acquisition.sh $scan_name thr_$line
 done 3<$thr_list
 

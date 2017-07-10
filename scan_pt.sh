@@ -9,6 +9,9 @@ export DAQOPSERVER=localhost:148
 mkdir -p $data_dir/$scan_name
 cp $point_list $data_dir/$scan_name/
 
+
+date '+%Y-%m-%d_%H:%M:%S' > $data_dir/$scan_name/ts_scan_start.txt
+
 while read line <&3; do
 #     echo $line
     x=$( echo $line | cut -d " " -f 1);
@@ -21,10 +24,21 @@ while read line <&3; do
     #curl http://localhost:1148/commands/put.pl?1483-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
     
     #./set_asd8_thresh.sh 37747
+    if [ -z $pktime ]; then
     ./init_asics
-    ./threshold 0 0 10 
+    else
+	    echo $(./init_asics_pt$pktime)
+	    echo "set pktime $pktime"
+    fi
+    if [ -z $thr ]; then
+      ./threshold_all 10 
+    else
+	    ./threshold_all $thr
+	    echo "set threshold $thr"
+    fi
     ./acquisition.sh $scan_name $acq_name
 done 3<$point_list
+date '+%Y-%m-%d_%H:%M:%S' > $data_dir/$scan_name/ts_scan_stop.txt
 cp $0 $data_dir/$scan_name/copy_of_scan.sh
 cp acquisition.sh $data_dir/$scan_name/copy_of_acquisition.sh
 echo "scan finished"

@@ -1,9 +1,12 @@
 #parameters and notes for acquisition
-timeout=10
+timeout=20
 
 HV=1700V
 Gas_mixture=70_30
 LaserRate=500Hz
 PrimariesPerPulse=unknown
-CorrespondingSenseWire=2
+CorrespondingSenseWire=3/Ch05
+CoincWindow=-100 to 300
+Threshold=37000
+
 

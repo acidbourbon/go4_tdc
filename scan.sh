@@ -19,6 +19,7 @@ while read line <&3; do
     #curl http://localhost:1148/commands/put.pl?1483-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
     
     #./set_asd8_thresh.sh 37747
+./set_asd8_thresh.sh 30000
     ./acquisition.sh $scan_name $acq_name
 done 3<$point_list
 cp $0 $data_dir/$scan_name/copy_of_scan.sh

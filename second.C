@@ -36,7 +36,7 @@
 
 // in the first iteration, scanning through data in the coincidence window, rejecting hits (fuzzy edges)
 
-#define spike_rejection 30 //ns for PASTTREC 
+//#define spike_rejection 90 //ns for ASD8 0x72 (25000) with LASER
 // #define spike_rejection 90 //ns for PASTTREC pt10 // for t1 calibration
 // #define spike_rejection 60 //ns for PASTTREC pt10 
 // #define spike_rejection 45 //ns for PASTTREC with all the nice filters
@@ -45,6 +45,7 @@
 // #define spike_rejection 30 //ns for ASD8 0xA9
 // #define spike_rejection 60 //ns for ASD8 0x72
 // #define spike_rejection 75 //ns for ASD8 0x52
+#define spike_rejection 47 //ns for ASD8 0x72 (25000) with LASER
 
 #define individual_spike_rejection 0
 
@@ -390,7 +391,7 @@ class SecondProc : public base::EventProc {
                   Double_t candidate_tot_ns = (t2_candidate[chid-1] - t1_candidate[chid-1])*1e9;
                   
 //                   if( (candidate_tot_ns > spike_rejection) ){
-                  if( (individual_spike_rejection == 0) && (candidate_tot_ns > spike_rejection)  || (individual_spike_rejection == 1) && (candidate_tot_ns > channel_spike_rejection[chid -1])  ){
+                  if( (individual_spike_rejection == 0) && (candidate_tot_ns > spike_rejection)  || (individual_spike_rejection == 1) && (candidate_tot_ns > channel_spike_rejection[chid -1])  || (chid-1) == REFCHAN ){
 //                   if( (candidate_tot_ns > spike_rejection) &&  ((t2_candidate[chid-1] - t1_candidate[chid-1])*1e9 < max_tot )    ){
                     // hit is long enough not to be rejected
                     t1[chid-1] = t1_candidate[chid-1];
