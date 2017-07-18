@@ -24,5 +24,7 @@ while read line <&3; do
     ./threshold_all $line 
     ./acquisition.sh $scan_name thr_$line
 done 3<$thr_list
+./mail.pl m.wiebusch@gsi.de "scan $scan_name finished"
+./mail.pl c.wendisch@gsi.de "scan $scan_name finished"
 
 ./go4_on_all.sh $data_dir/$scan_name/

@@ -19,3 +19,7 @@ while read line <&3; do
 done 3<$thr_list
 
 ./go4_on_all.sh $data_dir/$scan_name/
+
+./mail.pl m.wiebusch@gsi.de "scan $scan_name finished"
+./mail.pl c.wendisch@gsi.de "scan $scan_name finished"
+./next_scan.sh
