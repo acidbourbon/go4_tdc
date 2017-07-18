@@ -19,7 +19,7 @@ while read line <&3; do
     #curl http://localhost:1148/commands/put.pl?1483-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
     
     #./set_asd8_thresh.sh 37747
-./set_asd8_thresh.sh 30000
+    #./set_asd8_thresh.sh 30000
     ./acquisition.sh $scan_name $acq_name
 done 3<$point_list
 cp $0 $data_dir/$scan_name/copy_of_scan.sh
@@ -27,3 +27,7 @@ cp acquisition.sh $data_dir/$scan_name/copy_of_acquisition.sh
 echo "scan finished"
 ./go4_on_all.sh $data_dir/$scan_name/
 echo "pre-analysis finished"
+./mail.pl m.wiebusch@gsi.de "scan $scan_name finished"
+./mail.pl c.wendisch@gsi.de "scan $scan_name finished"
+./next_scan.sh
+

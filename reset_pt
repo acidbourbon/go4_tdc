@@ -19,3 +19,5 @@ trbcmd w 0x1482 0xc801 0x80640014
 trbcmd w 0x1482 0xc802 0x000001ff ## if PT board 1 is connected to ch 0-7
 #disable asd8 data out
 trbcmd w 0x1483 0xc802 0x00000000 
+
+./init_asics
