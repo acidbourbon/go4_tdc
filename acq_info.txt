@@ -4,11 +4,9 @@ timeout=20
 HV=1700V
 Gas_mixture=70_30
 LaserRate=500Hz
-LaserIntensity=1nJ
-LaserAttenuator=210Deg
 PrimariesPerPulse=unknown
 CorrespondingSenseWire=3/Ch05
-CoincWindow=-100 to 300
-Threshold=scanning
-
+CoincWindow=+-500
+Threshold=40
+pktime=10
 

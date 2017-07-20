@@ -28,12 +28,14 @@ echo "% finished         : "$(echo "scale=2;$points_done / $points_sched * 100" 
 echo "minutes running    : $min_running ($hrs_running hours)"
 fraction=$(echo "scale=5;$points_done / $points_sched" | bc)
 hrs_left=$(echo "scale=2; $hrs_running*(1/$fraction-1)" | bc)
+min_left=$(echo "scale=2; $min_running*(1/$fraction-1)" | bc)
 hrs_total=$(echo "scale=2; $hrs_running*(1/$fraction)" | bc)
 echo
 
 echo "hours total        :" $hrs_total
 echo "hours running      :" $hrs_running
-echo "hours left         :" $hrs_left
+echo "hours left         :" $hrs_left 
+echo "minutes left       :" $min_left 
 echo
 echo "should be finished at (rough estimation):"
 date --date="@$(echo "$first_acq_epoch + $sec_running/$fraction"| bc)"

@@ -47,8 +47,9 @@
 // #define spike_rejection 30 //ns for ASD8 0xA9
 // #define spike_rejection 60 //ns for ASD8 0x72
 // #define spike_rejection 75 //ns for ASD8 0x52
-// #define spike_rejection 47 //ns for ASD8 thr 37000 with LASER
-#define spike_rejection 90 //ns for PASTTREC pt20 with LASER
+#define spike_rejection 47 //ns for ASD8 thr 37000 with LASER
+// #define spike_rejection 90 //ns for PASTTREC pt20 with LASER
+//#define spike_rejection 90 //ns for PASTTREC pt20 with Fe55
 
 #define individual_spike_rejection 0
 
@@ -56,10 +57,12 @@
 
 
 //#define t1_accept_L (-250 + ref_channel_offset) //ns // GSI Dlab
-#define t1_accept_L (-1000 + ref_channel_offset) //ns // HZDR
-// #define t1_accept_L (-150 + ref_channel_offset) //ns // Muentz-Torte
+//#define t1_accept_L (-1000000 + ref_channel_offset) //ns // HZDR fe55
+#define t1_accept_L (-100 + ref_channel_offset) //ns // HZDR 
+//#define t1_accept_L (-150 + ref_channel_offset) //ns // Muentz-Torte
 //#define t1_accept_R (100 + ref_channel_offset)//ns // GSI Dlab
-#define t1_accept_R (1000 + ref_channel_offset)//ns // HZDR
+//#define t1_accept_R (1000000 + ref_channel_offset)//ns // HZDR fe55
+#define t1_accept_R (200 + ref_channel_offset)//ns // HZDR
 // #define t1_accept_R (-130 + ref_channel_offset)//ns // Muentz-Torte
 // #define t1_accept_R (-90 + ref_channel_offset)//ns // ASD8 with thr 0x52
 
@@ -114,6 +117,7 @@ class SecondProc : public base::EventProc {
       
       
       base::H1handle  tot_h[CHANNELS]; 
+      base::H1handle  tot_untrig_h[CHANNELS]; 
       base::H1handle  t1_h[CHANNELS]; 
       base::H1handle  potato_h[CHANNELS];
       base::H1handle  meta_potato_h;
@@ -151,6 +155,8 @@ class SecondProc : public base::EventProc {
           t1_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
           sprintf(chno,"Ch%02d_tot",i);
           tot_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
+          sprintf(chno,"Ch%02d_tot_untrig",i);
+          tot_untrig_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_potato",i);
           potato_h[i] = MakeH2(chno,chno,500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
         }
@@ -410,6 +416,9 @@ class SecondProc : public base::EventProc {
                     t2[chid-1] = t2_candidate[chid-1];
                     tot[chid-1] = t2[chid-1] - t1[chid-1];
                     got_real_hit[chid-1] = true;
+                    
+                    // fill untriggered tot histogram
+                    FillH1(tot_untrig_h[chid-1],tot[chid-1]*1e9);
                   }
 //                   printf("got hit, ch %d, tot = %f ns\n",(chid-1), tot[chid-1]*1e9);
                 }
