@@ -42,3 +42,9 @@
 21:13:52 1989.535860 base/src/Publisher.cxx:ApplyEntryDiff:301 Command failed for rec 0 addr dabc://localhost:1237/App errcnt 1
 17:59:27 1755.248454 plugins/mbs/src/ServerTransport.cxx:OnRecvCompleted:168 Get request at wrong state 5
 12:14:22 743.380508 base/src/Publisher.cxx:ApplyEntryDiff:301 Command failed for rec 0 addr dabc://localhost:1237/App errcnt 1
+15:16:11   0.149879 base/src/DataIO.cxx:ShowInfo:73 /home/hadaq/mdctest/tmp/test_DLAB17201151611.hld cannot open file for writing
+15:16:11   0.150087 base/src/Factory.cxx:CreateTransport:88 Output object hld:///home/hadaq/mdctest/tmp/test_DLAB.hld?maxsize=2000 cannot be initialized
+15:16:11   0.150205 base/src/Application.cxx:CallInitFunc:323 Cannot create output transport for port Combiner/Output1
+15:17:14   0.140920 base/src/DataIO.cxx:ShowInfo:73 /home/hadaq/mdctest/tmp/test_DLAB17201151714.hld cannot open file for writing
+15:17:14   0.140983 base/src/Factory.cxx:CreateTransport:88 Output object hld:///home/hadaq/mdctest/tmp/test_DLAB.hld?maxsize=2000 cannot be initialized
+15:17:14   0.141152 base/src/Application.cxx:CallInitFunc:323 Cannot create output transport for port Combiner/Output1

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+export PATH="$PATH:/home/mdcdaq/tdc/trbnettools/bin"
+export TRB3_SERVER=192.168.4.240
+export DAQOPSERVER=localhost:148
+
+export dump_dir="/home/mdcdaq/tdc/tmp/"
+export data_dir="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/data"
+export acq_info="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/acq_info.txt"
+export laser_pos="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/lasertest/position.config"
+export laser_intensity="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/lasertest/intensity.config"
+
+. /home/mdcdaq/tdc/trb3/trb3login

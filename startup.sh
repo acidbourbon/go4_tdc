@@ -1,11 +1,15 @@
 #!/bin/bash
 
+. set_env
+sudo service isc-dhcp-server start
 killall trbnetd
-sleep 1
+sleep 10
 
-sudo /usr/sbin/rcrpcbind start
-TRB3_SERVER=192.168.4.240 trbnetd -i 148
-export DAQOPSERVER=localhost:148
+#sudo /usr/sbin/rcrpcbind start
+sudo service rpcbind start
+#TRB3_SERVER=192.168.4.240 trbnetd -i 148
+trbnetd -i 148
+#export DAQOPSERVER=localhost:148
 trbcmd i 0xffff
 
 echo "if you see a list of FPGAs, trbnetd is running properly"
@@ -13,7 +17,6 @@ echo
 echo
 
 
-export DAQOPSERVER=localhost:148
 
 echo "trbcmd reset"
 trbcmd reset

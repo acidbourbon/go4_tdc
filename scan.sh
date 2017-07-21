@@ -2,7 +2,8 @@
 
 scan_name=$1
 point_list="./point_list.txt"
-data_dir="/home/hadaq/mdctest/trbsoft/daqtools/users/asd8_tdc/data"
+. set_env
+#data_dir="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/data"
 
 mkdir -p $data_dir/$scan_name
 cp $point_list $data_dir/$scan_name/

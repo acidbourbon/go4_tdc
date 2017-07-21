@@ -1,12 +1,15 @@
 #!/bin/bash
 
+. set_env
+
 scan_name=$1
 acq_name=$2
-dump_dir="/home/hadaq/mdctest/tmp/"
-data_dir="/home/hadaq/mdctest/trbsoft/daqtools/users/asd8_tdc/data"
-acq_info="/home/hadaq/mdctest/trbsoft/daqtools/users/asd8_tdc/acq_info.txt"
-laser_pos="/home/hadaq/mdctest/trbsoft/daqtools/users/asd8_tdc/lasertest/position.config"
-laser_intensity="/home/hadaq/mdctest/trbsoft/daqtools/users/asd8_tdc/lasertest/intensity.config"
+
+#dump_dir="/home/mdcdaq/tdc/tmp/"
+#data_dir="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/data"
+#acq_info="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/acq_info.txt"
+#laser_pos="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/lasertest/position.config"
+#laser_intensity="/home/mdcdaq/tdc/daqtools/users/asd8_tdc/lasertest/intensity.config"
 
 ts=$(date '+%Y-%m-%d_%H:%M:%S')
 timeout=$( grep -Po '(?<=timeout=).*' $acq_info )
@@ -19,8 +22,6 @@ mkdir -p $outdir
 killall dabc_exe
 rm $dump_dir/*.hld
 
-echo "re-setting threshold:"
-#curl http://localhost:1148/commands/put.pl?1483-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
 
 date '+%Y-%m-%d_%H:%M:%S' > $outdir/ts_acq_start.txt
 timeout $timeout dabc_exe TdcEventBuilder.xml

@@ -71,15 +71,15 @@ def main():
   z_max=2750
   
   ## half cell
-  z_min=-250
+  z_max=150
   
   # some extra points in z
   #z_min=2750
   #z_max=3150
   
   # some extra points in y
-  y_min=-1500
-  y_max=-250
+  #y_min=-1500
+  #y_max=-250
   
   
   r0 = 50
@@ -126,7 +126,7 @@ def main():
   y0 = 3743
   z0 = 4000
   
-  new_x = -1399 # yz_vol_scan_87
+  new_x = 0 # yz_vol_scan_87
   #~ new_x = -2000 # yz_vol_scan_88
   #~ new_x = -2700
   

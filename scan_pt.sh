@@ -2,7 +2,8 @@
 
 scan_name=$1
 point_list="./point_list.txt"
-data_dir="/home/hadaq/mdctest/trbsoft/daqtools/users/asd8_tdc/data"
+. set_env
+#data_dir="/home/hadaq/mdctest/trbsoft/daqtools/users/asd8_tdc/data"
 
 export DAQOPSERVER=localhost:148
 

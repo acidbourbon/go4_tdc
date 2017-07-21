@@ -6,7 +6,5 @@ Gas_mixture=70_30
 LaserRate=500Hz
 PrimariesPerPulse=unknown
 CorrespondingSenseWire=3/Ch05
-CoincWindow=+-500
-Threshold=40
-pktime=10
-
+CoincWindow=+-250
+Threshold=37000
