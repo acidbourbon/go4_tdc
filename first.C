@@ -19,7 +19,7 @@ void first()
    //hadaq::TdcProcessor::DisableCalibrationFor(0,8);
    // [min..max] range for TDC ids
    //hadaq::TrbProcessor::SetTDCRange(0x610, 0x613);
-   hadaq::TrbProcessor::SetTDCRange(0x1482, 0x1483);
+   hadaq::TrbProcessor::SetTDCRange(0x0351, 0x0353);
    //hadaq::T
    // [min..max] range for HUB ids
    hadaq::TrbProcessor::SetHUBRange(0xc001, 0xcfff);
@@ -54,7 +54,7 @@ void first()
  
 
    // only accept trigger type 0x1 when storing file
-   new hadaq::HldFilter(0x0);
+   //new hadaq::HldFilter(0x0);
 
    // create ROOT file store
    //base::ProcMgr::instance()->CreateStore("td.root");

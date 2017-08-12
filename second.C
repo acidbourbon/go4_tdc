@@ -40,16 +40,18 @@
 
 //#define spike_rejection 90 //ns for ASD8 0x72 (25000) with LASER
 // #define spike_rejection 90 //ns for PASTTREC pt10 // for t1 calibration
-// #define spike_rejection 60 //ns for PASTTREC pt10 
+//#define spike_rejection 60 //ns for PASTTREC pt10 
 // #define spike_rejection 45 //ns for PASTTREC with all the nice filters
 // #define spike_rejection 90 //ns for PASTTREC pt15
-// #define spike_rejection 100 //ns for PASTTREC pt20
+//#define spike_rejection 100 //ns for PASTTREC pt20
 // #define spike_rejection 30 //ns for ASD8 0xA9
 // #define spike_rejection 60 //ns for ASD8 0x72
 // #define spike_rejection 75 //ns for ASD8 0x52
-#define spike_rejection 47 //ns for ASD8 thr 37000 with LASER
+//#define spike_rejection 47 //ns for ASD8 thr 37000 with LASER
 // #define spike_rejection 90 //ns for PASTTREC pt20 with LASER
 //#define spike_rejection 90 //ns for PASTTREC pt20 with Fe55
+#define spike_rejection 50
+
 
 #define individual_spike_rejection 0
 
@@ -58,11 +60,11 @@
 
 //#define t1_accept_L (-250 + ref_channel_offset) //ns // GSI Dlab
 //#define t1_accept_L (-1000000 + ref_channel_offset) //ns // HZDR fe55
-#define t1_accept_L (-100 + ref_channel_offset) //ns // HZDR 
+#define t1_accept_L (-400 + ref_channel_offset) //ns // HZDR 
 //#define t1_accept_L (-150 + ref_channel_offset) //ns // Muentz-Torte
 //#define t1_accept_R (100 + ref_channel_offset)//ns // GSI Dlab
 //#define t1_accept_R (1000000 + ref_channel_offset)//ns // HZDR fe55
-#define t1_accept_R (200 + ref_channel_offset)//ns // HZDR
+#define t1_accept_R (300 + ref_channel_offset)//ns // HZDR
 // #define t1_accept_R (-130 + ref_channel_offset)//ns // Muentz-Torte
 // #define t1_accept_R (-90 + ref_channel_offset)//ns // ASD8 with thr 0x52
 
@@ -73,7 +75,7 @@
 // real cuts on selected data
 
 #define max_tot 10000 // Muentz-Torte
-#define t1_cut_L -300
+#define t1_cut_L -400
 #define t1_cut_R 300
 
 
@@ -84,7 +86,7 @@
 
 #define enable_single_hits       1
 #define enable_one_hit_per_layer 1
-#define enable_two_to_one_hits   0
+#define enable_two_to_one_hits   1
 
 
 Bool_t file_exists(TString fname){
@@ -645,8 +647,8 @@ class SecondProc : public base::EventProc {
 void second()
 {
    //hadaq::TdcProcessor::SetDefaults(700);
-//    new SecondProc("Sec_1482", "TDC_1482");
-   new SecondProc("Sec_1483", "TDC_1483");
-   new SecondProc("Sec_1482", "TDC_1482");
+   new SecondProc("Sec_0351", "TDC_0351");
+   new SecondProc("Sec_0353", "TDC_0353");
+//   new SecondProc("Sec_0351", "TDC_0351");
 }
 

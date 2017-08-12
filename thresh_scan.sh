@@ -12,7 +12,7 @@ while read line <&3; do
     echo "setting thr: $line"
     
     #thresh=$(printf "%04x" $line)
-    #curl http://localhost:1148/commands/put.pl?1483-d400-30${thresh}-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
+    #curl http://localhost:1148/commands/put.pl?0353-d400-30${thresh}-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
     ./set_asd8_thresh.sh $line
     acq_name=$(printf "thr_%05d" $line)
     ./acquisition.sh $scan_name $acq_name

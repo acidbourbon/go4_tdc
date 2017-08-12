@@ -75,7 +75,7 @@ Float_t get_toa_offset(TH1F* toa0) {
 
 void fit_t1_offsets(TString fname){
   TFile *f = new TFile(fname);
-//   f->cd("Histograms/TDC_1483");
+//   f->cd("Histograms/TDC_0353");
   
   TString fpga = "1482";
   
@@ -125,7 +125,7 @@ void fit_t1_offsets(TString fname){
 //   list.push_back("Ch22_t1");
 //   list.push_back("Ch23_t1");
 
-//   ((TH1F*)f->Get("Histograms/TDC_1483/Ch2/TDC_1483_Ch2_RisingRef"))->Draw()  
+//   ((TH1F*)f->Get("Histograms/TDC_0353/Ch2/TDC_0353_Ch2_RisingRef"))->Draw()  
 
 
   ofstream myfile ("t1_offsets.txt");

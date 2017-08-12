@@ -24,7 +24,7 @@ TString from_env(TString env_var,TString default_val){
 
 void draw_things(TString fname){
   TFile *f = new TFile(fname);
-//   f->cd("Histograms/TDC_1483");
+//   f->cd("Histograms/TDC_0353");
   
   TString TDC=from_env("TDC","1482");
   
@@ -81,7 +81,7 @@ void draw_things(TString fname){
   list.push_back("Ch22_t1");
   list.push_back("Ch23_t1"); */
 
-//   ((TH1F*)f->Get("Histograms/TDC_1483/Ch2/TDC_1483_Ch2_RisingRef"))->Draw()  
+//   ((TH1F*)f->Get("Histograms/TDC_0353/Ch2/TDC_0353_Ch2_RisingRef"))->Draw()  
   for (Int_t i = 0; i< list.size(); i++){
     draw_and_save(f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_"+list[i]),list[i],outdir,"colz" );
 //     TH1* cumul = ((TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_"+list[i]))->GetCumulative();

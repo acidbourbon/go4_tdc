@@ -11,13 +11,13 @@ chan=$[ $chan + 4 ]
 
 
 if [ $chip == "0" ]; then
-trbcmd w 0x1482 0xa000 "0x52"$(printf "%01x%02x" $chan $val)
+trbcmd w 0x0351 0xa000 "0x52"$(printf "%01x%02x" $chan $val)
 elif [ $chip == "1" ]; then
-trbcmd w 0x1482 0xa000 "0x54"$(printf "%01x%02x" $chan $val)
+trbcmd w 0x0351 0xa000 "0x54"$(printf "%01x%02x" $chan $val)
 elif [ $chip == "2" ]; then
-trbcmd w 0x1482 0xa000 "0xd2"$(printf "%01x%02x" $chan $val)
+trbcmd w 0x0351 0xa000 "0xd2"$(printf "%01x%02x" $chan $val)
 elif [ $chip == "3" ]; then
-trbcmd w 0x1482 0xa000 "0xd4"$(printf "%01x%02x" $chan $val)
+trbcmd w 0x0351 0xa000 "0xd4"$(printf "%01x%02x" $chan $val)
 else
 echo "wrong input"
 fi

@@ -20,7 +20,7 @@ killall dabc_exe
 rm $dump_dir/*.hld
 
 echo "re-setting threshold:"
-#curl http://localhost:1148/commands/put.pl?1483-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
+#curl http://localhost:1148/commands/put.pl?0353-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
 
 date '+%Y-%m-%d_%H:%M:%S' > $outdir/ts_acq_start.txt
 timeout $timeout dabc_exe TdcEventBuilder.xml

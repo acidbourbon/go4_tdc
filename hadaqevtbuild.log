@@ -42,3 +42,4 @@
 21:13:52 1989.535860 base/src/Publisher.cxx:ApplyEntryDiff:301 Command failed for rec 0 addr dabc://localhost:1237/App errcnt 1
 17:59:27 1755.248454 plugins/mbs/src/ServerTransport.cxx:OnRecvCompleted:168 Get request at wrong state 5
 12:14:22 743.380508 base/src/Publisher.cxx:ApplyEntryDiff:301 Command failed for rec 0 addr dabc://localhost:1237/App errcnt 1
+16:10:09 222.782218 base/src/Publisher.cxx:ApplyEntryDiff:301 Command failed for rec 0 addr dabc://localhost:1237/App errcnt 1

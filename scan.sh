@@ -16,7 +16,7 @@ while read line <&3; do
     
     acq_name="x${x}_y${y}_z${z}"
     ./move_laser.sh $x $y $z
-    #curl http://localhost:1148/commands/put.pl?1483-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
+    #curl http://localhost:1148/commands/put.pl?0353-d400-309373-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-1-1
     
     #./set_asd8_thresh.sh 37747
     #./set_asd8_thresh.sh 30000
