@@ -16,7 +16,7 @@
 #include "hadaq/TdcSubEvent.h"
 
 #define CHANNELS 32
-#define FISHES   32
+#define FISHES   16
 #define REFCHAN 8
 
 // #define t1_L -300
@@ -50,7 +50,7 @@
 //#define spike_rejection 47 //ns for ASD8 thr 37000 with LASER
 // #define spike_rejection 90 //ns for PASTTREC pt20 with LASER
 //#define spike_rejection 90 //ns for PASTTREC pt20 with Fe55
-#define spike_rejection 50
+#define spike_rejection 60
 
 
 #define individual_spike_rejection 0
@@ -82,11 +82,11 @@
 // #define coincidence_rejection 7
 #define accept_hits_per_layer 2
 
-#define enable_coincidence_rejection 0
+#define enable_coincidence_rejection 1
 
-#define enable_single_hits       1
+#define enable_single_hits       0
 #define enable_one_hit_per_layer 1
-#define enable_two_to_one_hits   1
+#define enable_two_to_one_hits   0
 
 
 Bool_t file_exists(TString fname){
@@ -180,28 +180,79 @@ class SecondProc : public base::EventProc {
 // //         AddHistogram(efficiency_h, "", true);
          
         coinc_matrix = MakeH2("coinc_matrix","coinc_matrix",12,-2.5,9.5,10,15-0.5,24+0.5, "channels 0-7;channels 16-23");
-        meta_fish = MakeH2("meta_fish","meta_fish",250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
+        meta_fish = MakeH2("meta_fish","meta_fish",250,-600,-100,200,-100,100, "T_A+T_B;T_B-T_A");
         
-        meta_fish_proj = MakeH1("meta_fish_proj","meta_fish_proj",250,-400,100, "T_A+T_B;counts");
+        meta_fish_proj = MakeH1("meta_fish_proj","meta_fish_proj",250,-600,-100, "T_A+T_B;counts");
         
 //         for (unsigned i=0; i<FISHES; i++ ) {
 //         }
+//         for( unsigned i=0; i<8; i++ ) {
+//           for( unsigned j=16; j<24; j++ ) {
+//             if((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 -1))  ) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
+//               unsigned fish_index = i; // for diagonal elements
+//               if( i==(j-16 + 1) ) { // next to diagonal elements
+//                 fish_index = i + 8;
+//               }
+//               if( i==(j-16 - 1) ) { // next to diagonal elements, other side
+//                 fish_index = i + 16;
+//               }
+//               char chno[64];
+//               sprintf(chno,"fish_%02d_vs_%02d",j,i);
+//               fishes[fish_index]    = MakeH2(chno,chno,250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
+//               sprintf(chno,"fish_proj_%02d_vs_%02d",j,i);
+//               fish_proj[fish_index] = MakeH1(chno,chno,250,-400,100, "T_A+T_B;counts");
+//             }
+//           }
+//         }
+        
+        // fish loop for Lena
         for( unsigned i=0; i<8; i++ ) {
           for( unsigned j=16; j<24; j++ ) {
-            if((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 -1))  ) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
-              unsigned fish_index = i; // for diagonal elements
-              if( i==(j-16 + 1) ) { // next to diagonal elements
-                fish_index = i + 8;
-              }
-              if( i==(j-16 - 1) ) { // next to diagonal elements, other side
-                fish_index = i + 16;
-              }
-              char chno[64];
-              sprintf(chno,"fish_%02d_vs_%02d",j,i);
-              fishes[fish_index]    = MakeH2(chno,chno,250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
-              sprintf(chno,"fish_proj_%02d_vs_%02d",j,i);
-              fish_proj[fish_index] = MakeH1(chno,chno,250,-400,100, "T_A+T_B;counts");
+//             if((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 -1))  ) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
+            
+            unsigned fish_index = 0; // for diagonal elements
+            // diagonal elements of coincidence matrix
+            if        ( i==0 && j==23){
+              fish_index = 0;
+            } else if ( i==1 && j==22){
+              fish_index = 1;
+            } else if ( i==2 && j==21){
+              fish_index = 2;
+            } else if ( i==3 && j==20){
+              fish_index = 3;
+            } else if ( i==4 && j==19){
+              fish_index = 4;
+            } else if ( i==5 && j==18){
+              fish_index = 5;
+            } else if ( i==6 && j==17){
+              fish_index = 6;
+            } else if ( i==7 && j==16){
+              fish_index = 7;
+            // next-to-diagonal elements of coincidence matrix
+            } else if ( i==1 && j==23){
+              fish_index = 8;
+            } else if ( i==2 && j==22){
+              fish_index = 9;
+            } else if ( i==3 && j==21){
+              fish_index = 10;
+            } else if ( i==4 && j==20){
+              fish_index = 11;
+            } else if ( i==5 && j==19){
+              fish_index = 12;
+            } else if ( i==6 && j==18){
+              fish_index = 13;
+            } else if ( i==7 && j==17){
+              fish_index = 14;
+            } else {
+              continue;
             }
+            
+            char chno[64];
+            sprintf(chno,"fish_%02d_vs_%02d",j,i);
+            fishes[fish_index]    = MakeH2(chno,chno,250,-600,-100,200,-100,100, "T_A+T_B;T_B-T_A");
+            sprintf(chno,"fish_proj_%02d_vs_%02d",j,i);
+            fish_proj[fish_index] = MakeH1(chno,chno,250,-600,-100, "T_A+T_B;counts");
+//             }
           }
         }
          
@@ -499,9 +550,9 @@ class SecondProc : public base::EventProc {
          }
          
          if(enable_one_hit_per_layer && hits_layer_a == 1 && hits_layer_b == 1 ){
-           if( hit_channels_layer_a[0] == hit_channels_layer_b[0]-16 || hit_channels_layer_a[0] == hit_channels_layer_b[0]-15 ){
+//            if( hit_channels_layer_a[0] == hit_channels_layer_b[0]-16 || hit_channels_layer_a[0] == hit_channels_layer_b[0]-15 ){
             keep_event = true;
-           }
+//            }
          }
          
          
@@ -588,22 +639,48 @@ class SecondProc : public base::EventProc {
                             if( (t1_vs_ref_b > t1_cut_L) && (t1_vs_ref_b < t1_cut_R))  {
                               FillH2(coinc_matrix,i,j);
                               
-                              if(((i==(j-16)) || (i==(j-16 + 1)) ) && (i > 3) ) { // last four cells, PASTTREC
-//                               if(((i==(j-16)) || (i==(j-16 + 1)) ) && (i < 4) ) { // first four cells - ASD8
-                                //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
-                                FillH2(meta_fish,(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
-                                unsigned fish_index = i; // for diagonal elements
-                                if( i==(j-16 + 1) ) { // next to diagonal elements
-                                  fish_index = i + 8;
-                                }
-                                if( i==(j-16 - 1) ) { // next to diagonal elements, other side
-                                  fish_index = i + 16;
-                                }
-                                FillH2(fishes[fish_index],(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
-                                if( abs(t1_vs_ref_b - t1_vs_ref_a) < fish_proj_cut  ){ // cut on drift time difference
-                                  FillH1(fish_proj[fish_index],(t1_vs_ref_a + t1_vs_ref_b));
-                                  FillH1(meta_fish_proj,(t1_vs_ref_a + t1_vs_ref_b));
-                                }
+                              unsigned fish_index = 0; // for diagonal elements
+                              // diagonal elements of coincidence matrix
+                              if        ( i==0 && j==23){
+                                fish_index = 0;
+                              } else if ( i==1 && j==22){
+                                fish_index = 1;
+                              } else if ( i==2 && j==21){
+                                fish_index = 2;
+                              } else if ( i==3 && j==20){
+                                fish_index = 3;
+                              } else if ( i==4 && j==19){
+                                fish_index = 4;
+                              } else if ( i==5 && j==18){
+                                fish_index = 5;
+                              } else if ( i==6 && j==17){
+                                fish_index = 6;
+                              } else if ( i==7 && j==16){
+                                fish_index = 7;
+                              // next-to-diagonal elements of coincidence matrix
+                              } else if ( i==1 && j==23){
+                                fish_index = 8;
+                              } else if ( i==2 && j==22){
+                                fish_index = 9;
+                              } else if ( i==3 && j==21){
+                                fish_index = 10;
+                              } else if ( i==4 && j==20){
+                                fish_index = 11;
+                              } else if ( i==5 && j==19){
+                                fish_index = 12;
+                              } else if ( i==6 && j==18){
+                                fish_index = 13;
+                              } else if ( i==7 && j==17){
+                                fish_index = 14;
+                              } else {
+                                continue;
+                              }
+                              
+                              FillH2(meta_fish,(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
+                              FillH2(fishes[fish_index],(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
+                              if( abs(t1_vs_ref_b - t1_vs_ref_a) < fish_proj_cut  ){ // cut on drift time difference
+                                FillH1(fish_proj[fish_index],(t1_vs_ref_a + t1_vs_ref_b));
+                                FillH1(meta_fish_proj,(t1_vs_ref_a + t1_vs_ref_b));
                               }
                               
                             }
