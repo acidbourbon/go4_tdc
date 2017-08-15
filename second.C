@@ -17,7 +17,8 @@
 
 #define CHANNELS 32
 #define FISHES   16
-#define REFCHAN 8
+#define REFCHAN_A 8
+#define REFCHAN_B 9
 
 // #define t1_L -300
 // #define t1_R 300
@@ -180,9 +181,9 @@ class SecondProc : public base::EventProc {
 // //         AddHistogram(efficiency_h, "", true);
          
         coinc_matrix = MakeH2("coinc_matrix","coinc_matrix",12,-2.5,9.5,10,15-0.5,24+0.5, "channels 0-7;channels 16-23");
-        meta_fish = MakeH2("meta_fish","meta_fish",250,-600,-100,200,-100,100, "T_A+T_B;T_B-T_A");
+        meta_fish = MakeH2("meta_fish","meta_fish",250,-300,200,200,-100,100, "T_A+T_B;T_B-T_A");
         
-        meta_fish_proj = MakeH1("meta_fish_proj","meta_fish_proj",250,-600,-100, "T_A+T_B;counts");
+        meta_fish_proj = MakeH1("meta_fish_proj","meta_fish_proj",250,-300,200, "T_A+T_B;counts");
         
 //         for (unsigned i=0; i<FISHES; i++ ) {
 //         }
@@ -249,9 +250,9 @@ class SecondProc : public base::EventProc {
             
             char chno[64];
             sprintf(chno,"fish_%02d_vs_%02d",j,i);
-            fishes[fish_index]    = MakeH2(chno,chno,250,-600,-100,200,-100,100, "T_A+T_B;T_B-T_A");
+            fishes[fish_index]    = MakeH2(chno,chno,250,-300,200,200,-100,100, "T_A+T_B;T_B-T_A");
             sprintf(chno,"fish_proj_%02d_vs_%02d",j,i);
-            fish_proj[fish_index] = MakeH1(chno,chno,250,-600,-100, "T_A+T_B;counts");
+            fish_proj[fish_index] = MakeH1(chno,chno,250,-300,200, "T_A+T_B;counts");
 //             }
           }
         }
@@ -447,7 +448,7 @@ class SecondProc : public base::EventProc {
 //               if(not(got_rising[chid-1])){
                 
               
-                if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )  || (chid-1) == REFCHAN) { // this condition sets another coincidence window, except for REFCHAN
+                if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )  || (chid-1) == REFCHAN_A || (chid-1) == REFCHAN_B) { // this condition sets another coincidence window, except for REFCHAN_A
                   got_rising[chid-1] = true;
                   got_falling[chid-1] = false;
                   t1_candidate[chid-1] = tm;
@@ -462,7 +463,7 @@ class SecondProc : public base::EventProc {
                   Double_t candidate_tot_ns = (t2_candidate[chid-1] - t1_candidate[chid-1])*1e9;
                   
 //                   if( (candidate_tot_ns > spike_rejection) ){
-                  if( (individual_spike_rejection == 0) && (candidate_tot_ns > effective_spike_rejection)  || (individual_spike_rejection == 1) && (candidate_tot_ns > channel_spike_rejection[chid -1])  || (chid-1) == REFCHAN ){
+                  if( (individual_spike_rejection == 0) && (candidate_tot_ns > effective_spike_rejection)  || (individual_spike_rejection == 1) && (candidate_tot_ns > channel_spike_rejection[chid -1])  || (chid-1) == REFCHAN_A || (chid-1) == REFCHAN_B ){
 //                   if( (candidate_tot_ns > spike_rejection) &&  ((t2_candidate[chid-1] - t1_candidate[chid-1])*1e9 < max_tot )    ){
                     // hit is long enough not to be rejected
                     t1[chid-1] = t1_candidate[chid-1];
@@ -579,9 +580,13 @@ class SecondProc : public base::EventProc {
          for( unsigned i=0; i<CHANNELS; i++ ) {
             if(got_real_hit[i]){
               
-              if(got_real_hit[REFCHAN]){ // t1 information only makes sense if you have 
+              if(got_real_hit[REFCHAN_A] || got_real_hit[REFCHAN_B] ){ // t1 information only makes sense if you have 
                 // a hit in the reference channel
-                double t1_vs_ref = (t1[i]-t1[REFCHAN])*1e9 ;
+                double t1_ref = t1[REFCHAN_A];
+                if (got_real_hit[REFCHAN_B]){
+                  t1_ref = t1[REFCHAN_B];
+                }
+                double t1_vs_ref = (t1[i]-t1_ref)*1e9 ;
                 if( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) )  {
                   
                   // fill histograms
@@ -589,7 +594,7 @@ class SecondProc : public base::EventProc {
                   FillH2(potato_h[i],t1_vs_ref - t1_offsets[i],tot[i]*1e9);
                   FillH1(t1_h[i],t1_vs_ref - t1_offsets[i]);
                   
-                  if( i != REFCHAN ) {
+                  if( (i != REFCHAN_A) && (i != REFCHAN_B) ) {
                     FillH2(meta_potato_h,t1_vs_ref - t1_offsets[i],tot[i]*1e9);
                     FillH1(meta_tot_h,tot[i]*1e9);
                     FillH1(meta_t1_h,t1_vs_ref - t1_offsets[i]);
@@ -606,12 +611,12 @@ class SecondProc : public base::EventProc {
                     int dut_b = overlaps[i][1];
                     
                     if(got_real_hit[ dut_a ]){ // is there a DUT hit in the first cell overlapping with the reference?
-                      double t1_dut_a_vs_ref = (t1[dut_a]-t1[REFCHAN])*1e9 ; // is in coincidence window?
+                      double t1_dut_a_vs_ref = (t1[dut_a]-t1_ref)*1e9 ; // is in coincidence window?
                       if( (t1_dut_a_vs_ref > t1_cut_L) && (t1_dut_a_vs_ref < t1_cut_R))  {
                         dut_counts[i]++; // count up dut counts
                       }
                     } else if(got_real_hit[ dut_b ]){  // is there a DUT hit in the second cell overlapping with the reference?
-                      double t1_dut_b_vs_ref = (t1[dut_b]-t1[REFCHAN])*1e9 ; // is in coincidence window?
+                      double t1_dut_b_vs_ref = (t1[dut_b]-t1_ref)*1e9 ; // is in coincidence window?
                       if( (t1_dut_b_vs_ref > t1_cut_L) && (t1_dut_b_vs_ref < t1_cut_R))  {
                         dut_counts[i]++; // count up dut counts
                       }
@@ -626,16 +631,21 @@ class SecondProc : public base::EventProc {
          
          
         // fill the coincidence coinc_matrix
-        if(got_real_hit[REFCHAN]){ 
+        if(got_real_hit[REFCHAN_A] || got_real_hit[REFCHAN_B] ){ 
+          // a hit in the reference channel
+          double t1_ref = t1[REFCHAN_A];
+          if (got_real_hit[REFCHAN_B]){
+            t1_ref = t1[REFCHAN_B];
+          }
            
           for( unsigned i=0; i<8; i++ ) {
               if(got_real_hit[i]){
-                  double t1_vs_ref_a = (t1[i]-t1[REFCHAN])*1e9 - t1_offsets[i] ;
+                  double t1_vs_ref_a = (t1[i]-t1_ref)*1e9 - t1_offsets[i] ;
                   if( (t1_vs_ref_a > t1_cut_L) && (t1_vs_ref_a < t1_cut_R))  {
                   
                     for( unsigned j=16; j<24; j++ ) {
                         if(got_real_hit[j]){
-                            double t1_vs_ref_b = (t1[j]-t1[REFCHAN])*1e9 - t1_offsets[j];
+                            double t1_vs_ref_b = (t1[j]-t1_ref)*1e9 - t1_offsets[j];
                             if( (t1_vs_ref_b > t1_cut_L) && (t1_vs_ref_b < t1_cut_R))  {
                               FillH2(coinc_matrix,i,j);
                               
