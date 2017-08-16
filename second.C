@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <map>
 
 #include "TTree.h"
+#include "TFile.h"
 #include "TSystem.h"
 #include "TString.h"
 #include "TH1.h"
@@ -19,6 +21,8 @@
 #define FISHES   16
 #define REFCHAN_A 8
 #define REFCHAN_B 9
+
+#define VERBOSE 0
 
 // #define t1_L -300
 // #define t1_R 300
@@ -90,6 +94,13 @@
 #define enable_two_to_one_hits   0
 
 
+
+TFile *tree_out;
+std::map<std::string,int> trig_no;
+std::map<std::string,TTree*> data_tree;
+
+
+
 Bool_t file_exists(TString fname){
   
   fstream src_file(fname.Data());
@@ -137,6 +148,18 @@ class SecondProc : public base::EventProc {
       base::H1handle  ref_counts_h;
       base::H1handle  dut_counts_h;
       
+      
+      int entry_chan;
+      int entry_ref_chan;
+      double entry_t1;
+      double entry_tot;
+      
+      
+      
+      
+      
+//       int evt_no;
+      
    public:
       SecondProc(const char* procname, const char* _tdcid) :
          base::EventProc(procname),
@@ -150,7 +173,14 @@ class SecondProc : public base::EventProc {
 //          totCh1 = MakeH1("totCh1","totCh1", 20000, -200, 200, "ns");
 //          totCh2 = MakeH1("totCh2","totCh2", 20000, -200, 200, "ns");
          
-         
+       trig_no[fTdcId] = 0;  
+       data_tree[fTdcId] = new TTree((TString) fTdcId,"data recorded");
+       data_tree[fTdcId]->Branch("trig_no",&trig_no[fTdcId]);
+       data_tree[fTdcId]->Branch("t1",&entry_t1);
+       data_tree[fTdcId]->Branch("tot",&entry_tot);
+       data_tree[fTdcId]->Branch("chan",&entry_chan);
+       data_tree[fTdcId]->Branch("ref_chan",&entry_ref_chan);
+       
          
         for( unsigned i=0; i<CHANNELS; i++ ) {
           char chno[16];
@@ -170,6 +200,8 @@ class SecondProc : public base::EventProc {
         meta_tot_2d = MakeH2("meta_tot_2d","meta_tot_2d", 200, tot_L, tot_R,CHANNELS,-0.5,CHANNELS-0.5, "ns;channel#");
         meta_potato_h = MakeH2("meta_potato","meta_potato",500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
         
+//         evt_no = 0;
+        
         ref_counts_h = MakeH1("ref_counts","ref_counts", CHANNELS, -0.5, CHANNELS-0.5, "channel #");
         dut_counts_h = MakeH1("dut_counts","dut_counts", CHANNELS, -0.5, CHANNELS-0.5, "channel #");
         efficiency_h = MakeH1("efficiency","efficiency", CHANNELS, -0.5, CHANNELS-0.5, "channel #;kind:F");
@@ -185,26 +217,6 @@ class SecondProc : public base::EventProc {
         
         meta_fish_proj = MakeH1("meta_fish_proj","meta_fish_proj",250,-300,200, "T_A+T_B;counts");
         
-//         for (unsigned i=0; i<FISHES; i++ ) {
-//         }
-//         for( unsigned i=0; i<8; i++ ) {
-//           for( unsigned j=16; j<24; j++ ) {
-//             if((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 -1))  ) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
-//               unsigned fish_index = i; // for diagonal elements
-//               if( i==(j-16 + 1) ) { // next to diagonal elements
-//                 fish_index = i + 8;
-//               }
-//               if( i==(j-16 - 1) ) { // next to diagonal elements, other side
-//                 fish_index = i + 16;
-//               }
-//               char chno[64];
-//               sprintf(chno,"fish_%02d_vs_%02d",j,i);
-//               fishes[fish_index]    = MakeH2(chno,chno,250,-400,100,200,-100,100, "T_A+T_B;T_B-T_A");
-//               sprintf(chno,"fish_proj_%02d_vs_%02d",j,i);
-//               fish_proj[fish_index] = MakeH1(chno,chno,250,-400,100, "T_A+T_B;counts");
-//             }
-//           }
-//         }
         
         // fish loop for Lena
         for( unsigned i=0; i<8; i++ ) {
@@ -260,6 +272,13 @@ class SecondProc : public base::EventProc {
          // enable storing already in constructor
          SetStoreEnabled();
       }
+      
+      virtual void UserPostLoop(void) {
+        cout << "--- User Post Loop " << fTdcId << endl;
+        tree_out->cd();
+        data_tree[fTdcId]->Write();
+      }
+
 
       virtual void CreateBranch(TTree* t)
       {
@@ -275,8 +294,8 @@ class SecondProc : public base::EventProc {
 
          hadaq::TdcSubEvent* sub =
                dynamic_cast<hadaq::TdcSubEvent*> (ev->GetSubEvent(fTdcId));
-
-
+         
+         if(VERBOSE) cout<< "tdc: " << fTdcId << " evt no: " << trig_no[fTdcId] << endl;
          if (sub==0) return false;
 
 //         printf("%s process sub %d %s\n", GetName(), sub->Size(), fTdcId.c_str());
@@ -583,8 +602,10 @@ class SecondProc : public base::EventProc {
               if(got_real_hit[REFCHAN_A] || got_real_hit[REFCHAN_B] ){ // t1 information only makes sense if you have 
                 // a hit in the reference channel
                 double t1_ref = t1[REFCHAN_A];
+                entry_ref_chan = REFCHAN_A;
                 if (got_real_hit[REFCHAN_B]){
                   t1_ref = t1[REFCHAN_B];
+                  entry_ref_chan = REFCHAN_B;
                 }
                 double t1_vs_ref = (t1[i]-t1_ref)*1e9 ;
                 if( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) )  {
@@ -600,6 +621,10 @@ class SecondProc : public base::EventProc {
                     FillH1(meta_t1_h,t1_vs_ref - t1_offsets[i]);
                     FillH2(meta_tot_2d,tot[i]*1e9,i);
                     FillH2(meta_t1_2d,t1_vs_ref - t1_offsets[i],i);
+                    entry_chan = i;
+                    entry_t1 = t1_vs_ref - t1_offsets[i];
+                    entry_tot = tot[i]*1e9;
+                    data_tree[fTdcId]->Fill();
                   }
                   
                   // efficiency estimation ... this cell, cell #i, is a reference detector
@@ -726,14 +751,21 @@ class SecondProc : public base::EventProc {
 
 //          draw_and_save((TH2F*) meta_fish, "meta_fish","./","colz");
 
+//    tree_out->cd();
+//    data_tree[fTdcId]->Write();
+         trig_no[fTdcId]++;
+         
          return true;
       }
+      
+      
 };
 
 
 void second()
 {
    //hadaq::TdcProcessor::SetDefaults(700);
+   tree_out = new TFile("./tree_out.root","RECREATE");
    new SecondProc("Sec_0351", "TDC_0351");
    new SecondProc("Sec_0353", "TDC_0353");
 //   new SecondProc("Sec_0351", "TDC_0351");
