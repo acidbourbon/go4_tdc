@@ -59,6 +59,8 @@ void correlate_planes(TString filename){
   
   std::vector<TString> TDC_list;
   
+  
+  // for the time being only put in two TDCs please!
   TDC_list.push_back("TDC_0351");
   TDC_list.push_back("TDC_0353");
   
@@ -75,14 +77,121 @@ void correlate_planes(TString filename){
   TH1F* coinc_distribution = new TH1F("coinc_distribution","hits in same trigger;counts",10,0-0.5,10-0.5);  
   
   // variables to which the tree entries will be read
-  
-//   int chan;
-//   int trig_no;
-//   int ref_chan;
-//   double t1;
-//   double tot;
-  
   Hit current_hit;
+  
+  
+  
+  
+  // look-up tables for the detectors, truth tables identify self trackers of two types
+  
+  
+  //  ####
+  //  ####
+  //    ####
+  //    ####
+  // (upper cell is left of lower overlapping cell)
+  Bool_t is_stracker_L[2][32][32];
+  
+  
+  //    ####
+  //    ####
+  //  ####
+  //  ####
+  // (upper cell is right of lower overlapping cell)
+  Bool_t is_stracker_R[2][32][32];
+  
+  
+  for(int i = 0 ; i<2; i++){
+    for(int j = 0 ; j<32; j++){
+      for(int k = 0 ; k<32; k++){
+        is_stracker_L[i][j][k] = false;
+        is_stracker_R[i][j][k] = false;
+      }
+    }
+  }
+  
+  // for Lena -> TDC_0351 -> tdc_no 0
+  
+  is_stracker_L[0][00][23]=true;
+  is_stracker_L[0][01][22]=true;
+  is_stracker_L[0][02][21]=true;
+  is_stracker_L[0][03][20]=true;
+  is_stracker_L[0][04][19]=true;
+  is_stracker_L[0][05][18]=true;
+  is_stracker_L[0][06][17]=true;
+  is_stracker_L[0][07][16]=true;
+  
+  is_stracker_R[0][01][23]=true;
+  is_stracker_R[0][02][22]=true;
+  is_stracker_R[0][03][21]=true;
+  is_stracker_R[0][04][20]=true;
+  is_stracker_R[0][05][19]=true;
+  is_stracker_R[0][06][18]=true;
+  is_stracker_R[0][07][17]=true;
+  
+  
+  
+  // for Sandra -> TDC_0353 -> tdc_no 1
+  
+  is_stracker_L[1][00][17]=true;
+  is_stracker_L[1][01][18]=true;
+  is_stracker_L[1][02][19]=true;
+  is_stracker_L[1][03][20]=true;
+  is_stracker_L[1][04][21]=true;
+  is_stracker_L[1][05][22]=true;
+  is_stracker_L[1][06][23]=true;
+  
+  is_stracker_R[1][00][16]=true;
+  is_stracker_R[1][01][17]=true;
+  is_stracker_R[1][02][18]=true;
+  is_stracker_R[1][03][19]=true;
+  is_stracker_R[1][04][20]=true;
+  is_stracker_R[1][05][21]=true;
+  is_stracker_R[1][06][22]=true;
+  is_stracker_R[1][07][23]=true;
+  
+  
+  
+  
+  
+  
+  // a tree to store inter plane correlations
+  
+  TTree* inter_plane_correlations = new TTree("inter_plane_correlations","inter_plane_correlations");
+  Int_t wire_aa;
+  Int_t wire_ab;
+  Int_t wire_ba;
+  Int_t wire_bb;
+  
+  Double_t t1_aa;
+  Double_t t1_ab;
+  Double_t t1_ba;
+  Double_t t1_bb;
+  
+  Double_t tot_aa;
+  Double_t tot_ab;
+  Double_t tot_ba;
+  Double_t tot_bb;
+  
+  inter_plane_correlations->Branch("wire_aa",&wire_aa);
+  inter_plane_correlations->Branch("wire_ab",&wire_ab);
+  inter_plane_correlations->Branch("wire_ba",&wire_ba);
+  inter_plane_correlations->Branch("wire_bb",&wire_bb);
+  
+  inter_plane_correlations->Branch("t1_aa",&t1_aa);
+  inter_plane_correlations->Branch("t1_ab",&t1_ab);
+  inter_plane_correlations->Branch("t1_ba",&t1_ba);
+  inter_plane_correlations->Branch("t1_bb",&t1_bb);
+  
+  inter_plane_correlations->Branch("tot_aa",&tot_aa);
+  inter_plane_correlations->Branch("tot_ab",&tot_ab);
+  inter_plane_correlations->Branch("tot_ba",&tot_ba);
+  inter_plane_correlations->Branch("tot_bb",&tot_bb);
+  
+  
+  
+  
+  
   
   for (Int_t i = 0; i < TDC_list.size(); i++){
     data_tree[i] = (TTree*)f->Get(TDC_list[i]);
@@ -122,16 +231,17 @@ void correlate_planes(TString filename){
 //         cout << "entry trig no: " << trig_no << endl;
         
         if (current_hit.trig_no == trig_no){
-          hits_per_trigger++;
-          // do the interesting stuff
-//           cout << "trig_no: " << trig_no << " TDC: " << TDC_list[tdc_no] << " chan: " << chan << endl;
-          current_pair[tdc_no]->fill(current_hit);
-          if(current_pair[tdc_no]->complete()){
-//             cout << "pair complete! chan a: " << current_pair[tdc_no]->hit_a.chan << "chan b: "<< current_pair[tdc_no]->hit_b.chan << endl;
-            coinc_matrix[tdc_no]->Fill(current_pair[tdc_no]->hit_a.chan,current_pair[tdc_no]->hit_b.chan);
+          if(current_hit.ref_chan == 8 ){
+            hits_per_trigger++;
+            // do the interesting stuff
+  //           cout << "trig_no: " << trig_no << " TDC: " << TDC_list[tdc_no] << " chan: " << chan << endl;
+            current_pair[tdc_no]->fill(current_hit);
+            if(current_pair[tdc_no]->complete()){
+  //             cout << "pair complete! chan a: " << current_pair[tdc_no]->hit_a.chan << "chan b: "<< current_pair[tdc_no]->hit_b.chan << endl;
+              coinc_matrix[tdc_no]->Fill(current_pair[tdc_no]->hit_a.chan,current_pair[tdc_no]->hit_b.chan);
+            }
+            
           }
-          
-          
           
         }
         if (current_hit.trig_no <= trig_no){
@@ -147,11 +257,28 @@ void correlate_planes(TString filename){
     
     // now for the inter-plane correlations:
     if( current_pair[0]->complete() && current_pair[1]->complete() ) {
-      cout << current_pair[0]->hit_a.chan << endl;
-      cout << current_pair[0]->hit_b.chan << endl;
-      cout << current_pair[1]->hit_a.chan << endl;
-      cout << current_pair[1]->hit_b.chan << endl;
-      cout << " --- " << endl;
+//       cout << current_pair[0]->hit_a.chan << endl;
+//       cout << current_pair[0]->hit_b.chan << endl;
+//       cout << current_pair[1]->hit_a.chan << endl;
+//       cout << current_pair[1]->hit_b.chan << endl;
+//       cout << " --- " << endl;
+      
+      wire_aa = current_pair[0]->hit_a.chan;
+      wire_ab = current_pair[0]->hit_b.chan;
+      wire_ba = current_pair[1]->hit_a.chan;
+      wire_bb = current_pair[1]->hit_b.chan;
+      
+      t1_aa = current_pair[0]->hit_a.t1;
+      t1_ab = current_pair[0]->hit_b.t1;
+      t1_ba = current_pair[1]->hit_a.t1;
+      t1_bb = current_pair[1]->hit_b.t1;
+      
+      tot_aa = current_pair[0]->hit_a.tot;
+      tot_ab = current_pair[0]->hit_b.tot;
+      tot_ba = current_pair[1]->hit_a.tot;
+      tot_bb = current_pair[1]->hit_b.tot;
+      
+      inter_plane_correlations->Fill();
     }
     
     
@@ -194,8 +321,16 @@ void correlate_planes(TString filename){
  
 //  draw stuff on the fly from the console:
 //  TDC_0353->Draw("tot:t1>>abc(100,-100,100,100,0,200),","","colz")
-// 
-  
+
+
+// inter_plane_correlations->Draw("sum_t1_a:sum_t1_b>>abc(),","","")
+// inter_plane_correlations->Draw("sum_t1_a:wire_aa>>abc(),","","")
+
+// draw fish Lena
+//  inter_plane_correlations->Draw("(t1_aa-t1_ab):(t1_aa+t1_ab)>>abc(),","","")
+// draw fish Sandra
+//  inter_plane_correlations->Draw("(t1_ba-t1_bb):(t1_ba+t1_bb)>>abc(),","","")
+
   
   
 }

@@ -89,7 +89,7 @@
 
 #define enable_coincidence_rejection 1
 
-#define enable_single_hits       0
+#define enable_single_hits       1
 #define enable_one_hit_per_layer 1
 #define enable_two_to_one_hits   0
 
