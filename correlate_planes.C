@@ -33,9 +33,10 @@ void correlate_planes(TString filename){
   TTree* data_tree[TDC_list.size()];
   Int_t  data_tree_entries[TDC_list.size()];
   Int_t  data_tree_index[TDC_list.size()];
+  TH2F*  coinc_matrix[TDC_list.size()];
 //   Bool_t data_tree_end_reached[TDC_list.size()];
  
-  
+  TH1F* coinc_distribution = new TH1F("coinc_distribution","hits in same trigger;counts",10,0-0.5,10-0.5);  
   
   // variables to which the tree entries will be read
   
@@ -57,6 +58,7 @@ void correlate_planes(TString filename){
     data_tree[i]->SetBranchAddress("tot",&entry_tot);
     data_tree[i]->SetBranchAddress("chan",&entry_chan);
     data_tree[i]->SetBranchAddress("ref_chan",&entry_ref_chan);
+    coinc_matrix[i] = new TH2F("coinc_matrix_"+TDC_list[i],"channels 0-7;channels 16-23",12,-2.5,9.5,10,15-0.5,24+0.5);
   }
   
  
@@ -65,6 +67,7 @@ void correlate_planes(TString filename){
     
 //     cout << "trig_no: " << trig_no << endl;
     Bool_t all_ends_reached = true; 
+    Int_t hits_per_trigger = 0;
     // loop over all participating TDCs
     for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no ++){
       
@@ -77,7 +80,7 @@ void correlate_planes(TString filename){
 //         cout << "entry trig no: " << entry_trig_no << endl;
         
         if (entry_trig_no == trig_no){
-          
+          hits_per_trigger++;
           // do the interesting stuff
 //           cout << "trig_no: " << trig_no << " TDC: " << TDC_list[tdc_no] << " chan: " << entry_chan << endl;
           
@@ -93,6 +96,8 @@ void correlate_planes(TString filename){
       }
       
     }
+    
+    coinc_distribution->Fill(hits_per_trigger);
     
     if (all_ends_reached) { // all trees have been read to the end
       break;
