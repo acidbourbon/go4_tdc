@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+using namespace std;
 
 #define RISING 1
 #define FALLING 0
@@ -14,6 +15,41 @@
 /*
  * 
  * */
+
+class Hit {
+public:
+  int entry_chan;
+  int entry_trig_no;
+  int entry_ref_chan;
+  double entry_t1;
+  double entry_tot;
+};
+
+class HitPair {
+public:
+  Hit hit_a;
+  Hit hit_b;
+  Bool_t got_a, got_b;
+  HitPair(void);
+  void fill(Hit new_hit) {
+    if(new_hit.entry_chan < 8){
+      hit_a = new_hit;
+      got_a = true;
+    } else {
+      hit_b = new_hit;
+      got_b = true;
+    }
+  };
+  Bool_t complete(void) {
+    return got_a && got_b;
+  };
+};
+
+HitPair::HitPair(void) {
+  got_a = false;
+  got_b = false;
+}
+
 
 void correlate_planes(TString filename){
   
@@ -40,11 +76,13 @@ void correlate_planes(TString filename){
   
   // variables to which the tree entries will be read
   
-  int entry_chan;
-  int entry_trig_no;
-  int entry_ref_chan;
-  double entry_t1;
-  double entry_tot;
+//   int entry_chan;
+//   int entry_trig_no;
+//   int entry_ref_chan;
+//   double entry_t1;
+//   double entry_tot;
+  
+  Hit current_hit;
   
   for (Int_t i = 0; i < TDC_list.size(); i++){
     data_tree[i] = (TTree*)f->Get(TDC_list[i]);
@@ -53,11 +91,11 @@ void correlate_planes(TString filename){
 //     data_tree_end_reached[i] = false;
     cout << "TDC: " << TDC_list[i] << " entries: " << data_tree[i]->GetEntries() << endl;
     
-    data_tree[i]->SetBranchAddress("trig_no",&entry_trig_no);
-    data_tree[i]->SetBranchAddress("t1",&entry_t1);
-    data_tree[i]->SetBranchAddress("tot",&entry_tot);
-    data_tree[i]->SetBranchAddress("chan",&entry_chan);
-    data_tree[i]->SetBranchAddress("ref_chan",&entry_ref_chan);
+    data_tree[i]->SetBranchAddress("trig_no", &current_hit.entry_trig_no);
+    data_tree[i]->SetBranchAddress("t1",      &current_hit.entry_t1);
+    data_tree[i]->SetBranchAddress("tot",     &current_hit.entry_tot);
+    data_tree[i]->SetBranchAddress("chan",    &current_hit.entry_chan);
+    data_tree[i]->SetBranchAddress("ref_chan",&current_hit.entry_ref_chan);
     coinc_matrix[i] = new TH2F("coinc_matrix_"+TDC_list[i],"channels 0-7;channels 16-23",12,-2.5,9.5,10,15-0.5,24+0.5);
   }
   
@@ -72,6 +110,7 @@ void correlate_planes(TString filename){
     for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no ++){
       
 //       cout << "TDC: " << TDC_list[tdc_no] << endl;
+      HitPair *current_pair = new HitPair();
       
       // loop over tree entries
       while ( data_tree_index[tdc_no] < data_tree_entries[tdc_no] ) {
@@ -79,14 +118,20 @@ void correlate_planes(TString filename){
         data_tree[tdc_no]->GetEntry(data_tree_index[tdc_no]);
 //         cout << "entry trig no: " << entry_trig_no << endl;
         
-        if (entry_trig_no == trig_no){
+        if (current_hit.entry_trig_no == trig_no){
           hits_per_trigger++;
           // do the interesting stuff
 //           cout << "trig_no: " << trig_no << " TDC: " << TDC_list[tdc_no] << " chan: " << entry_chan << endl;
+          current_pair->fill(current_hit);
+          if(current_pair->complete()){
+//             cout << "pair complete! chan a: " << current_pair->hit_a.entry_chan << "chan b: "<< current_pair->hit_b.entry_chan << endl;
+            coinc_matrix[tdc_no]->Fill(current_pair->hit_a.entry_chan,current_pair->hit_b.entry_chan);
+          }
+          
           
           
         }
-        if (entry_trig_no <= trig_no){
+        if (current_hit.entry_trig_no <= trig_no){
           data_tree_index[tdc_no]++;
         } else {
           break;
@@ -133,6 +178,10 @@ void correlate_planes(TString filename){
     
   }
   */
+ 
+//  draw stuff on the fly from the console:
+//  TDC_0353->Draw("tot:t1>>abc(100,-100,100,100,0,200),","","colz")
+// 
   
   
   
