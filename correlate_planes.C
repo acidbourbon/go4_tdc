@@ -121,7 +121,7 @@ void correlate_planes(TString filename){
   TH1F* coinc_distribution = new TH1F("coinc_distribution","hits in same trigger;counts",10,0-0.5,10-0.5);  
   
   // variables to which the tree entries will be read
-  Hit current_hit;
+  Hit current_hit, hit_a, hit_b, hit_c, hit_d, empty_hit;
   
   
   
@@ -199,7 +199,7 @@ void correlate_planes(TString filename){
   
   Float_t t1_offset[2][32][32]; // two TDCs, 32 possible ref channels, 32 channels ... yes I know it's debauchery
   
-  
+  /*
   for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no++){
     for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
       for (Int_t chan = 0; chan <32; chan++){
@@ -233,6 +233,7 @@ void correlate_planes(TString filename){
       tg_offset->Write();
     }
   }
+  */
   
   
   
@@ -275,6 +276,30 @@ void correlate_planes(TString filename){
   
   
   
+  empty_hit.chan = -1;
+  empty_hit.ref_chan = -1;
+  empty_hit.t1 = -1000;
+  empty_hit.tot = -1000;
+  
+  TTree* inter_plane_all = new TTree("inter_plane_all","inter_plane_all");
+  
+  inter_plane_all->Branch("t1_a",&hit_a.t1);
+  inter_plane_all->Branch("tot_a",&hit_a.tot);
+  inter_plane_all->Branch("chan_a",&hit_a.chan);
+  inter_plane_all->Branch("ref_chan_a",&hit_a.ref_chan);
+  inter_plane_all->Branch("t1_b",&hit_b.t1);
+  inter_plane_all->Branch("tot_b",&hit_b.tot);
+  inter_plane_all->Branch("chan_b",&hit_b.chan);
+  inter_plane_all->Branch("ref_chan_b",&hit_b.ref_chan);
+  inter_plane_all->Branch("t1_c",&hit_c.t1);
+  inter_plane_all->Branch("tot_c",&hit_c.tot);
+  inter_plane_all->Branch("chan_c",&hit_c.chan);
+  inter_plane_all->Branch("ref_chan_c",&hit_c.ref_chan);
+  inter_plane_all->Branch("t1_d",&hit_d.t1);
+  inter_plane_all->Branch("tot_d",&hit_d.tot);
+  inter_plane_all->Branch("chan_d",&hit_d.chan);
+  inter_plane_all->Branch("ref_chan_d",&hit_d.ref_chan);
+  
   
   
   
@@ -296,7 +321,7 @@ void correlate_planes(TString filename){
   
  
   // loop over all possible trigger numbers
-  for (Int_t trig_no = 0; false; trig_no++){
+  for (Int_t trig_no = 0; trig_no < 10000; trig_no++){
     
 //     cout << "trig_no: " << trig_no << endl;
     Bool_t all_ends_reached = true; 
@@ -304,6 +329,12 @@ void correlate_planes(TString filename){
     // loop over all participating TDCs
     
     HitPair* current_pair[2];
+    
+    hit_a = empty_hit;
+    hit_b = empty_hit;
+    hit_c = empty_hit;
+    hit_d = empty_hit;
+    
     
     for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no ++){
       
@@ -326,6 +357,17 @@ void correlate_planes(TString filename){
   //             cout << "pair complete! chan a: " << current_pair[tdc_no]->hit_a.chan << "chan b: "<< current_pair[tdc_no]->hit_b.chan << endl;
               coinc_matrix[tdc_no]->Fill(current_pair[tdc_no]->hit_a.chan,current_pair[tdc_no]->hit_b.chan);
             }
+            
+            if(current_hit.chan < 8 && tdc_no == 0){
+              hit_a = current_hit;
+            } else if (current_hit.chan >=16 && tdc_no == 0){
+              hit_b = current_hit;
+            } else if (current_hit.chan < 8 && tdc_no == 1){
+              hit_c = current_hit;
+            } else if (current_hit.chan >=16 && tdc_no == 1){
+              hit_d = current_hit;
+            }
+            
             
           }
           
@@ -367,6 +409,7 @@ void correlate_planes(TString filename){
       inter_plane_correlations->Fill();
     }
     
+    inter_plane_all->Fill();
     
     coinc_distribution->Fill(hits_per_trigger);
     
