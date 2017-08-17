@@ -244,35 +244,35 @@ void correlate_planes(TString filename){
   
   
   TTree* inter_plane_correlations = new TTree("inter_plane_correlations","inter_plane_correlations");
-  Int_t wire_aa;
-  Int_t wire_ab;
-  Int_t wire_ba;
-  Int_t wire_bb;
+  Int_t chan_a;
+  Int_t chan_b;
+  Int_t chan_c;
+  Int_t chan_d;
   
-  Double_t t1_aa;
-  Double_t t1_ab;
-  Double_t t1_ba;
-  Double_t t1_bb;
+  Double_t t1_a;
+  Double_t t1_b;
+  Double_t t1_c;
+  Double_t t1_d;
   
-  Double_t tot_aa;
-  Double_t tot_ab;
-  Double_t tot_ba;
-  Double_t tot_bb;
+  Double_t tot_a;
+  Double_t tot_b;
+  Double_t tot_c;
+  Double_t tot_d;
   
-  inter_plane_correlations->Branch("wire_aa",&wire_aa);
-  inter_plane_correlations->Branch("wire_ab",&wire_ab);
-  inter_plane_correlations->Branch("wire_ba",&wire_ba);
-  inter_plane_correlations->Branch("wire_bb",&wire_bb);
+  inter_plane_correlations->Branch("chan_a",&chan_a);
+  inter_plane_correlations->Branch("chan_b",&chan_b);
+  inter_plane_correlations->Branch("chan_c",&chan_c);
+  inter_plane_correlations->Branch("chan_d",&chan_d);
   
-  inter_plane_correlations->Branch("t1_aa",&t1_aa);
-  inter_plane_correlations->Branch("t1_ab",&t1_ab);
-  inter_plane_correlations->Branch("t1_ba",&t1_ba);
-  inter_plane_correlations->Branch("t1_bb",&t1_bb);
+  inter_plane_correlations->Branch("t1_a",&t1_a);
+  inter_plane_correlations->Branch("t1_b",&t1_b);
+  inter_plane_correlations->Branch("t1_c",&t1_c);
+  inter_plane_correlations->Branch("t1_d",&t1_d);
   
-  inter_plane_correlations->Branch("tot_aa",&tot_aa);
-  inter_plane_correlations->Branch("tot_ab",&tot_ab);
-  inter_plane_correlations->Branch("tot_ba",&tot_ba);
-  inter_plane_correlations->Branch("tot_bb",&tot_bb);
+  inter_plane_correlations->Branch("tot_a",&tot_a);
+  inter_plane_correlations->Branch("tot_b",&tot_b);
+  inter_plane_correlations->Branch("tot_c",&tot_c);
+  inter_plane_correlations->Branch("tot_d",&tot_d);
   
   
   
@@ -393,27 +393,30 @@ void correlate_planes(TString filename){
 //       cout << current_pair[1]->hit_b.chan << endl;
 //       cout << " --- " << endl;
       
-      wire_aa = current_pair[0]->hit_a.chan;
-      wire_ab = current_pair[0]->hit_b.chan;
-      wire_ba = current_pair[1]->hit_a.chan;
-      wire_bb = current_pair[1]->hit_b.chan;
+      chan_a = current_pair[0]->hit_a.chan;
+      chan_b = current_pair[0]->hit_b.chan;
+      chan_c = current_pair[1]->hit_a.chan;
+      chan_d = current_pair[1]->hit_b.chan;
       
-      t1_aa = current_pair[0]->hit_a.t1;
-      t1_ab = current_pair[0]->hit_b.t1;
-      t1_ba = current_pair[1]->hit_a.t1;
-      t1_bb = current_pair[1]->hit_b.t1;
+      t1_a = current_pair[0]->hit_a.t1;
+      t1_b = current_pair[0]->hit_b.t1;
+      t1_c = current_pair[1]->hit_a.t1;
+      t1_d = current_pair[1]->hit_b.t1;
       
-      tot_aa = current_pair[0]->hit_a.tot;
-      tot_ab = current_pair[0]->hit_b.tot;
-      tot_ba = current_pair[1]->hit_a.tot;
-      tot_bb = current_pair[1]->hit_b.tot;
+      tot_a = current_pair[0]->hit_a.tot;
+      tot_b = current_pair[0]->hit_b.tot;
+      tot_c = current_pair[1]->hit_a.tot;
+      tot_d = current_pair[1]->hit_b.tot;
       
       inter_plane_correlations->Fill();
     }
     
-    inter_plane_all->Fill();
     
     coinc_distribution->Fill(hits_per_trigger);
+    
+    if (hits_per_trigger) { // if you have at least one hit in one plane
+      inter_plane_all->Fill();
+    }
     
     if (all_ends_reached) { // all trees have been read to the end
       break;
@@ -468,9 +471,33 @@ void correlate_planes(TString filename){
 
 // draw fish on the fly with new cool tree
 
-//   inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(),","chan_a>=0 && chan_b >= 0","")
+//   draw fish Lena
+//   inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(100,-50,150,150,-150,150),","chan_a>=0 && chan_b >= 0","")
 
+//   draw fish Sandra
+//   inter_plane_all->Draw("t1_c-t1_d:t1_c+t1_d>>abc(100,-50,150,150,-150,150),","chan_c>=0 && chan_d >= 0","")
+
+//   draw fish Lena with one hit in Sandra
+//   inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(100,-50,150,150,-150,150),","chan_a>=0 && chan_b >= 0 && (chan_c>=0 || chan_d >= 0)","")
+
+//   draw fish Lena with two hits in Sandra
+//   inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(100,-50,150,150,-150,150),","chan_a>=0 && chan_b >= 0 && (chan_c>=0 && chan_d >= 0)","colz")
+
+//   draw fish Lena with one hit in Sandra that is lying underneath
+//   inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(100,-50,150,150,-150,150),","chan_a>=0 && chan_b >= 0 && (chan_c == chan_a || (chan_d-16 == chan_a))","colz")
   
+//   draw fish Lena with one hit in Sandra that is lying underneath
+//   inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(100,-50,150,150,-150,150),","chan_a>=0 && chan_b >= 0 && (chan_c == chan_a || (chan_d-16 == chan_a)) && (chan_c>=0 && chan_d>=0)","colz")
+
+//   draw fish Lena -> all L-type self-trackers
+// inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(100,-50,150,150,-150,150),","chan_a>=0 && chan_b >= 0 && (23-chan_b == chan_a)","colz")
+
+//   draw fish Lena -> all R-type self-trackers
+// inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(100,-50,150,150,-150,150),","chan_a>=0 && chan_b >= 0 && (23-chan_b+1 == chan_a)","colz")
+
+//   draw fish Lena -> all L-type self-trackers
+// inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(100,-50,150,150,-150,150),","chan_a>=0 && chan_b >= 0 && (23-chan_b == chan_a) && (chan_c>=0 || chan_d >= 0)","colz")
+
 }
 
 
