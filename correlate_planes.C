@@ -51,6 +51,46 @@ HitPair::HitPair(void) {
 }
 
 
+
+
+Float_t get_toa_offset(TH1F* toa0) {
+    
+  TH1* cum_toa0 = toa0->GetCumulative();
+  Int_t cum_toa0_sum = cum_toa0->GetBinContent(cum_toa0->GetEntries());
+//   cout << "toa0 sum " << cum_toa0_sum <<endl;
+  
+  Float_t cum_toa0_up   = ((Float_t) cum_toa0_sum) *0.6;
+  Float_t cum_toa0_down = ((Float_t) cum_toa0_sum) *0.1;
+  
+  Int_t cum_toa0_left_bin   = cum_toa0->FindFirstBinAbove(cum_toa0_down,2);
+  Int_t cum_toa0_right_bin  = cum_toa0->FindFirstBinAbove(cum_toa0_up,2);
+  TAxis *xaxis = cum_toa0->GetXaxis();
+  Float_t cum_toa0_left  = xaxis->GetBinCenter(cum_toa0_left_bin);
+  Float_t cum_toa0_right = xaxis->GetBinCenter(cum_toa0_right_bin);
+  
+  TF1 *fa = new TF1("fa","[0] + [1]*x",0,5000);
+
+  // This creates a function of variable x with 2 parameters. The parameters must be initialized via:
+  fa->SetParameter(0,0);
+  fa->SetParameter(1,1);
+  
+  cum_toa0->Fit(fa,"","", cum_toa0_left,cum_toa0_right);
+  
+  Float_t x_intersect = -fa->GetParameter(0)/fa->GetParameter(1);
+  
+//   cout << "x intersect " << x_intersect << endl;
+  
+//   draw_and_save(cum_toa0,"cum_toa0","./","");
+  
+  return x_intersect;
+
+  
+}
+
+
+
+
+
 void correlate_planes(TString filename){
   
 // ##################################################
@@ -69,6 +109,10 @@ void correlate_planes(TString filename){
   TFile *f = TFile::Open(filename);
   
   TTree* data_tree[TDC_list.size()];
+  
+  
+  TFile* correlations_out = new TFile("./correlations_out.root","RECREATE");
+  
   Int_t  data_tree_entries[TDC_list.size()];
   Int_t  data_tree_index[TDC_list.size()];
   TH2F*  coinc_matrix[TDC_list.size()];
@@ -110,6 +154,7 @@ void correlate_planes(TString filename){
     }
   }
   
+    
   // for Lena -> TDC_0351 -> tdc_no 0
   
   is_stracker_L[0][00][23]=true;
@@ -150,12 +195,52 @@ void correlate_planes(TString filename){
   is_stracker_R[1][06][22]=true;
   is_stracker_R[1][07][23]=true;
   
+  correlations_out->cd();
+  
+  Float_t t1_offset[2][32][32]; // two TDCs, 32 possible ref channels, 32 channels ... yes I know it's debauchery
+  
+  
+  for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no++){
+    for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
+      for (Int_t chan = 0; chan <32; chan++){
+        
+        TString chan_str, ref_chan_str;
+        chan_str.Form("%d",chan);
+        ref_chan_str.Form("%d",ref_chan);
+        
+        ( (TTree*) f->Get(TDC_list[tdc_no]) )->Draw("t1>>tmp_hist(600,-100,200),","ref_chan=="+ref_chan_str+" && chan=="+chan_str,"");
+        TH1F* hist = (TH1F*) correlations_out->Get("tmp_hist");
+        
+        t1_offset[tdc_no][ref_chan][chan] = get_toa_offset(hist); 
+  //       cout << "hist offset: "<< get_toa_offset(hist) << endl;
+        
+      }
+    }
+  }
+  Float_t channels_x[32];
+  for (Int_t i = 0 ; i<32; i++){
+    channels_x[i] = i;
+  }
+  
+  for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no ++){
+    for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
+      
+      TString ref_chan_str;
+      ref_chan_str.Form("%d",ref_chan);
+      TGraph* tg_offset = new TGraph(32,channels_x, t1_offset[tdc_no][ref_chan]);
+      tg_offset->SetName("t1_offset_"+TDC_list[tdc_no]+"_ref_chan_"+ref_chan_str);
+      tg_offset->SetTitle("t1_offset_"+TDC_list[tdc_no]+"_ref_chan_"+ref_chan_str);
+      tg_offset->Write();
+    }
+  }
+  
   
   
   
   
   
   // a tree to store inter plane correlations
+  
   
   TTree* inter_plane_correlations = new TTree("inter_plane_correlations","inter_plane_correlations");
   Int_t wire_aa;
@@ -193,6 +278,7 @@ void correlate_planes(TString filename){
   
   
   
+  
   for (Int_t i = 0; i < TDC_list.size(); i++){
     data_tree[i] = (TTree*)f->Get(TDC_list[i]);
     data_tree_entries[i] = data_tree[i]->GetEntries();
@@ -210,7 +296,7 @@ void correlate_planes(TString filename){
   
  
   // loop over all possible trigger numbers
-  for (Int_t trig_no = 0; true; trig_no++){
+  for (Int_t trig_no = 0; false; trig_no++){
     
 //     cout << "trig_no: " << trig_no << endl;
     Bool_t all_ends_reached = true; 
@@ -231,7 +317,7 @@ void correlate_planes(TString filename){
 //         cout << "entry trig no: " << trig_no << endl;
         
         if (current_hit.trig_no == trig_no){
-          if(current_hit.ref_chan == 8 ){
+          if(current_hit.ref_chan == 8 || true ){ // filter only one reference channel
             hits_per_trigger++;
             // do the interesting stuff
   //           cout << "trig_no: " << trig_no << " TDC: " << TDC_list[tdc_no] << " chan: " << chan << endl;
@@ -288,6 +374,10 @@ void correlate_planes(TString filename){
       break;
     }
 //     cout << "\n --- \n"<< endl;
+
+
+
+
     
   }
  
