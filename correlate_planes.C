@@ -199,7 +199,7 @@ void correlate_planes(TString filename){
   
   Float_t t1_offset[2][32][32]; // two TDCs, 32 possible ref channels, 32 channels ... yes I know it's debauchery
   
-  /*
+  
   for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no++){
     for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
       for (Int_t chan = 0; chan <32; chan++){
@@ -233,7 +233,7 @@ void correlate_planes(TString filename){
       tg_offset->Write();
     }
   }
-  */
+  
   
   
   
@@ -321,7 +321,7 @@ void correlate_planes(TString filename){
   
  
   // loop over all possible trigger numbers
-  for (Int_t trig_no = 0; trig_no < 10000; trig_no++){
+  for (Int_t trig_no = 0; trig_no < 10000 || true; trig_no++){
     
 //     cout << "trig_no: " << trig_no << endl;
     Bool_t all_ends_reached = true; 
@@ -357,6 +357,8 @@ void correlate_planes(TString filename){
   //             cout << "pair complete! chan a: " << current_pair[tdc_no]->hit_a.chan << "chan b: "<< current_pair[tdc_no]->hit_b.chan << endl;
               coinc_matrix[tdc_no]->Fill(current_pair[tdc_no]->hit_a.chan,current_pair[tdc_no]->hit_b.chan);
             }
+            
+            current_hit.t1 -= t1_offset[tdc_no][current_hit.ref_chan][current_hit.chan];
             
             if(current_hit.chan < 8 && tdc_no == 0){
               hit_a = current_hit;
@@ -464,7 +466,10 @@ void correlate_planes(TString filename){
 // draw fish Sandra
 //  inter_plane_correlations->Draw("(t1_ba-t1_bb):(t1_ba+t1_bb)>>abc(),","","")
 
-  
+// draw fish on the fly with new cool tree
+
+//   inter_plane_all->Draw("t1_a-t1_b:t1_a+t1_b>>abc(),","chan_a>=0 && chan_b >= 0","")
+
   
 }
 
