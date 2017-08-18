@@ -470,11 +470,12 @@ void correlate_planes(TString filename){
   }
   
 
+  // draw all offsets  to a TGraph
+  
   Float_t channels_x[32];
   for (Int_t i = 0 ; i<32; i++){
     channels_x[i] = i;
   }
-  // draw all offsets 
   for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no ++){
     for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
       
@@ -508,7 +509,34 @@ void correlate_planes(TString filename){
   inter_plane_all_corrected->Branch("chan_d",&hit_d.chan);
   inter_plane_all_corrected->Branch("ref_chan_d",&hit_d.ref_chan);
   
+  inter_plane_all->SetBranchAddress("t1_a",&hit_a.t1);
+  inter_plane_all->SetBranchAddress("tot_a",&hit_a.tot);
+  inter_plane_all->SetBranchAddress("chan_a",&hit_a.chan);
+  inter_plane_all->SetBranchAddress("ref_chan_a",&hit_a.ref_chan);
+  inter_plane_all->SetBranchAddress("t1_b",&hit_b.t1);
+  inter_plane_all->SetBranchAddress("tot_b",&hit_b.tot);
+  inter_plane_all->SetBranchAddress("chan_b",&hit_b.chan);
+  inter_plane_all->SetBranchAddress("ref_chan_b",&hit_b.ref_chan);
+  inter_plane_all->SetBranchAddress("t1_c",&hit_c.t1);
+  inter_plane_all->SetBranchAddress("tot_c",&hit_c.tot);
+  inter_plane_all->SetBranchAddress("chan_c",&hit_c.chan);
+  inter_plane_all->SetBranchAddress("ref_chan_c",&hit_c.ref_chan);
+  inter_plane_all->SetBranchAddress("t1_d",&hit_d.t1);
+  inter_plane_all->SetBranchAddress("tot_d",&hit_d.tot);
+  inter_plane_all->SetBranchAddress("chan_d",&hit_d.chan);
+  inter_plane_all->SetBranchAddress("ref_chan_d",&hit_d.ref_chan);
   
+  for( Int_t event_no; event_no < inter_plane_all->GetEntries(); event_no++){
+    // load
+    inter_plane_all->GetEntry(event_no);
+    // correct
+    hit_a.t1 -= t1_offset[0][hit_a.ref_chan][hit_a.chan];
+    hit_b.t1 -= t1_offset[0][hit_b.ref_chan][hit_b.chan];
+    hit_c.t1 -= t1_offset[1][hit_c.ref_chan][hit_c.chan];
+    hit_d.t1 -= t1_offset[1][hit_d.ref_chan][hit_d.chan];
+    // store again
+    inter_plane_all_corrected->Fill();
+  }
   
   
   
