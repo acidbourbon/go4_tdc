@@ -552,6 +552,33 @@ void correlate_planes(TString filename){
 
 // associate Lena t1 sum with hit position in Sandra (limit to diff < 20 ns)
 // inter_plane_correlations->Draw("(t1_a+t1_b):xpos_cd>>abc(),","Ltracker_ab && abs(t1_a-t1_b)<20 ","colz")
+
+
+
+
+// this shows me the ange correlation
+
+// Ltracker t1_sum vs hit angle (difference of x pos)
+// inter_plane_correlations->Draw("(t1_a+t1_b):(xpos_ab-xpos_cd)>>abc(),","Ltracker_ab && abs(t1_a-t1_b)<20 ","")
+// Rtracker t1_sum vs hit angle (difference of x pos)
+// inter_plane_correlations->Draw("(t1_a+t1_b):(xpos_ab-xpos_cd)>>abc(),","Rtracker_ab && abs(t1_a-t1_b)<20 ","")
+
+// in color
+// root [58] inter_plane_correlations->Draw("(t1_a+t1_b):(xpos_ab-xpos_cd)>>abc(33,-40,40,20,0,80),","Rtracker_ab && abs(t1_a-t1_b)<20 ","colz")
+// Error in <TSelectorDraw::DrawSelect>: ncols*3 < ncomma ncols=2, ncomma=7
+// (long long) 2174
+// root [59] inter_plane_correlations->Draw("(t1_a+t1_b):(xpos_ab-xpos_cd)>>abc(33,-40,40,20,0,80),","Ltracker_ab && abs(t1_a-t1_b)<20 ","colz")
+// Error in <TSelectorDraw::DrawSelect>: ncols*3 < ncomma ncols=2, ncomma=7
+// (long long) 2860
+
+
+
+
+// fish peak for limited angle
+//inter_plane_correlations->Draw("(t1_a+t1_b)>>abc(90,-10,80),","Ltracker_ab && abs(t1_a-t1_b)<20 && (abs(xpos_ab-xpos_cd)<40) ","")
+//inter_plane_correlations->Draw("(t1_a+t1_b)>>abc(90,-10,80),","abs(t1_a-t1_b)<20 && (abs(xpos_ab-xpos_cd)<40) ","")
+
+
 }
 
 
