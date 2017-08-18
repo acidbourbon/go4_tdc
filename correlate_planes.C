@@ -125,81 +125,24 @@ void correlate_planes(TString filename){
   
   
   
-  
-  // look-up tables for the detectors, truth tables identify self trackers of two types
-  
-  
-  //  ####
-  //  ####
-  //    ####
-  //    ####
-  // (upper cell is left of lower overlapping cell)
-  Bool_t is_stracker_L[2][32][32];
-  
-  
-  //    ####
-  //    ####
-  //  ####
-  //  ####
-  // (upper cell is right of lower overlapping cell)
-  Bool_t is_stracker_R[2][32][32];
-  
-  
-  for(int i = 0 ; i<2; i++){
-    for(int j = 0 ; j<32; j++){
-      for(int k = 0 ; k<32; k++){
-        is_stracker_L[i][j][k] = false;
-        is_stracker_R[i][j][k] = false;
-      }
-    }
-  }
-  
-    
-  // for Lena -> TDC_0351 -> tdc_no 0
-  
-  is_stracker_L[0][00][23]=true;
-  is_stracker_L[0][01][22]=true;
-  is_stracker_L[0][02][21]=true;
-  is_stracker_L[0][03][20]=true;
-  is_stracker_L[0][04][19]=true;
-  is_stracker_L[0][05][18]=true;
-  is_stracker_L[0][06][17]=true;
-  is_stracker_L[0][07][16]=true;
-  
-  is_stracker_R[0][01][23]=true;
-  is_stracker_R[0][02][22]=true;
-  is_stracker_R[0][03][21]=true;
-  is_stracker_R[0][04][20]=true;
-  is_stracker_R[0][05][19]=true;
-  is_stracker_R[0][06][18]=true;
-  is_stracker_R[0][07][17]=true;
-  
-  
-  
-  // for Sandra -> TDC_0353 -> tdc_no 1
-  
-  is_stracker_L[1][00][17]=true;
-  is_stracker_L[1][01][18]=true;
-  is_stracker_L[1][02][19]=true;
-  is_stracker_L[1][03][20]=true;
-  is_stracker_L[1][04][21]=true;
-  is_stracker_L[1][05][22]=true;
-  is_stracker_L[1][06][23]=true;
-  
-  is_stracker_R[1][00][16]=true;
-  is_stracker_R[1][01][17]=true;
-  is_stracker_R[1][02][18]=true;
-  is_stracker_R[1][03][19]=true;
-  is_stracker_R[1][04][20]=true;
-  is_stracker_R[1][05][21]=true;
-  is_stracker_R[1][06][22]=true;
-  is_stracker_R[1][07][23]=true;
-  
   correlations_out->cd();
   
   Float_t t1_offset[2][32][32]; // two TDCs, 32 possible ref channels, 32 channels ... yes I know it's debauchery
   
+  for (Int_t i = 0 ; i<2; i++){
+    for (Int_t j = 0 ; j<32; j++){
+      for (Int_t k = 0 ; k<32; k++){
+        t1_offset[i][j][k] = 0;
+      }
+    }
+  }
   
+  
+  
+  // offset correction version 1 (take all hits )
+ 
+  
+  /*
   for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no++){
     for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
       for (Int_t chan = 0; chan <32; chan++){
@@ -217,22 +160,9 @@ void correlate_planes(TString filename){
       }
     }
   }
-  Float_t channels_x[32];
-  for (Int_t i = 0 ; i<32; i++){
-    channels_x[i] = i;
-  }
   
-  for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no ++){
-    for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
-      
-      TString ref_chan_str;
-      ref_chan_str.Form("%d",ref_chan);
-      TGraph* tg_offset = new TGraph(32,channels_x, t1_offset[tdc_no][ref_chan]);
-      tg_offset->SetName("t1_offset_"+TDC_list[tdc_no]+"_ref_chan_"+ref_chan_str);
-      tg_offset->SetTitle("t1_offset_"+TDC_list[tdc_no]+"_ref_chan_"+ref_chan_str);
-      tg_offset->Write();
-    }
-  }
+  */
+  
   
   
   
@@ -292,8 +222,8 @@ void correlate_planes(TString filename){
   inter_plane_correlations->Branch("xpos_ab",&xpos_ab);
   inter_plane_correlations->Branch("xpos_cd",&xpos_cd);
   
-  empty_hit.chan = -1;
-  empty_hit.ref_chan = -1;
+  empty_hit.chan = -1000;
+  empty_hit.ref_chan = -1000;
   empty_hit.t1 = -1000;
   empty_hit.tot = -1000;
   
@@ -316,6 +246,24 @@ void correlate_planes(TString filename){
   inter_plane_all->Branch("chan_d",&hit_d.chan);
   inter_plane_all->Branch("ref_chan_d",&hit_d.ref_chan);
   
+  
+
+//   _                                           _____         ___ 
+//  | |                                         |  __ \       /   |
+//  | | ___   ___  _ __     _____   _____ _ __  | |  \/ ___  / /| |
+//  | |/ _ \ / _ \| '_ \   / _ \ \ / / _ \ '__| | | __ / _ \/ /_| |
+//  | | (_) | (_) | |_) | | (_) \ V /  __/ |    | |_\ \ (_) \___  |
+//  |_|\___/ \___/| .__/   \___/ \_/ \___|_|     \____/\___/    |_/
+//                | |                                              
+//                |_|                                              
+//       _       _                                                 
+//      | |     | |                                                
+//    __| | __ _| |_ __ _                                          
+//   / _` |/ _` | __/ _` |                                         
+//  | (_| | (_| | || (_| |                                         
+//   \__,_|\__,_|\__\__,_|                                         
+//                                                                 
+//                                                                 
   
   
   
@@ -430,8 +378,8 @@ void correlate_planes(TString filename){
       Rtracker_ab = false;
       Rtracker_cd = false;
       
-      xpos_ab = -1;
-      xpos_cd = -1;
+      xpos_ab = -1000;
+      xpos_cd = -1000;
       
       if( chan_a == 23-chan_b ){
         Ltracker_ab = true;
@@ -469,6 +417,101 @@ void correlate_planes(TString filename){
 
     
   }
+  
+  
+
+//             _ _ _               _          
+//            | (_) |             | |         
+//    ___ __ _| |_| |__  _ __ __ _| |_ ___    
+//   / __/ _` | | | '_ \| '__/ _` | __/ _ \   
+//  | (_| (_| | | | |_) | | | (_| | ||  __/   
+//   \___\__,_|_|_|_.__/|_|  \__,_|\__\___|   
+//                                            
+//                                            
+//   _   __           __  __          _       
+//  | | /  |         / _|/ _|        | |      
+//  | |_`| |    ___ | |_| |_ ___  ___| |_ ___ 
+//  | __|| |   / _ \|  _|  _/ __|/ _ \ __/ __|
+//  | |__| |_ | (_) | | | | \__ \  __/ |_\__ \
+//   \__\___/  \___/|_| |_| |___/\___|\__|___/
+//                                            
+//                                            
+  
+  // calibrate t1 offsets with pair hits in overlapping cell_size
+  
+
+  for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no++){
+    for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
+      for (Int_t chan = 0; chan <32; chan++){
+        
+        TString chan_str, ref_chan_str;
+        chan_str.Form("%d",chan);
+        ref_chan_str.Form("%d",ref_chan);
+        if ( tdc_no == 0 ) {
+          if ( chan < 8 ){ 
+          ( (TTree*) correlations_out->Get("inter_plane_all"))->Draw("t1_a>>tmp_hist(600,-150,150),","ref_chan_a=="+ref_chan_str+" && chan_a=="+chan_str+" && ((23-chan_b == chan_a) || (23-chan_b+1 == chan_a))","");
+          } else if ( chan >= 16 ){ 
+          ( (TTree*) correlations_out->Get("inter_plane_all"))->Draw("t1_b>>tmp_hist(600,-150,150),","ref_chan_b=="+ref_chan_str+" && chan_b=="+chan_str+" && ((23-chan_b == chan_a) || (23-chan_b+1 == chan_a))","");
+          }
+        } else if ( tdc_no == 1 ) {
+          if ( chan < 8 ){ 
+          ( (TTree*) correlations_out->Get("inter_plane_all"))->Draw("t1_c>>tmp_hist(600,-150,150),","ref_chan_c=="+ref_chan_str+" && chan_c=="+chan_str+" && ((chan_d - 16 == chan_c) || ( chan_d -15 == chan_c))","");
+          } else if ( chan >= 16 ){ 
+          ( (TTree*) correlations_out->Get("inter_plane_all"))->Draw("t1_d>>tmp_hist(600,-150,150),","ref_chan_d=="+ref_chan_str+" && chan_d=="+chan_str+" && ((chan_d - 16 == chan_c) || ( chan_d -15 == chan_c))","");
+          }
+        }
+        TH1F* hist = (TH1F*) correlations_out->Get("tmp_hist");
+        
+        t1_offset[tdc_no][ref_chan][chan] = get_toa_offset(hist); 
+  //       cout << "hist offset: "<< get_toa_offset(hist) << endl;
+        
+      }
+    }
+  }
+  
+
+  Float_t channels_x[32];
+  for (Int_t i = 0 ; i<32; i++){
+    channels_x[i] = i;
+  }
+  // draw all offsets 
+  for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no ++){
+    for (Int_t ref_chan = 8; ref_chan <10; ref_chan++){
+      
+      TString ref_chan_str;
+      ref_chan_str.Form("%d",ref_chan);
+      TGraph* tg_offset = new TGraph(32,channels_x, t1_offset[tdc_no][ref_chan]);
+      tg_offset->SetName("t1_offset_"+TDC_list[tdc_no]+"_ref_chan_"+ref_chan_str);
+      tg_offset->SetTitle("t1_offset_"+TDC_list[tdc_no]+"_ref_chan_"+ref_chan_str);
+      tg_offset->Write();
+    }
+  }
+  
+
+  
+  TTree* inter_plane_all_corrected = new TTree("inter_plane_all_corrected","inter_plane_all_corrected");
+  
+  inter_plane_all_corrected->Branch("t1_a",&hit_a.t1);
+  inter_plane_all_corrected->Branch("tot_a",&hit_a.tot);
+  inter_plane_all_corrected->Branch("chan_a",&hit_a.chan);
+  inter_plane_all_corrected->Branch("ref_chan_a",&hit_a.ref_chan);
+  inter_plane_all_corrected->Branch("t1_b",&hit_b.t1);
+  inter_plane_all_corrected->Branch("tot_b",&hit_b.tot);
+  inter_plane_all_corrected->Branch("chan_b",&hit_b.chan);
+  inter_plane_all_corrected->Branch("ref_chan_b",&hit_b.ref_chan);
+  inter_plane_all_corrected->Branch("t1_c",&hit_c.t1);
+  inter_plane_all_corrected->Branch("tot_c",&hit_c.tot);
+  inter_plane_all_corrected->Branch("chan_c",&hit_c.chan);
+  inter_plane_all_corrected->Branch("ref_chan_c",&hit_c.ref_chan);
+  inter_plane_all_corrected->Branch("t1_d",&hit_d.t1);
+  inter_plane_all_corrected->Branch("tot_d",&hit_d.tot);
+  inter_plane_all_corrected->Branch("chan_d",&hit_d.chan);
+  inter_plane_all_corrected->Branch("ref_chan_d",&hit_d.ref_chan);
+  
+  
+  
+  
+  
  
  /*
   
@@ -577,6 +620,10 @@ void correlate_planes(TString filename){
 // fish peak for limited angle
 //inter_plane_correlations->Draw("(t1_a+t1_b)>>abc(90,-10,80),","Ltracker_ab && abs(t1_a-t1_b)<20 && (abs(xpos_ab-xpos_cd)<40) ","")
 //inter_plane_correlations->Draw("(t1_a+t1_b)>>abc(90,-10,80),","abs(t1_a-t1_b)<20 && (abs(xpos_ab-xpos_cd)<40) ","")
+
+
+// t1 vs channel for Sandra, require coincidence in both layers
+// inter_plane_all->Draw("t1_c:chan_c>>my_TH2F(32,-2,29,200,-20,180),","chan_c>=0&&(chan_d-16 == chan_c || (chan_d-15 == chan_c))","colz")
 
 
 }
