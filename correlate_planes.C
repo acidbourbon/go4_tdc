@@ -93,6 +93,12 @@ Float_t get_toa_offset(TH1F* toa0) {
 
 void correlate_planes(TString filename){
   
+  
+  
+  // display fit result in canvas
+  gStyle->SetOptFit();
+
+  
 // ##################################################
 // ##                acquire trees                 ##
 // ##################################################
@@ -189,16 +195,16 @@ void correlate_planes(TString filename){
   Double_t tot_c;
   Double_t tot_d;
   
-  Bool_t Ltracker_ab;
-  Bool_t Rtracker_ab;
-  Bool_t Ltracker_cd;
-  Bool_t Rtracker_cd;
+//   Bool_t Ltracker_ab;
+//   Bool_t Rtracker_ab;
+//   Bool_t Ltracker_cd;
+//   Bool_t Rtracker_cd;
   
   Double_t xpos_ab;
   Double_t xpos_cd;
   // xpos = zero is defined as the position of layer one(a) channel 0
   
-  
+/*  
   inter_plane_correlations->Branch("chan_a",&chan_a);
   inter_plane_correlations->Branch("chan_b",&chan_b);
   inter_plane_correlations->Branch("chan_c",&chan_c);
@@ -220,7 +226,7 @@ void correlate_planes(TString filename){
   inter_plane_correlations->Branch("Rtracker_cd",&Rtracker_cd);
   
   inter_plane_correlations->Branch("xpos_ab",&xpos_ab);
-  inter_plane_correlations->Branch("xpos_cd",&xpos_cd);
+  inter_plane_correlations->Branch("xpos_cd",&xpos_cd); */
   
   empty_hit.chan = -1000;
   empty_hit.ref_chan = -1000;
@@ -350,6 +356,9 @@ void correlate_planes(TString filename){
       
     }
     
+    
+    
+    /*
     // now for the inter-plane correlations:
     if( current_pair[0]->complete() && current_pair[1]->complete() ) {
 //       cout << current_pair[0]->hit_a.chan << endl;
@@ -399,6 +408,7 @@ void correlate_planes(TString filename){
       
       inter_plane_correlations->Fill();
     }
+    */
     
     
     coinc_distribution->Fill(hits_per_trigger);
@@ -509,6 +519,9 @@ void correlate_planes(TString filename){
   inter_plane_all_corrected->Branch("chan_d",&hit_d.chan);
   inter_plane_all_corrected->Branch("ref_chan_d",&hit_d.ref_chan);
   
+  inter_plane_all_corrected->Branch("xpos_ab",&xpos_ab);
+  inter_plane_all_corrected->Branch("xpos_cd",&xpos_cd);
+  
   inter_plane_all->SetBranchAddress("t1_a",&hit_a.t1);
   inter_plane_all->SetBranchAddress("tot_a",&hit_a.tot);
   inter_plane_all->SetBranchAddress("chan_a",&hit_a.chan);
@@ -534,6 +547,24 @@ void correlate_planes(TString filename){
     hit_b.t1 -= t1_offset[0][hit_b.ref_chan][hit_b.chan];
     hit_c.t1 -= t1_offset[1][hit_c.ref_chan][hit_c.chan];
     hit_d.t1 -= t1_offset[1][hit_d.ref_chan][hit_d.chan];
+    
+    if( hit_a.chan == 23-hit_b.chan ){
+//       Ltracker_ab = true;
+      xpos_ab = (hit_a.chan + 0.25)*cell_size;
+    } else if( hit_a.chan == 23-hit_b.chan+1 ){
+//       Rtracker_ab = true;
+      xpos_ab = (hit_a.chan - 0.25)*cell_size;
+    }
+    
+    if( hit_c.chan == hit_d.chan - 16){
+//       Rtracker_cd = true;
+      xpos_cd = (0.5 + hit_c.chan - 0.25)*cell_size;
+    } else if( hit_c.chan == hit_d.chan-17 ){
+//       Ltracker_cd = true;
+      xpos_cd = (0.5 + hit_c.chan + 0.25)*cell_size;
+    }
+    
+    
     // store again
     inter_plane_all_corrected->Fill();
   }
@@ -654,6 +685,32 @@ void correlate_planes(TString filename){
 // inter_plane_all->Draw("t1_c:chan_c>>my_TH2F(32,-2,29,200,-20,180),","chan_c>=0&&(chan_d-16 == chan_c || (chan_d-15 == chan_c))","colz")
 
 
+///// using inter_plane_correlations is deprecated
+// better use advanced cuts now
+
+TCut LTracker_ab = "chan_a >=0 && chan_b >= 0 && (23-chan_b   == chan_a)";
+TCut RTracker_ab = "chan_a >=0 && chan_b >= 0 && (23-chan_b+1 == chan_a)";
+TCut LTracker_cd = "chan_c >=0 && chan_d >= 0 && (chan_d - 17 == chan_c)";
+TCut RTracker_cd = "chan_c >=0 && chan_d >= 0 && (chan_d - 16 == chan_c)";
+
+TCut FullTrack  = (LTracker_ab || RTracker_ab) && (LTracker_cd || RTracker_cd);
+
+
+
+/*
+// Sandra fish:
+inter_plane_all_corrected->Draw("t1_c-t1_d:t1_c+t1_d>>abc(100,-50,150,150,-150,150),",FullTrack && "abs(t1_c - t1_d)<200","")
+
+// Sandra fish center piece projection
+inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_d)<10","")
+
+// limited solid angle
+inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_d)<10 && abs(xpos_ab-xpos_cd) < 40","")
+
+// with Fit
+inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_d)<20 && abs(xpos_ab-xpos_cd) < 5",""); abc->Fit("gaus")
+
+*/
 }
 
 
