@@ -708,9 +708,83 @@ inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_
 inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_d)<10 && abs(xpos_ab-xpos_cd) < 40","")
 
 // with Fit
-inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_d)<20 && abs(xpos_ab-xpos_cd) < 5",""); abc->Fit("gaus")
+inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_d)<10 && abs(xpos_ab-xpos_cd) < 5",""); abc->Fit("gaus")
+
+
+
+// Lena fish:
+inter_plane_all_corrected->Draw("t1_a+t1_b>>abc(),",FullTrack && "abs(t1_a - t1_b)<10 && abs(xpos_ab-xpos_cd) < 10","")
+
+
+
+// this shows me the angle correlation
+
+// Ltracker t1_sum vs hit angle (difference of x pos)
+inter_plane_correlations->Draw("(t1_a+t1_b):(xpos_ab-xpos_cd)>>abc(),","Ltracker_ab && abs(t1_a-t1_b)<20 ","")
+// Rtracker t1_sum vs hit angle (difference of x pos)
+inter_plane_correlations->Draw("(t1_a+t1_b):(xpos_ab-xpos_cd)>>abc(),","Rtracker_ab && abs(t1_a-t1_b)<20 ","")
+
+// in color
+inter_plane_all_corrected->Draw("(t1_a+t1_b):(xpos_ab-xpos_cd)>>abc(33,-40,40,20,0,80),",RTracker_ab && "abs(t1_a-t1_b)<20 ","colz")
+inter_plane_all_corrected->Draw("(t1_a+t1_b):(xpos_ab-xpos_cd)>>abc(33,-40,40,20,0,80),",LTracker_ab && "abs(t1_a-t1_b)<20 ","colz")
+
+// select specific angles
+inter_plane_all_corrected->Draw("(t1_a+t1_b)>>abc(),",LTracker_ab && "abs(t1_a-t1_b)<20 && (xpos_ab - xpos_cd) == 0","colz")
+ continue here with plots of mean and stdev
+
 
 */
+
+// plot angular dependence
+
+TH1F* angle_dependence_ab_LT = new TH1F(
+  "angle_dependence_ab_LT","angle dependece LTracker Lena;xpos_ab - xpos_cd (mm);t1+t2 peak (ns)",
+                                     80,-50-0.5,50-0.5);  
+TH1F* angle_dependence_ab_RT = new TH1F(
+  "angle_dependence_ab_RT","angle dependece RTracker Lena;xpos_ab - xpos_cd (mm);t1+t2 peak (ns)",
+                                     80,-50-0.5,50-0.5);  
+TH1F* angle_dependence_cd_LT = new TH1F(
+  "angle_dependence_cd_LT","angle dependece LTracker Sandra;xpos_ab - xpos_cd (mm);t1+t2 peak (ns)",
+                                     80,-50-0.5,50-0.5);  
+TH1F* angle_dependence_cd_RT = new TH1F(
+  "angle_dependence_cd_RT","angle dependece RTracker Sandra;xpos_ab - xpos_cd (mm);t1+t2 peak (ns)",
+                                     80,-50-0.5,50-0.5);  
+
+for (Double_t xdiff = -50; xdiff <= 50; xdiff += 2.5){
+  
+  TString xdiff_str;
+  xdiff_str.Form("%2.1f",xdiff);
+  inter_plane_all_corrected->Draw("(t1_a+t1_b)>>ang_ab_LT(),", FullTrack && LTracker_ab && "abs(t1_a-t1_b)<10 && (xpos_ab - xpos_cd) == "+xdiff_str,"colz");
+  inter_plane_all_corrected->Draw("(t1_a+t1_b)>>ang_ab_RT(),", FullTrack && RTracker_ab && "abs(t1_a-t1_b)<10 && (xpos_ab - xpos_cd) == "+xdiff_str,"colz");
+  inter_plane_all_corrected->Draw("(t1_c+t1_d)>>ang_cd_LT(),", FullTrack && LTracker_cd && "abs(t1_c-t1_d)<10 && (xpos_ab - xpos_cd) == "+xdiff_str,"colz");
+  inter_plane_all_corrected->Draw("(t1_c+t1_d)>>ang_cd_RT(),", FullTrack && RTracker_cd && "abs(t1_c-t1_d)<10 && (xpos_ab - xpos_cd) == "+xdiff_str,"colz");
+  
+  
+  Int_t bin = angle_dependence_ab_LT->FindBin(xdiff);
+  
+  
+//   TH1F* hist = (TH1F*) correlations_out->Get("abc");
+//   Double_t mean = hist->GetMean();
+//   Double_t stddev = hist->GetStdDev();
+  
+//   cout << "xdiff:  " << xdiff << endl;
+//   cout << "mean:   " << mean << endl;
+//   cout << "stddev: " << stddev << endl;
+//   cout << "bin   : " << bin << endl;
+  
+  angle_dependence_ab_LT->SetBinContent(bin,( (TH1F*) correlations_out->Get("ang_ab_LT") )->GetMean() );
+  angle_dependence_ab_LT->SetBinError  (bin,( (TH1F*) correlations_out->Get("ang_ab_LT") )->GetStdDev() );
+  angle_dependence_ab_RT->SetBinContent(bin,( (TH1F*) correlations_out->Get("ang_ab_RT") )->GetMean() );
+  angle_dependence_ab_RT->SetBinError  (bin,( (TH1F*) correlations_out->Get("ang_ab_RT") )->GetStdDev() );
+  angle_dependence_cd_LT->SetBinContent(bin,( (TH1F*) correlations_out->Get("ang_cd_LT") )->GetMean() );
+  angle_dependence_cd_LT->SetBinError  (bin,( (TH1F*) correlations_out->Get("ang_cd_LT") )->GetStdDev() );
+  angle_dependence_cd_RT->SetBinContent(bin,( (TH1F*) correlations_out->Get("ang_cd_RT") )->GetMean() );
+  angle_dependence_cd_RT->SetBinError  (bin,( (TH1F*) correlations_out->Get("ang_cd_RT") )->GetStdDev() );
+  
+}
+
+// angle_dependence_LT->Draw();
+
 }
 
 
