@@ -695,11 +695,19 @@ TCut RTracker_cd = "chan_c >=0 && chan_d >= 0 && (chan_d - 16 == chan_c)";
 
 TCut FullTrack  = (LTracker_ab || RTracker_ab) && (LTracker_cd || RTracker_cd);
 
-
+inter_plane_all_corrected->Draw("t1_c-t1_d:t1_c+t1_d>>sandra_fish(500,-200,300,200,-100,100),",FullTrack && "abs(t1_c - t1_d)<200","colz");
+inter_plane_all_corrected->Draw("t1_c+t1_d>>sandra_fish_proj(),",FullTrack && "abs(t1_c - t1_d)<10","");
+sandra_fish_proj->Fit("gaus");
+inter_plane_all_corrected->Draw("t1_a-t1_b:t1_a+t1_b>>lena_fish(500,-200,300,200,-100,100),",FullTrack && "abs(t1_c - t1_d)<200","colz");
+inter_plane_all_corrected->Draw("t1_a+t1_b>>lena_fish_proj(),",FullTrack && "abs(t1_a - t1_b)<10 && abs(xpos_ab-xpos_cd) < 10","");
+lena_fish_proj->Fit("gaus");
 
 /*
 // Sandra fish:
 inter_plane_all_corrected->Draw("t1_c-t1_d:t1_c+t1_d>>abc(100,-50,150,150,-150,150),",FullTrack && "abs(t1_c - t1_d)<200","")
+inter_plane_all_corrected->Draw("t1_c-t1_d:t1_c+t1_d>>abc(500,-200,300,200,-100,100),",FullTrack && "abs(t1_c - t1_d)<200","colz")
+
+
 
 // Sandra fish center piece projection
 inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_d)<10","")
@@ -713,7 +721,13 @@ inter_plane_all_corrected->Draw("t1_c+t1_d>>abc(),",FullTrack && "abs(t1_c - t1_
 
 
 // Lena fish:
+inter_plane_all_corrected->Draw("t1_a-t1_b:t1_a+t1_b>>abc(500,-200,300,200,-100,100),",FullTrack && "abs(t1_c - t1_d)<200","colz")
+// Lena fish center piece projection
 inter_plane_all_corrected->Draw("t1_a+t1_b>>abc(),",FullTrack && "abs(t1_a - t1_b)<10 && abs(xpos_ab-xpos_cd) < 10","")
+
+
+
+
 
 
 
