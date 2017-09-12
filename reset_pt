@@ -4,11 +4,14 @@ trbcmd reload 0x0351
 sleep 3
 ./addresses.sh
 # set trigger to cts
-trbcmd w 0x0351 0xcf00 0x100
+# for two scintillators
+trbcmd w 0x0351 0xcf00 0x300
 # set data limit
 trbcmd w 0x0351 0xc804 100
 # set trigger windows +- 250 ns (cosmic setup)
-trbcmd w 0x0351 0xc801 0x80320032
+#trbcmd w 0x0351 0xc801 0x80320032
+# set trigger windows -400 + 100 (cosmic setup, 2 scintillators)
+trbcmd w 0x0351 0xc801 0x80140050 
 # set trigger windews -100 ns to +500 ns (HZDR Laser)
 #trbcmd w 0x0351 0xc801 0x80640014
 # disable trigger windows, e.g. for Fe55 scan
@@ -18,7 +21,8 @@ trbcmd w 0x0351 0xc801 0x80320032
 # enable relevant TDC channels
 #trbcmd w 0x0351 0xc802 0x00ff01bf ## if PT board 2 is connected to ch 0-7
 #trbcmd w 0x0351 0xc802 0x00ff01ff ## if PT board 1 is connected to ch 0-7
-trbcmd w 0x0351 0xc802 0x000f010f ## if four channels of each PT board are used
+#trbcmd w 0x0351 0xc802 0x000f010f ## if four channels of each PT board are used
+trbcmd w 0x0351 0xc802 0xbf03ff ## cosmic setup, two scintillators, Lena on Sandra
 
 # only read out ch 0-7 + trigger
 #trbcmd w 0x0351 0xc802 0x000001ff ## if PT board 1 is connected to ch 0-7
