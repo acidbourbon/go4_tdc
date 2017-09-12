@@ -695,12 +695,12 @@ TCut RTracker_cd = "chan_c >=0 && chan_d >= 0 && (chan_d - 16 == chan_c)";
 
 TCut FullTrack  = (LTracker_ab || RTracker_ab) && (LTracker_cd || RTracker_cd);
 
-inter_plane_all_corrected->Draw("t1_c-t1_d:t1_c+t1_d>>sandra_fish(500,-200,300,200,-100,100),",FullTrack && "abs(t1_c - t1_d)<200","colz");
-inter_plane_all_corrected->Draw("t1_c+t1_d>>sandra_fish_proj(),",FullTrack && "abs(t1_c - t1_d)<10","");
-sandra_fish_proj->Fit("gaus");
-inter_plane_all_corrected->Draw("t1_a-t1_b:t1_a+t1_b>>lena_fish(500,-200,300,200,-100,100),",FullTrack && "abs(t1_c - t1_d)<200","colz");
+inter_plane_all_corrected->Draw("t1_c-t1_d:t1_c+t1_d>>sandra_fish(500,-200,300,200,-100,100),",FullTrack && "abs(t1_c - t1_d)<200 && abs(xpos_ab-xpos_cd) < 10","colz");
+inter_plane_all_corrected->Draw("t1_c+t1_d>>sandra_fish_proj(),",FullTrack && "abs(t1_c - t1_d)<10 && abs(xpos_ab-xpos_cd) < 10","");
+((TH1F*) correlations_out->Get("sandra_fish_proj"))->Fit("gaus");
+inter_plane_all_corrected->Draw("t1_a-t1_b:t1_a+t1_b>>lena_fish(500,-200,300,200,-100,100),",FullTrack && "abs(t1_c - t1_d)<200 && abs(xpos_ab-xpos_cd) < 10","colz");
 inter_plane_all_corrected->Draw("t1_a+t1_b>>lena_fish_proj(),",FullTrack && "abs(t1_a - t1_b)<10 && abs(xpos_ab-xpos_cd) < 10","");
-lena_fish_proj->Fit("gaus");
+((TH1F*) correlations_out->Get("lena_fish_proj"))->Fit("gaus");
 
 /*
 // Sandra fish:
@@ -796,6 +796,7 @@ for (Double_t xdiff = -50; xdiff <= 50; xdiff += 2.5){
   angle_dependence_cd_RT->SetBinError  (bin,( (TH1F*) correlations_out->Get("ang_cd_RT") )->GetStdDev() );
   
 }
+
 
 // angle_dependence_LT->Draw();
 
