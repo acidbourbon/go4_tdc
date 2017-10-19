@@ -3,6 +3,7 @@
 killall trbnetd
 sleep 1
 
+sudo /sbin/service dhcpd start
 sudo /usr/sbin/rcrpcbind start
 TRB3_SERVER=192.168.4.240 trbnetd -i 35
 export DAQOPSERVER=localhost:35
