@@ -32,8 +32,10 @@
 // Muentz-Torte
 //#define t1_L -300 // GSI Dlab
 //#define t1_R 300 // GSI Dlab
-#define t1_L -300 // HZDR
-#define t1_R 300 // HZDR
+//#define t1_L -300 // HZDR
+//#define t1_R 300 // HZDR
+#define t1_L -1500 // juelich diamond
+#define t1_R 500 // juelich diamond
 //#define tot_L -10
 //#define tot_R 500
 #define tot_L -10 // HZDR
@@ -65,11 +67,13 @@
 
 //#define t1_accept_L (-250 + ref_channel_offset) //ns // GSI Dlab
 //#define t1_accept_L (-1000000 + ref_channel_offset) //ns // HZDR fe55
-#define t1_accept_L (-400 + ref_channel_offset) //ns // HZDR 
+//#define t1_accept_L (-400 + ref_channel_offset) //ns // HZDR 
 //#define t1_accept_L (-150 + ref_channel_offset) //ns // Muentz-Torte
+#define t1_accept_L (-1500 + ref_channel_offset) //ns // juelich diamond
 //#define t1_accept_R (100 + ref_channel_offset)//ns // GSI Dlab
 //#define t1_accept_R (1000000 + ref_channel_offset)//ns // HZDR fe55
-#define t1_accept_R (300 + ref_channel_offset)//ns // HZDR
+//#define t1_accept_R (300 + ref_channel_offset)//ns // HZDR
+#define t1_accept_R (300 + ref_channel_offset)//ns // juelich diamond
 // #define t1_accept_R (-130 + ref_channel_offset)//ns // Muentz-Torte
 // #define t1_accept_R (-90 + ref_channel_offset)//ns // ASD8 with thr 0x52
 
@@ -80,14 +84,14 @@
 // real cuts on selected data
 
 #define max_tot 10000 // Muentz-Torte
-#define t1_cut_L -400
+#define t1_cut_L -1500
 #define t1_cut_R 300
 
 
 // #define coincidence_rejection 7
 #define accept_hits_per_layer 2
 
-#define enable_coincidence_rejection 1
+#define enable_coincidence_rejection 0
 
 #define enable_single_hits       0
 #define enable_one_hit_per_layer 1
@@ -185,7 +189,7 @@ class SecondProc : public base::EventProc {
         for( unsigned i=0; i<CHANNELS; i++ ) {
           char chno[16];
           sprintf(chno,"Ch%02d_t1",i);
-          t1_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
+          t1_h[i] = MakeH1(chno,chno, 20000, t1_L, t1_R, "ns");
           sprintf(chno,"Ch%02d_tot",i);
           tot_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_tot_untrig",i);

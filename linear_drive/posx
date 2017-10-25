@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+stty -F /dev/ttyUSB_stage_pollux_house speed 19200
+sleep 0.1
+cat /dev/ttyUSB_stage_pollux_house &
+echo "3 npos"  > /dev/ttyUSB_stage_pollux_house
+sleep 0.1
+wait

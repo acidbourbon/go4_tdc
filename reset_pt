@@ -4,14 +4,17 @@ trbcmd reload 0x0351
 sleep 3
 ./addresses.sh
 # set trigger to cts
-# for two scintillators
-trbcmd w 0x0351 0xcf00 0x300
+
+#trbcmd w 0x0351 0xcf00 0x300 # for two scintillators
+trbcmd w 0x0351 0xcf00 0x100
 # set data limit
 trbcmd w 0x0351 0xc804 100
 # set trigger windows +- 250 ns (cosmic setup)
 #trbcmd w 0x0351 0xc801 0x80320032
 # set trigger windows -400 + 100 (cosmic setup, 2 scintillators)
-trbcmd w 0x0351 0xc801 0x80140050 
+#trbcmd w 0x0351 0xc801 0x80140050 
+# set trigger windows -1000 + 200 (juelich set-up, trigger with scope)
+trbcmd w 0x0351 0xc801 0x802800c8
 # set trigger windews -100 ns to +500 ns (HZDR Laser)
 #trbcmd w 0x0351 0xc801 0x80640014
 # disable trigger windows, e.g. for Fe55 scan
@@ -29,4 +32,5 @@ trbcmd w 0x0351 0xc802 0xbf03ff ## cosmic setup, two scintillators, Lena on Sand
 #disable asd8 data out
 #trbcmd w 0x0353 0xc802 0x00000000 
 
-./init_asics
+./init_asics_pt10
+./threshold_all 10

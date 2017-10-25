@@ -4,7 +4,8 @@ trbcmd reload 0x0353
 sleep 3
 ./addresses.sh
 # set trigger to cts
-trbcmd w 0x0353 0xcf00 0x300
+#trbcmd w 0x0353 0xcf00 0x300 # two scintillators
+trbcmd w 0x0353 0xcf00 0x100
 # set data limit
 trbcmd w 0x0353 0xc804 100
 # set trigger windows +- 250 ns
@@ -12,7 +13,9 @@ trbcmd w 0x0353 0xc804 100
 # set trigger windows +- 500 ns
 #trbcmd w 0x0353 0xc801 0x80640064
 # set trigger windows -400 + 100 (cosmic setup, 2 scintillators)
-trbcmd w 0x0353 0xc801 0x80140050 
+#trbcmd w 0x0353 0xc801 0x80140050 
+# set trigger windows -1000 + 200 (juelich set-up, trigger with scope)
+trbcmd w 0x0353 0xc801 0x802800c8
 # enable relevant TDC channels
 trbcmd w 0x0353 0xc802 0x00ff03ff
 #trbcmd w 0x1482 0xc802 0x00000000
