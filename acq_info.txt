@@ -1,12 +1,11 @@
 #parameters and notes for acquisition
-timeout=20
+timeout=180
 
-HV=1700V
+HV=0V
 Gas_mixture=70_30
-LaserRate=500Hz
-PrimariesPerPulse=unknown
-CorrespondingSenseWire=3/Ch05
-CoincWindow=+-500
-Threshold=40
-pktime=10
+CoincWindow=-1000+200
+Threshold=5
+pktime=15
+diamond_pos_x=63
+diamond_pos_y=45
 

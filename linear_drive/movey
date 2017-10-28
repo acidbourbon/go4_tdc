@@ -3,6 +3,10 @@
 
 stty -F /dev/ttyUSB_stage_pollux_house speed 19200
 sleep 0.1
-pos=$(printf "%0.0f" $(echo "scale=2; $1 * 1000000" | bc -l))
-echo " $pos 4 nmove" > /dev/ttyUSB_stage_pollux_house
+if [ $(echo "$1 > 95" | bc -l) == "0" ]; then 
+pos=$(printf "%0.0f" $(echo "scale=2; $1 * 1000000" | bc -l | perl -p -e 's/\..*//'))
+echo " $pos 4 nmove"  > /dev/ttyUSB_stage_pollux_house
+else
+	echo "value too big, i will not move"
+fi
 sleep 0.1
