@@ -55,3 +55,14 @@ echo "load registerdb.pl ..."
 #echo "tdc" 
 #trbcmd w 0xfe48 0xc801 0x000f0000
 #trbcmd w 0xfe48 0xc804 0x00000040
+
+sleep 3
+./reset_asd8_tdc
+./reset_pt
+killall continuously_set_asd8_thresh.sh log_front_end_noise.sh log_front_end_noise_pt.sh
+./continuously_set_asd8_thresh.sh& disown
+./log_front_end_noise.sh& disown
+./log_front_end_noise_pt.sh& disown
+
+#reload cts settings
+./cts-dump.sh

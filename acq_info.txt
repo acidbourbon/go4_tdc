@@ -1,11 +1,11 @@
 #parameters and notes for acquisition
-timeout=180
+timeout=43
 
-HV=0V
+HV=1750V
 Gas_mixture=70_30
 CoincWindow=-1000+200
-Threshold=5
-pktime=15
-diamond_pos_x=63
+Threshold=10
+pktime=10
+diamond_pos_x=70
 diamond_pos_y=45
 
