@@ -224,42 +224,42 @@ class SecondProc : public base::EventProc {
         
         
         // fish loop for Lena
-        for( unsigned i=0; i<8; i++ ) {
-          for( unsigned j=16; j<24; j++ ) {
+        for( unsigned i=0; i<24; i++ ) {
+          for( unsigned j=0; j<24; j++ ) {
 //             if((i==(j-16)) || (i==(j-16 + 1)) || (i==(j-16 -1))  ) { //if is on diagonal of coinc matrix or one below the diagonal -- cells are overlapping
             
             unsigned fish_index = 0; // for diagonal elements
             // diagonal elements of coincidence matrix
-            if        ( i==0 && j==23){
+            if        ( i==4 && j==19){
               fish_index = 0;
-            } else if ( i==1 && j==22){
-              fish_index = 1;
-            } else if ( i==2 && j==21){
-              fish_index = 2;
-            } else if ( i==3 && j==20){
-              fish_index = 3;
-            } else if ( i==4 && j==19){
-              fish_index = 4;
             } else if ( i==5 && j==18){
-              fish_index = 5;
+              fish_index = 1;
             } else if ( i==6 && j==17){
-              fish_index = 6;
+              fish_index = 2;
             } else if ( i==7 && j==16){
+              fish_index = 3;
+            } else if ( i==8 && j==19){
+              fish_index = 4;
+            } else if ( i==9 && j==18){
+              fish_index = 5;
+            } else if ( i==10 && j==17){
+              fish_index = 6;
+            } else if ( i==11 && j==16){
               fish_index = 7;
             // next-to-diagonal elements of coincidence matrix
-            } else if ( i==1 && j==23){
+            } else if ( i==3 && j==19){
               fish_index = 8;
-            } else if ( i==2 && j==22){
+            } else if ( i==4 && j==18){
               fish_index = 9;
-            } else if ( i==3 && j==21){
+            } else if ( i==5 && j==17){
               fish_index = 10;
-            } else if ( i==4 && j==20){
+            } else if ( i==6 && j==20){
               fish_index = 11;
-            } else if ( i==5 && j==19){
+            } else if ( i==7 && j==19){
               fish_index = 12;
-            } else if ( i==6 && j==18){
+            } else if ( i==8 && j==18){
               fish_index = 13;
-            } else if ( i==7 && j==17){
+            } else if ( i==9 && j==17){
               fish_index = 14;
             } else {
               continue;
@@ -267,9 +267,9 @@ class SecondProc : public base::EventProc {
             
             char chno[64];
             sprintf(chno,"fish_%02d_vs_%02d",j,i);
-            fishes[fish_index]    = MakeH2(chno,chno,250,-300,200,200,-100,100, "T_A+T_B;T_B-T_A");
+            fishes[fish_index]    = MakeH2(chno,chno,250,-1950,-1450,200,-100,100, "T_A+T_B;T_B-T_A");
             sprintf(chno,"fish_proj_%02d_vs_%02d",j,i);
-            fish_proj[fish_index] = MakeH1(chno,chno,250,-300,200, "T_A+T_B;counts");
+            fish_proj[fish_index] = MakeH1(chno,chno,250,-1950,-1450, "T_A+T_B;counts");
 //             }
           }
         }
@@ -668,12 +668,12 @@ class SecondProc : public base::EventProc {
             t1_ref = t1[REFCHAN_B];
           }
            
-          for( unsigned i=0; i<8; i++ ) {
+          for( unsigned i=0; i<24; i++ ) {
               if(got_real_hit[i]){
                   double t1_vs_ref_a = (t1[i]-t1_ref)*1e9 - t1_offsets[i] ;
                   if( (t1_vs_ref_a > t1_cut_L) && (t1_vs_ref_a < t1_cut_R))  {
                   
-                    for( unsigned j=16; j<24; j++ ) {
+                    for( unsigned j=0; j<24; j++ ) {
                         if(got_real_hit[j]){
                             double t1_vs_ref_b = (t1[j]-t1_ref)*1e9 - t1_offsets[j];
                             if( (t1_vs_ref_b > t1_cut_L) && (t1_vs_ref_b < t1_cut_R))  {
@@ -681,40 +681,108 @@ class SecondProc : public base::EventProc {
                               
                               unsigned fish_index = 0; // for diagonal elements
                               // diagonal elements of coincidence matrix
-                              if        ( i==0 && j==23){
-                                fish_index = 0;
-                              } else if ( i==1 && j==22){
-                                fish_index = 1;
-                              } else if ( i==2 && j==21){
-                                fish_index = 2;
-                              } else if ( i==3 && j==20){
-                                fish_index = 3;
-                              } else if ( i==4 && j==19){
-                                fish_index = 4;
-                              } else if ( i==5 && j==18){
-                                fish_index = 5;
-                              } else if ( i==6 && j==17){
-                                fish_index = 6;
-                              } else if ( i==7 && j==16){
-                                fish_index = 7;
-                              // next-to-diagonal elements of coincidence matrix
-                              } else if ( i==1 && j==23){
-                                fish_index = 8;
-                              } else if ( i==2 && j==22){
-                                fish_index = 9;
-                              } else if ( i==3 && j==21){
-                                fish_index = 10;
-                              } else if ( i==4 && j==20){
-                                fish_index = 11;
-                              } else if ( i==5 && j==19){
-                                fish_index = 12;
-                              } else if ( i==6 && j==18){
-                                fish_index = 13;
-                              } else if ( i==7 && j==17){
-                                fish_index = 14;
-                              } else {
-                                continue;
-                              }
+//                               if        ( i==0 && j==23){
+//                                 fish_index = 0;
+//                               } else if ( i==1 && j==22){
+//                                 fish_index = 1;
+//                               } else if ( i==2 && j==21){
+//                                 fish_index = 2;
+//                               } else if ( i==3 && j==20){
+//                                 fish_index = 3;
+//                               } else if ( i==4 && j==19){
+//                                 fish_index = 4;
+//                               } else if ( i==5 && j==18){
+//                                 fish_index = 5;
+//                               } else if ( i==6 && j==17){
+//                                 fish_index = 6;
+//                               } else if ( i==7 && j==16){
+//                                 fish_index = 7;
+//                               // next-to-diagonal elements of coincidence matrix
+//                               } else if ( i==1 && j==23){
+//                                 fish_index = 8;
+//                               } else if ( i==2 && j==22){
+//                                 fish_index = 9;
+//                               } else if ( i==3 && j==21){
+//                                 fish_index = 10;
+//                               } else if ( i==4 && j==20){
+//                                 fish_index = 11;
+//                               } else if ( i==5 && j==19){
+//                                 fish_index = 12;
+//                               } else if ( i==6 && j==18){
+//                                 fish_index = 13;
+//                               } else if ( i==7 && j==17){
+//                                 fish_index = 14;
+//                               } else {
+//                                 continue;
+//                               }
+//             if        ( i==4 && j==19){
+//               fish_index = 0;
+//             } else if ( i==5 && j==18){
+//               fish_index = 1;
+//             } else if ( i==6 && j==17){
+//               fish_index = 2;
+//             } else if ( i==7 && j==16){
+//               fish_index = 3;
+//             } else if ( i==8 && j==15){
+//               fish_index = 4;
+//             } else if ( i==9 && j==14){
+//               fish_index = 5;
+//             } else if ( i==10 && j==13){
+//               fish_index = 6;
+//             } else if ( i==11 && j==12){
+//               fish_index = 7;
+//             // next-to-diagonal elements of coincidence matrix
+//             } else if ( i==4 && j==19){
+//               fish_index = 8;
+//             } else if ( i==5 && j==18){
+//               fish_index = 9;
+//             } else if ( i==6 && j==17){
+//               fish_index = 10;
+//             } else if ( i==7 && j==16){
+//               fish_index = 11;
+//             } else if ( i==8 && j==15){
+//               fish_index = 12;
+//             } else if ( i==9 && j==16){
+//               fish_index = 13;
+//             } else if ( i==10 && j==17){
+//               fish_index = 14;
+//             } else {
+//               continue;
+//             }
+            if        ( i==4 && j==19){
+              fish_index = 0;
+            } else if ( i==5 && j==18){
+              fish_index = 1;
+            } else if ( i==6 && j==17){
+              fish_index = 2;
+            } else if ( i==7 && j==16){
+              fish_index = 3;
+            } else if ( i==8 && j==19){
+              fish_index = 4;
+            } else if ( i==9 && j==18){
+              fish_index = 5;
+            } else if ( i==10 && j==17){
+              fish_index = 6;
+            } else if ( i==11 && j==16){
+              fish_index = 7;
+            // next-to-diagonal elements of coincidence matrix
+            } else if ( i==3 && j==19){
+              fish_index = 8;
+            } else if ( i==4 && j==18){
+              fish_index = 9;
+            } else if ( i==5 && j==17){
+              fish_index = 10;
+            } else if ( i==6 && j==20){
+              fish_index = 11;
+            } else if ( i==7 && j==19){
+              fish_index = 12;
+            } else if ( i==8 && j==18){
+              fish_index = 13;
+            } else if ( i==9 && j==17){
+              fish_index = 14;
+            } else {
+              continue;
+            }
                               
                               FillH2(meta_fish,(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
                               FillH2(fishes[fish_index],(t1_vs_ref_a + t1_vs_ref_b),(t1_vs_ref_b - t1_vs_ref_a));
