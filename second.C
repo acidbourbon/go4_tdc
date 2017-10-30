@@ -230,6 +230,7 @@ class SecondProc : public base::EventProc {
             
             unsigned fish_index = 0; // for diagonal elements
             // diagonal elements of coincidence matrix
+            if ( fTdcId == "TDC_0353" ) {
             if        ( i==4 && j==19){
               fish_index = 0;
             } else if ( i==5 && j==18){
@@ -253,14 +254,52 @@ class SecondProc : public base::EventProc {
               fish_index = 9;
             } else if ( i==5 && j==17){
               fish_index = 10;
-            } else if ( i==6 && j==20){
+            } else if ( i==6 && j==16){
               fish_index = 11;
-            } else if ( i==7 && j==19){
+            } else if ( i==7 && j==15){
               fish_index = 12;
-            } else if ( i==8 && j==18){
+            } else if ( i==8 && j==14){
               fish_index = 13;
-            } else if ( i==9 && j==17){
+            } else if ( i==9 && j==13){
               fish_index = 14;
+            } else {
+              continue;
+            }
+            } else if ( fTdcId == "TDC_0351" ) {
+            if        ( i==4 && j==19){
+              fish_index = 0;
+            } else if ( i==5 && j==18){
+              fish_index = 1;
+            } else if ( i==6 && j==17){
+              fish_index = 2;
+            } else if ( i==7 && j==16){
+              fish_index = 3;
+            } else if ( i==8 && j==19){
+              fish_index = 4;
+            } else if ( i==9 && j==18){
+              fish_index = 5;
+            } else if ( i==10 && j==17){
+              fish_index = 6;
+            } else if ( i==11 && j==16){
+              fish_index = 7;
+            // next-to-diagonal elements of coincidence matrix
+            } else if ( i==5 && j==19){
+              fish_index = 8;
+            } else if ( i==6 && j==18){
+              fish_index = 9;
+            } else if ( i==7 && j==17){
+              fish_index = 10;
+            } else if ( i==8 && j==20){
+              fish_index = 11;
+            } else if ( i==9 && j==19){
+              fish_index = 12;
+            } else if ( i==10 && j==18){
+              fish_index = 13;
+            } else if ( i==11 && j==17){
+              fish_index = 14;
+            } else {
+              continue;
+            }
             } else {
               continue;
             }
@@ -680,75 +719,7 @@ class SecondProc : public base::EventProc {
                               FillH2(coinc_matrix,i,j);
                               
                               unsigned fish_index = 0; // for diagonal elements
-                              // diagonal elements of coincidence matrix
-//                               if        ( i==0 && j==23){
-//                                 fish_index = 0;
-//                               } else if ( i==1 && j==22){
-//                                 fish_index = 1;
-//                               } else if ( i==2 && j==21){
-//                                 fish_index = 2;
-//                               } else if ( i==3 && j==20){
-//                                 fish_index = 3;
-//                               } else if ( i==4 && j==19){
-//                                 fish_index = 4;
-//                               } else if ( i==5 && j==18){
-//                                 fish_index = 5;
-//                               } else if ( i==6 && j==17){
-//                                 fish_index = 6;
-//                               } else if ( i==7 && j==16){
-//                                 fish_index = 7;
-//                               // next-to-diagonal elements of coincidence matrix
-//                               } else if ( i==1 && j==23){
-//                                 fish_index = 8;
-//                               } else if ( i==2 && j==22){
-//                                 fish_index = 9;
-//                               } else if ( i==3 && j==21){
-//                                 fish_index = 10;
-//                               } else if ( i==4 && j==20){
-//                                 fish_index = 11;
-//                               } else if ( i==5 && j==19){
-//                                 fish_index = 12;
-//                               } else if ( i==6 && j==18){
-//                                 fish_index = 13;
-//                               } else if ( i==7 && j==17){
-//                                 fish_index = 14;
-//                               } else {
-//                                 continue;
-//                               }
-//             if        ( i==4 && j==19){
-//               fish_index = 0;
-//             } else if ( i==5 && j==18){
-//               fish_index = 1;
-//             } else if ( i==6 && j==17){
-//               fish_index = 2;
-//             } else if ( i==7 && j==16){
-//               fish_index = 3;
-//             } else if ( i==8 && j==15){
-//               fish_index = 4;
-//             } else if ( i==9 && j==14){
-//               fish_index = 5;
-//             } else if ( i==10 && j==13){
-//               fish_index = 6;
-//             } else if ( i==11 && j==12){
-//               fish_index = 7;
-//             // next-to-diagonal elements of coincidence matrix
-//             } else if ( i==4 && j==19){
-//               fish_index = 8;
-//             } else if ( i==5 && j==18){
-//               fish_index = 9;
-//             } else if ( i==6 && j==17){
-//               fish_index = 10;
-//             } else if ( i==7 && j==16){
-//               fish_index = 11;
-//             } else if ( i==8 && j==15){
-//               fish_index = 12;
-//             } else if ( i==9 && j==16){
-//               fish_index = 13;
-//             } else if ( i==10 && j==17){
-//               fish_index = 14;
-//             } else {
-//               continue;
-//             }
+            if ( fTdcId == "TDC_0353" ) {
             if        ( i==4 && j==19){
               fish_index = 0;
             } else if ( i==5 && j==18){
@@ -780,6 +751,44 @@ class SecondProc : public base::EventProc {
               fish_index = 13;
             } else if ( i==9 && j==17){
               fish_index = 14;
+            } else {
+              continue;
+            }
+            } else if ( fTdcId == "TDC_0351" ) {
+            if        ( i==4 && j==19){
+              fish_index = 0;
+            } else if ( i==5 && j==18){
+              fish_index = 1;
+            } else if ( i==6 && j==17){
+              fish_index = 2;
+            } else if ( i==7 && j==16){
+              fish_index = 3;
+            } else if ( i==8 && j==19){
+              fish_index = 4;
+            } else if ( i==9 && j==18){
+              fish_index = 5;
+            } else if ( i==10 && j==17){
+              fish_index = 6;
+            } else if ( i==11 && j==16){
+              fish_index = 7;
+            // next-to-diagonal elements of coincidence matrix
+            } else if ( i==5 && j==19){
+              fish_index = 8;
+            } else if ( i==6 && j==18){
+              fish_index = 9;
+            } else if ( i==7 && j==17){
+              fish_index = 10;
+            } else if ( i==8 && j==20){
+              fish_index = 11;
+            } else if ( i==9 && j==19){
+              fish_index = 12;
+            } else if ( i==10 && j==18){
+              fish_index = 13;
+            } else if ( i==11 && j==17){
+              fish_index = 14;
+            } else {
+              continue;
+            }
             } else {
               continue;
             }
