@@ -1,8 +1,8 @@
 #!/bin/bash
 
-xlist=$(seq 68.5 68.5)
+xlist=$(seq 45 0.5 90 | sed 's/,/./')
 #ylist="$(seq 900 50 1200) $(seq 1200 200 3600) $(seq 3600 25 4400)" 
-ylist=$(seq 36 -2 26)
+ylist=$(seq 36 36)
 # ylist=$(seq 2500 2500)
 zlist=$(seq 0 0)
 

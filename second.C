@@ -20,7 +20,17 @@
 #define CHANNELS 32
 #define FISHES   16
 #define REFCHAN_A 8
-#define REFCHAN_B 9
+#define REFCHAN_B 11
+
+#define HODO_VETO_CHAN 9
+#define HODO_VETO_L (-750 + ref_channel_offset)
+// #define HODO_VETO_R (-730 + ref_channel_offset)
+#define HODO_VETO_R (-680 + ref_channel_offset)
+#define enable_HODO_VETO 1
+
+
+#define TAKE_FIRST_HIT 1
+
 
 #define VERBOSE 0
 //
@@ -61,7 +71,7 @@
 #define spike_rejection 60
 
 
-#define individual_spike_rejection 0
+#define individual_spike_rejection 1
 
 //#define ref_spike_rejection 100
 
@@ -85,8 +95,10 @@
 // real cuts on selected data
 
 #define max_tot 10000 // Muentz-Torte
-#define t1_cut_L -1500
-#define t1_cut_R 300
+// #define t1_cut_L -850
+// #define t1_cut_R -700
+#define t1_cut_L -1500 // juelich diamond
+#define t1_cut_R 500 // juelich diamond
 
 
 // #define coincidence_rejection 7
@@ -384,16 +396,16 @@ class SecondProc : public base::EventProc {
         };
         
         static float channel_spike_rejection[32] = {
-          spike_rejection +5, //0
-          spike_rejection +5,
+          spike_rejection, //0
           spike_rejection,
           spike_rejection,
           spike_rejection,
-          spike_rejection +5 , //5
           spike_rejection,
-          spike_rejection +5,
+          spike_rejection, //5
           spike_rejection,
           spike_rejection,
+          spike_rejection,
+          10, // hodoscope
           spike_rejection, //10
           spike_rejection,
           spike_rejection,
@@ -478,6 +490,10 @@ class SecondProc : public base::EventProc {
            got_real_hit[i] = false;
          }
          
+         
+         bool got_HODO_okay = false;
+         bool got_HODO_veto = false;
+         
 
          for (unsigned cnt=0;cnt<sub->Size();cnt++) {
             const hadaq::TdcMessageExt& ext = sub->msg(cnt);
@@ -509,12 +525,21 @@ class SecondProc : public base::EventProc {
 //               }
               
 //               if(not(got_rising[chid-1])){
-                
               
-                if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )  || (chid-1) == REFCHAN_A || (chid-1) == REFCHAN_B) { // this condition sets another coincidence window, except for REFCHAN_A
-                  got_rising[chid-1] = true;
-                  got_falling[chid-1] = false;
-                  t1_candidate[chid-1] = tm;
+                if( (chid-1) == HODO_VETO_CHAN ){
+                  if( (((tm - ch0tm)*1e9) > HODO_VETO_L) && (((tm - ch0tm)*1e9) < HODO_VETO_R ) ) {
+                    got_HODO_okay = true;
+                  } else {
+                    got_HODO_veto = true;
+                  }
+                }
+                
+                if( !(TAKE_FIRST_HIT && got_real_hit[chid-1]) ){ // block subsequent hits if TAKE_FIRST_HIT setting is active
+                  if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )  || (chid-1) == REFCHAN_A || (chid-1) == REFCHAN_B) { // this condition sets another coincidence window, except for REFCHAN_A
+                    got_rising[chid-1] = true;
+                    got_falling[chid-1] = false;
+                    t1_candidate[chid-1] = tm;
+                  }
                 }
 //               }
             }else{ // if falling edge
@@ -633,6 +658,11 @@ class SecondProc : public base::EventProc {
            keep_event = true;
 	 }
 
+          if ( enable_HODO_VETO && ( !(got_HODO_okay) || got_HODO_veto )){
+            keep_event = false;
+          }
+	 
+	 
          if( keep_event == false ) {
           for( unsigned i=0; i<CHANNELS; i++ ) {
             got_real_hit[i] = false;
@@ -652,7 +682,7 @@ class SecondProc : public base::EventProc {
                   entry_ref_chan = REFCHAN_B;
                 }
                 double t1_vs_ref = (t1[i]-t1_ref)*1e9 ;
-                if( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) )  {
+                if( ( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) ) || i == entry_ref_chan)  {
                   
                   // fill histograms
                   FillH1(tot_h[i],tot[i]*1e9);
@@ -809,13 +839,17 @@ class SecondProc : public base::EventProc {
           }
         }
         
-        
+        /*
         for (int i = 0 ; i<CHANNELS; i++) {
           ((TH1F*) ref_counts_h)->SetBinContent(i+1,ref_counts[i]);
           ((TH1F*) dut_counts_h)->SetBinContent(i+1,dut_counts[i]);
           if( is_dut[i] && (ref_counts[i] > 0)){
             ((TH1F*) efficiency_h)->SetBinContent(i+1,((float) dut_counts[i])/((float) ref_counts[i]));
           }
+        }*/
+        
+        for (int i = 0 ; i<CHANNELS; i++) {
+            ((TH1F*) efficiency_h)->SetBinContent(i+1,((float) (((TH1F*) t1_h[i])->GetEntries()) )/((float) (((TH1F*) t1_h[REFCHAN_A])->GetEntries())));
         }
         
         

@@ -1,5 +1,5 @@
 #parameters and notes for acquisition
-timeout=43
+timeout=60
 
 HV=1750V
 Gas_mixture=70_30

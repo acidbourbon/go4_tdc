@@ -22,10 +22,10 @@ while read line <&3; do
     ./linear_drive/movex $x
     ./linear_drive/movey $y
     sleep 5
-    ./wait_for_spill.sh
+    #./wait_for_spill.sh
     oa=$[ $(printf "%d" $(trbcmd r 0x0353 0xc000 | cut -f 3 -d " " ))  ]
-    #./acquisition.sh $scan_name $acq_name
-    sleep 25
+    ./acquisition.sh $scan_name $acq_name
+    #sleep 25
     a=$[ $(printf "%d" $(trbcmd r 0x0353 0xc000 | cut -f 3 -d " " )) - $oa ]
     echo "recorded $a triggers"
     echo $a >> $data_dir/$scan_name/triggers.txt
