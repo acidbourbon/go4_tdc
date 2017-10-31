@@ -1,0 +1,8 @@
+STOP;*OPC?
+EXPort:WAVeform:FASTexport ON
+EXPort:WAVeform:MULTichannel 
+EXPort:WAVeform:SCOPe WFM
+EXPort:WAVeform:RAW ON
+EXPort:WAVeform:DLOGging ON
+ACQuire:COUNt 1000
+RUNSingle;*OPC?
