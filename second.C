@@ -23,13 +23,13 @@
 #define REFCHAN_B 11
 
 #define HODO_VETO_CHAN 9
-#define HODO_VETO_L -716 
+#define HODO_VETO_L -718 
 // #define HODO_VETO_R (-730 + ref_channel_offset)
 #define HODO_VETO_R -710 
 #define enable_HODO_VETO 1
 
 
-#define TAKE_FIRST_HIT 1
+#define TAKE_FIRST_HIT 1 // has to be 1 for enable_HODO_VETO
 
 
 #define VERBOSE 0
