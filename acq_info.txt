@@ -1,11 +1,15 @@
 #parameters and notes for acquisition
-timeout=60
+timeout=400
 
 HV=1750V
 Gas_mixture=70_30
 CoincWindow=-1000+200
-Threshold=10
-pktime=10
-diamond_pos_x=70
-diamond_pos_y=45
 
+diamond_pos_x=70.45
+diamond_pos_y=36
+
+pkt, gain, thr scan with pasttrec
+
+trigger on diamond edge + hodoscope
+
+#recording both diamond waveforms, PT analog out and hodoscope

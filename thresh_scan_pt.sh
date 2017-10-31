@@ -1,12 +1,12 @@
 #!/bin/bash
 
 scan_name=$1
-thr_list="./thr_list.txt"
+thr_list="./thr_list_pt.txt"
 data_dir="/home/hadaq/mdctest/trbsoft/daqtools/users/asd8_tdc/data"
 
 mkdir -p $data_dir/$scan_name
 cp $thr_list $data_dir/$scan_name/
-export DAQOPSERVER=localhost:148
+export DAQOPSERVER=localhost:35
 
 #    /home/hadaq/mnt/mount_rossendorf_share.sh
 while read line <&3; do
@@ -21,10 +21,14 @@ while read line <&3; do
 	    echo $(./init_asics_pt$pktime)
 	    echo "set pktime $pktime"
     fi
-    ./threshold_all $line 
-    ./acquisition.sh $scan_name thr_$line
-done 3<$thr_list
-./mail.pl m.wiebusch@gsi.de "scan $scan_name finished"
-./mail.pl c.wendisch@gsi.de "scan $scan_name finished"
+    ./set_pt_amp_pkt.sh ## this gets gain and pktime from environment variables
 
-./go4_on_all.sh $data_dir/$scan_name/
+    ./threshold_all $line 
+    ./acquisition.sh $scan_name gain_${gain}_thr_${line} #&
+#     ./vxi/go.sh; killall dabc_exe; wait
+
+done 3<$thr_list
+#./mail.pl m.wiebusch@gsi.de "scan $scan_name finished"
+#./mail.pl c.wendisch@gsi.de "scan $scan_name finished"
+
+#./go4_on_all.sh $data_dir/$scan_name/
