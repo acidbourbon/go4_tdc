@@ -23,9 +23,9 @@
 #define REFCHAN_B 11
 
 #define HODO_VETO_CHAN 9
-#define HODO_VETO_L (-750 + ref_channel_offset)
+#define HODO_VETO_L -716 
 // #define HODO_VETO_R (-730 + ref_channel_offset)
-#define HODO_VETO_R (-680 + ref_channel_offset)
+#define HODO_VETO_R -710 
 #define enable_HODO_VETO 1
 
 
@@ -526,13 +526,13 @@ class SecondProc : public base::EventProc {
               
 //               if(not(got_rising[chid-1])){
               
-                if( (chid-1) == HODO_VETO_CHAN ){
-                  if( (((tm - ch0tm)*1e9) > HODO_VETO_L) && (((tm - ch0tm)*1e9) < HODO_VETO_R ) ) {
-                    got_HODO_okay = true;
-                  } else {
-                    got_HODO_veto = true;
-                  }
-                }
+//                 if( (chid-1) == HODO_VETO_CHAN ){
+//                   if( (((tm - ch0tm)*1e9) > HODO_VETO_L) && (((tm - ch0tm)*1e9) < HODO_VETO_R ) ) {
+//                     got_HODO_okay = true;
+//                   } else {
+//                     got_HODO_veto = true;
+//                   }
+//                 }
                 
                 if( !(TAKE_FIRST_HIT && got_real_hit[chid-1]) ){ // block subsequent hits if TAKE_FIRST_HIT setting is active
                   if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )  || (chid-1) == REFCHAN_A || (chid-1) == REFCHAN_B) { // this condition sets another coincidence window, except for REFCHAN_A
@@ -658,9 +658,17 @@ class SecondProc : public base::EventProc {
            keep_event = true;
 	 }
 
-          if ( enable_HODO_VETO && ( !(got_HODO_okay) || got_HODO_veto )){
-            keep_event = false;
-          }
+	 
+       if ( enable_HODO_VETO ){
+	     if( got_real_hit[HODO_VETO_CHAN] ){
+           keep_event = false;
+           if ((t1[HODO_VETO_CHAN] - t1[REFCHAN_A])*1e9 > -716 && (t1[HODO_VETO_CHAN] - t1[REFCHAN_A])*1e9 < -710) {
+            keep_event = true;
+           }
+         } else {
+           keep_event = false;
+         }
+       }
 	 
 	 
          if( keep_event == false ) {

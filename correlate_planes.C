@@ -613,8 +613,8 @@ void correlate_planes(TString filename){
 //  inter_plane_correlations->Draw("(t1_ba-t1_bb):(t1_ba+t1_bb)>>abc(),","","")
 
 
-
-
+//draw mixed asd8/pasttrec fish_
+//inter_plane_all->Draw("t1_b-t1_c:t1_b+t1_c>>inter_fish(1000,-1850,-1600,100,-200,0),","chan_b==19 && chan_c==3","colz")
 
 // draw fish on the fly with tree comprising all hits
 

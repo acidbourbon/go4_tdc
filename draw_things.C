@@ -45,16 +45,16 @@ void draw_things(TString fname){
   //list.push_back("coinc_matrix");
 //   list.push_back("meta_fish_proj");
 //   list.push_back("efficiency");
-  list.push_back("ref_counts");
+//   list.push_back("ref_counts");
 //   list.push_back("Ch03_t1");
 //   list.push_back("Ch03_tot");
 //   list.push_back("Ch03_potato");
 //   list.push_back("Ch04_t1");
 //   list.push_back("Ch04_tot");
 //   list.push_back("Ch04_potato");
-  list.push_back("Ch05_t1");
-  list.push_back("Ch05_tot");
-  list.push_back("Ch05_potato");
+//   list.push_back("Ch05_t1");
+//   list.push_back("Ch05_tot");
+//   list.push_back("Ch05_potato");
 //   list.push_back("Ch06_t1");
 //   list.push_back("Ch06_tot");
 //   list.push_back("Ch06_potato");
@@ -62,6 +62,8 @@ void draw_things(TString fname){
 //   list.push_back("Ch07_tot");
 //   list.push_back("Ch07_potato");
 //   list.push_back("Ch00_potato");
+  list.push_back("Ch07_t1");
+  list.push_back("Ch09_t1");
 /*  
   list.push_back("Ch00_t1");
   list.push_back("Ch01_t1");
@@ -71,6 +73,7 @@ void draw_things(TString fname){
   list.push_back("Ch05_t1");
   list.push_back("Ch06_t1");
   list.push_back("Ch07_t1");
+  
 
   list.push_back("Ch16_t1");
   list.push_back("Ch17_t1");

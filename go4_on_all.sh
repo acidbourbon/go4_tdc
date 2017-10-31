@@ -2,7 +2,8 @@
 
 scan_folder=$1
 
-. my_trb3login
+#. my_trb3login
+. trb3login_x230
 for i in $(find $scan_folder -name "*.hld"); do
   rm Go4AutoSave.root
   go4analysis -user $i -disable-errstop
