@@ -24,8 +24,8 @@ while read line <&3; do
     ./set_pt_amp_pkt.sh ## this gets gain and pktime from environment variables
 
     ./threshold_all $line 
-    ./acquisition.sh $scan_name gain_${gain}_thr_${line} #&
-#     ./vxi/go.sh; killall dabc_exe; wait
+    ./acquisition.sh $scan_name gain_${gain}_thr_${line} &
+    ./vxi/go.sh; killall dabc_exe; wait
 
 done 3<$thr_list
 #./mail.pl m.wiebusch@gsi.de "scan $scan_name finished"

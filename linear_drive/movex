@@ -4,5 +4,9 @@
 stty -F /dev/ttyUSB_stage_pollux_house speed 19200
 sleep 0.1
 pos=$(printf "%0.0f" $(echo "scale=2; $1 * 1000000" | bc -l | perl -p -e 's/\..*//'))
-echo " $pos 3 nmove"  > /dev/ttyUSB_stage_pollux_house
+echo " $pos 3 nmove" | tee /dev/ttyUSB_stage_pollux_house
 sleep 0.1
+
+pos=$(printf "%0.0f" $(echo "scale=2; ($1 + 12) * 1000000" | bc -l | perl -p -e 's/\..*//'))
+
+echo " $pos 1 nmove" | tee /dev/ttyUSB_stage_pollux_house

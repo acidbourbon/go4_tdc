@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $(dirname $0)
 
 host=$1
 infile=$2

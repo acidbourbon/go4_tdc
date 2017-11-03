@@ -1,0 +1,1 @@
+(echo -n -e "\n"; sleep .1; echo -n -e "*IDN?\nOUTPUT:GENERAL OFF\nMEAS:CURR?\n"; sleep 1.7; echo -n -e "OUTPUT:GENERAL ON\n"; sleep 1; echo -n -e "MEAS:CURR?\n";) | socat  - /dev/ttyUSB_HAMEG_HAMEG_HO720_020546035

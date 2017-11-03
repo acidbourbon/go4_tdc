@@ -17,12 +17,14 @@ while read line <&3; do
     echo $line > current_asd8_thresh.txt
     sleep 2
     acq_name=$(printf "thr_%05d" $line)
-    ./acquisition.sh $scan_name $acq_name #&
-    #./vxi/go.sh; sleep 5; killall dabc_exe; wait
+    ./acquisition.sh $scan_name $acq_name &
+    ./vxi/go.sh; sleep 5; killall dabc_exe; wait
 done 3<$thr_list
 
 #./go4_on_all.sh $data_dir/$scan_name/
 
 #./mail.pl m.wiebusch@gsi.de "scan $scan_name finished"
 #./mail.pl c.wendisch@gsi.de "scan $scan_name finished"
+cp default_asd8_thresh.txt current_asd8_thresh.txt
+
 ./next_scan.sh
