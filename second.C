@@ -782,13 +782,13 @@ class SecondProc : public base::EventProc {
               fish_index = 9;
             } else if ( i==5 && j==17){
               fish_index = 10;
-            } else if ( i==6 && j==20){
+            } else if ( i==6 && j==16){
               fish_index = 11;
-            } else if ( i==7 && j==19){
+            } else if ( i==7 && j==15){
               fish_index = 12;
-            } else if ( i==8 && j==18){
+            } else if ( i==8 && j==14){
               fish_index = 13;
-            } else if ( i==9 && j==17){
+            } else if ( i==9 && j==13){
               fish_index = 14;
             } else {
               continue;
