@@ -23,7 +23,7 @@
 #define REFCHAN_B 11
 
 #define HODO_VETO_CHAN 9
-#define HODO_VETO_L -718 
+#define HODO_VETO_L -717
 // #define HODO_VETO_R (-730 + ref_channel_offset)
 #define HODO_VETO_R -710 
 #define enable_HODO_VETO 1
@@ -80,7 +80,8 @@
 //#define t1_accept_L (-1000000 + ref_channel_offset) //ns // HZDR fe55
 //#define t1_accept_L (-400 + ref_channel_offset) //ns // HZDR 
 //#define t1_accept_L (-150 + ref_channel_offset) //ns // Muentz-Torte
-#define t1_accept_L (-1500 + ref_channel_offset) //ns // juelich diamond
+// #define t1_accept_L (-1500 + ref_channel_offset) //ns // juelich diamond
+#define t1_accept_L (-900 + ref_channel_offset) //ns // juelich diamond
 //#define t1_accept_R (100 + ref_channel_offset)//ns // GSI Dlab
 //#define t1_accept_R (1000000 + ref_channel_offset)//ns // HZDR fe55
 //#define t1_accept_R (300 + ref_channel_offset)//ns // HZDR

@@ -127,7 +127,7 @@ void correlate_planes(TString filename){
   TH1F* coinc_distribution = new TH1F("coinc_distribution","hits in same trigger;counts",10,0-0.5,10-0.5);  
   
   // variables to which the tree entries will be read
-  Hit current_hit, hit_a, hit_b, hit_c, hit_d, empty_hit;
+  Hit current_hit, hit_a, hit_b, hit_c, hit_d, hit_aux, empty_hit;
   
   
   
@@ -252,6 +252,11 @@ void correlate_planes(TString filename){
   inter_plane_all->Branch("chan_d",&hit_d.chan);
   inter_plane_all->Branch("ref_chan_d",&hit_d.ref_chan);
   
+  inter_plane_all->Branch("t1_aux",&hit_aux.t1);
+  inter_plane_all->Branch("tot_aux",&hit_aux.tot);
+  inter_plane_all->Branch("chan_aux",&hit_aux.chan);
+  inter_plane_all->Branch("ref_chan_aux",&hit_aux.ref_chan);
+  
   
 
 //   _                                           _____         ___ 
@@ -304,6 +309,7 @@ void correlate_planes(TString filename){
     hit_b = empty_hit;
     hit_c = empty_hit;
     hit_d = empty_hit;
+    hit_aux = empty_hit;
     
     
     for (Int_t tdc_no = 0; tdc_no < TDC_list.size(); tdc_no ++){
@@ -339,6 +345,8 @@ void correlate_planes(TString filename){
               hit_c = current_hit;
             } else if (current_hit.chan >=16 && tdc_no == 1){
               hit_d = current_hit;
+            } else if (current_hit.chan == 9 && tdc_no == 0){
+              hit_aux = current_hit;
             }
             
             
