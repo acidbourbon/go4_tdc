@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <vector>
 
 #include "TTree.h"
 #include "TFile.h"
@@ -26,7 +27,7 @@
 #define HODO_VETO_L -717
 // #define HODO_VETO_R (-730 + ref_channel_offset)
 #define HODO_VETO_R -710 
-#define enable_HODO_VETO 1
+#define enable_HODO_VETO 0
 
 
 #define TAKE_FIRST_HIT 1 // has to be 1 for enable_HODO_VETO
@@ -112,6 +113,12 @@
 #define enable_two_to_one_hits   0
 
 
+class MHPulse {
+public:
+  double t1;
+  double t2;
+  double tot;
+};
 
 TFile *tree_out;
 std::map<std::string,int> trig_no;
@@ -151,6 +158,8 @@ class SecondProc : public base::EventProc {
       base::H1handle  tot_h[CHANNELS]; 
       base::H1handle  tot_untrig_h[CHANNELS]; 
       base::H1handle  t1_h[CHANNELS]; 
+      base::H1handle  t1_mhit_h[CHANNELS]; 
+      base::H1handle  t2_mhit_h[CHANNELS]; 
       base::H1handle  potato_h[CHANNELS];
       base::H1handle  meta_potato_h;
       base::H1handle  meta_t1_h;
@@ -204,6 +213,10 @@ class SecondProc : public base::EventProc {
           char chno[16];
           sprintf(chno,"Ch%02d_t1",i);
           t1_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
+          sprintf(chno,"Ch%02d_mhit_t1",i);
+          t1_mhit_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
+          sprintf(chno,"Ch%02d_mhit_t2",i);
+          t2_mhit_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
           sprintf(chno,"Ch%02d_tot",i);
           tot_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_tot_untrig",i);
@@ -491,6 +504,12 @@ class SecondProc : public base::EventProc {
            got_real_hit[i] = false;
          }
          
+         std::vector<MHPulse> MultiHitMem[CHANNELS];
+         
+         for (Int_t i = 0; i< CHANNELS; i++){
+           MultiHitMem[i] = std::vector<MHPulse>(0);
+         }
+         
          
          bool got_HODO_okay = false;
          bool got_HODO_veto = false;
@@ -535,13 +554,13 @@ class SecondProc : public base::EventProc {
 //                   }
 //                 }
                 
-                if( !(TAKE_FIRST_HIT && got_real_hit[chid-1]) ){ // block subsequent hits if TAKE_FIRST_HIT setting is active
+//                 if( !(TAKE_FIRST_HIT && got_real_hit[chid-1]) ){ // block subsequent hits if TAKE_FIRST_HIT setting is active
                   if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )  || (chid-1) == REFCHAN_A || (chid-1) == REFCHAN_B) { // this condition sets another coincidence window, except for REFCHAN_A
                     got_rising[chid-1] = true;
                     got_falling[chid-1] = false;
                     t1_candidate[chid-1] = tm;
                   }
-                }
+//                 }
 //               }
             }else{ // if falling edge
 //               printf("got falling edge, ch %d\n",(chid-1));
@@ -555,13 +574,21 @@ class SecondProc : public base::EventProc {
                   if( (individual_spike_rejection == 0) && (candidate_tot_ns > effective_spike_rejection)  || (individual_spike_rejection == 1) && (candidate_tot_ns > channel_spike_rejection[chid -1])  || (chid-1) == REFCHAN_A || (chid-1) == REFCHAN_B ){
 //                   if( (candidate_tot_ns > spike_rejection) &&  ((t2_candidate[chid-1] - t1_candidate[chid-1])*1e9 < max_tot )    ){
                     // hit is long enough not to be rejected
-                    t1[chid-1] = t1_candidate[chid-1];
-                    t2[chid-1] = t2_candidate[chid-1];
-                    tot[chid-1] = t2[chid-1] - t1[chid-1];
+//                     t1[chid-1] = t1_candidate[chid-1];
+//                     t2[chid-1] = t2_candidate[chid-1];
+//                     tot[chid-1] = t2[chid-1] - t1[chid-1];
                     got_real_hit[chid-1] = true;
                     
                     // fill untriggered tot histogram
-                    FillH1(tot_untrig_h[chid-1],tot[chid-1]*1e9);
+                    FillH1(tot_untrig_h[chid-1],(t2_candidate[chid-1]-t1_candidate[chid-1])*1e9);
+                    
+                    MHPulse this_pulse;
+                    this_pulse.t1=t1_candidate[chid-1];
+                    this_pulse.t2=t2_candidate[chid-1];
+                    this_pulse.tot=t2_candidate[chid-1]-t1_candidate[chid-1];
+                    MultiHitMem[chid-1].push_back(this_pulse);
+//                     cout << "current tot " << (t2_candidate[chid-1]- t1_candidate[chid-1])*1e9 << endl;
+//                     cout << "fill MultiHitMem tot " << MultiHitMem[chid-1][MultiHitMem[chid-1].size()-1].tot*1e9 << endl;
                   }
 //                   printf("got hit, ch %d, tot = %f ns\n",(chid-1), tot[chid-1]*1e9);
                 }
@@ -592,6 +619,54 @@ class SecondProc : public base::EventProc {
 //             got_real_hit[i] = false;
 //           }
 //          }
+
+//
+//
+//                Select either first or last hit from trigger window
+//      
+//
+        double t1_ref = 0; 
+        if(got_real_hit[REFCHAN_A] || got_real_hit[REFCHAN_B] ){ 
+          // a hit in the reference channel
+          t1_ref = MultiHitMem[REFCHAN_A][0].t1;
+          entry_ref_chan = REFCHAN_A;
+          if (got_real_hit[REFCHAN_B]){
+            t1_ref = MultiHitMem[REFCHAN_A][0].t1;
+            entry_ref_chan = REFCHAN_B;
+          }
+        } else {
+          return true; // if there is no signal in the ref chan to the trigger, don't continue!
+        }
+        
+//         cout << "ref chan: " << entry_ref_chan << " t1: " << t1_ref*1e9 << endl;
+
+        for ( Int_t i = 0; i<CHANNELS; i++){
+//           for (Int_t j = 0; j < MultiHitMem[i].size(); j++){
+//             cout << "chan "<< i<< " tot: " << (MultiHitMem[i][j].t2 - MultiHitMem[i][j].t1 )*1e9 << endl;
+//             cout << "chan "<< i<< " t1 : " << (MultiHitMem[i][j].t1-t1_ref)*1e9 << endl;
+//           }
+          for (Int_t j = 0; j < MultiHitMem[i].size(); j++){
+            t1[i] = MultiHitMem[i][j].t1;
+            t2[i] = MultiHitMem[i][j].t2;
+            tot[i] = MultiHitMem[i][j].tot;
+            FillH1(t1_mhit_h[i],(t1[i]-t1_ref)*1e9);
+            FillH1(t2_mhit_h[i],(t2[i]-t1_ref)*1e9);
+           
+            
+            if(TAKE_FIRST_HIT) { // overwrite again with the value of the first hit
+              t1[i] = MultiHitMem[i][0].t1;
+              t2[i] = MultiHitMem[i][0].t2;
+              tot[i] = MultiHitMem[i][0].tot;
+            }
+              
+            
+          }
+          
+        }
+
+//                     t1[chid-1] = t1_candidate[chid-1];
+//                     t2[chid-1] = t2_candidate[chid-1];
+//                     tot[chid-1] = t2[chid-1] - t1[chid-1];
         
         
          unsigned hits_layer_a = 0;
@@ -682,14 +757,14 @@ class SecondProc : public base::EventProc {
          for( unsigned i=0; i<CHANNELS; i++ ) {
             if(got_real_hit[i]){
               
-              if(got_real_hit[REFCHAN_A] || got_real_hit[REFCHAN_B] ){ // t1 information only makes sense if you have 
-                // a hit in the reference channel
-                double t1_ref = t1[REFCHAN_A];
-                entry_ref_chan = REFCHAN_A;
-                if (got_real_hit[REFCHAN_B]){
-                  t1_ref = t1[REFCHAN_B];
-                  entry_ref_chan = REFCHAN_B;
-                }
+//               if(got_real_hit[REFCHAN_A] || got_real_hit[REFCHAN_B] ){ // t1 information only makes sense if you have 
+//                 // a hit in the reference channel
+//                 double t1_ref = t1[REFCHAN_A];
+//                 entry_ref_chan = REFCHAN_A;
+//                 if (got_real_hit[REFCHAN_B]){
+//                   t1_ref = t1[REFCHAN_B];
+//                   entry_ref_chan = REFCHAN_B;
+//                 }
                 double t1_vs_ref = (t1[i]-t1_ref)*1e9 ;
                 if( ( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) ) || i == entry_ref_chan)  {
                   
@@ -733,19 +808,13 @@ class SecondProc : public base::EventProc {
                     
                   }
                 }
-              }
+//               }
             }
          }
          
          
-        // fill the coincidence coinc_matrix
-        if(got_real_hit[REFCHAN_A] || got_real_hit[REFCHAN_B] ){ 
-          // a hit in the reference channel
-          double t1_ref = t1[REFCHAN_A];
-          if (got_real_hit[REFCHAN_B]){
-            t1_ref = t1[REFCHAN_B];
-          }
            
+        // fill the coincidence coinc_matrix
           for( unsigned i=0; i<24; i++ ) {
               if(got_real_hit[i]){
                   double t1_vs_ref_a = (t1[i]-t1_ref)*1e9 - t1_offsets[i] ;
@@ -846,7 +915,6 @@ class SecondProc : public base::EventProc {
                   }
               }
           }
-        }
         
         /*
         for (int i = 0 ; i<CHANNELS; i++) {
