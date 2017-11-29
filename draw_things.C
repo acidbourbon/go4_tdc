@@ -63,7 +63,9 @@ void draw_things(TString fname){
 //   list.push_back("Ch07_potato");
 //   list.push_back("Ch00_potato");
   list.push_back("Ch07_t1");
+  list.push_back("Ch07_mhit_t1");
   list.push_back("Ch09_t1");
+  list.push_back("Ch09_mhit_t1");
 /*  
   list.push_back("Ch00_t1");
   list.push_back("Ch01_t1");

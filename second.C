@@ -76,17 +76,16 @@
 
 //#define ref_spike_rejection 100
 
-
 //#define t1_accept_L (-250 + ref_channel_offset) //ns // GSI Dlab
 //#define t1_accept_L (-1000000 + ref_channel_offset) //ns // HZDR fe55
 //#define t1_accept_L (-400 + ref_channel_offset) //ns // HZDR 
 //#define t1_accept_L (-150 + ref_channel_offset) //ns // Muentz-Torte
 // #define t1_accept_L (-1500 + ref_channel_offset) //ns // juelich diamond
-#define t1_accept_L (-900 + ref_channel_offset) //ns // juelich diamond
+#define t1_accept_L (-1500 + ref_channel_offset) //ns // juelich diamond
 //#define t1_accept_R (100 + ref_channel_offset)//ns // GSI Dlab
 //#define t1_accept_R (1000000 + ref_channel_offset)//ns // HZDR fe55
 //#define t1_accept_R (300 + ref_channel_offset)//ns // HZDR
-#define t1_accept_R (300 + ref_channel_offset)//ns // juelich diamond
+#define t1_accept_R (500 + ref_channel_offset)//ns // juelich diamond
 // #define t1_accept_R (-130 + ref_channel_offset)//ns // Muentz-Torte
 // #define t1_accept_R (-90 + ref_channel_offset)//ns // ASD8 with thr 0x52
 
@@ -160,6 +159,7 @@ class SecondProc : public base::EventProc {
       base::H1handle  t1_h[CHANNELS]; 
       base::H1handle  t1_mhit_h[CHANNELS]; 
       base::H1handle  t2_mhit_h[CHANNELS]; 
+      base::H1handle  tot_mhit_h[CHANNELS]; 
       base::H1handle  potato_h[CHANNELS];
       base::H1handle  meta_potato_h;
       base::H1handle  meta_t1_h;
@@ -217,6 +217,8 @@ class SecondProc : public base::EventProc {
           t1_mhit_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
           sprintf(chno,"Ch%02d_mhit_t2",i);
           t2_mhit_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
+          sprintf(chno,"Ch%02d_mhit_tot",i);
+          tot_mhit_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_tot",i);
           tot_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_tot_untrig",i);
@@ -651,6 +653,7 @@ class SecondProc : public base::EventProc {
             tot[i] = MultiHitMem[i][j].tot;
             FillH1(t1_mhit_h[i],(t1[i]-t1_ref)*1e9);
             FillH1(t2_mhit_h[i],(t2[i]-t1_ref)*1e9);
+            FillH1(tot_mhit_h[i],(t2[i]-t1[i])*1e9);
            
             
             if(TAKE_FIRST_HIT) { // overwrite again with the value of the first hit
