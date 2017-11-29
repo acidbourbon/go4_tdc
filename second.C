@@ -24,10 +24,13 @@
 #define REFCHAN_B 11
 
 #define HODO_VETO_CHAN 9
-#define HODO_VETO_L -717
-// #define HODO_VETO_R (-730 + ref_channel_offset)
-#define HODO_VETO_R -710 
-#define enable_HODO_VETO 0
+// #define HODO_VETO_L -716 // sharp
+// #define HODO_VETO_R -714 // sharp
+// #define HODO_VETO_L -720
+// #define HODO_VETO_R -710 
+#define HODO_VETO_L -300 // background
+#define HODO_VETO_R -200 // background
+#define enable_HODO_VETO 1
 
 
 #define TAKE_FIRST_HIT 1 // has to be 1 for enable_HODO_VETO
@@ -176,8 +179,8 @@ class SecondProc : public base::EventProc {
       base::H1handle  dut_counts_h;
       
       
-      int entry_chan;
-      int entry_ref_chan;
+      UInt_t entry_chan;
+      UInt_t entry_ref_chan;
       double entry_t1;
       double entry_tot;
       
@@ -647,7 +650,7 @@ class SecondProc : public base::EventProc {
 //             cout << "chan "<< i<< " tot: " << (MultiHitMem[i][j].t2 - MultiHitMem[i][j].t1 )*1e9 << endl;
 //             cout << "chan "<< i<< " t1 : " << (MultiHitMem[i][j].t1-t1_ref)*1e9 << endl;
 //           }
-          for (Int_t j = 0; j < MultiHitMem[i].size(); j++){
+          for (UInt_t j = 0; j < MultiHitMem[i].size(); j++){
             t1[i] = MultiHitMem[i][j].t1;
             t2[i] = MultiHitMem[i][j].t2;
             tot[i] = MultiHitMem[i][j].tot;
@@ -741,7 +744,7 @@ class SecondProc : public base::EventProc {
        if ( enable_HODO_VETO ){
 	     if( got_real_hit[HODO_VETO_CHAN] ){
            keep_event = false;
-           if ((t1[HODO_VETO_CHAN] - t1[REFCHAN_A])*1e9 > -716 && (t1[HODO_VETO_CHAN] - t1[REFCHAN_A])*1e9 < -710) {
+           if ((t1[HODO_VETO_CHAN] - t1[REFCHAN_A])*1e9 > HODO_VETO_L && (t1[HODO_VETO_CHAN] - t1[REFCHAN_A])*1e9 < HODO_VETO_R) {
             keep_event = true;
            }
          } else {
