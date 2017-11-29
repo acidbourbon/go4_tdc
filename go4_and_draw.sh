@@ -14,6 +14,7 @@ dir=$(dirname $fname)
   go4analysis -user $fname -num $i
   mv Go4AutoSave.root $fname.root
   cp second.C $dir/second.C_bak
+  mv tree_out.root $dir/
 }
 
 ./draw_things.sh $fname.root

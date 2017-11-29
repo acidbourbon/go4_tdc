@@ -28,9 +28,16 @@
 // #define HODO_VETO_R -714 // sharp
 // #define HODO_VETO_L -720
 // #define HODO_VETO_R -710 
-#define HODO_VETO_L -300 // background
-#define HODO_VETO_R -200 // background
+#define HODO_VETO_L -749 // sharp
+#define HODO_VETO_R -744 // sharp
+// #define HODO_VETO_L -1000 // wide
+// #define HODO_VETO_R -600 // wide
+// #define HODO_VETO_L -860 // background
+// #define HODO_VETO_R -780 // background
+
 #define enable_HODO_VETO 1
+
+#define PERSISTENT_RISING_DELAY 45
 
 
 #define TAKE_FIRST_HIT 1 // has to be 1 for enable_HODO_VETO
@@ -179,8 +186,8 @@ class SecondProc : public base::EventProc {
       base::H1handle  dut_counts_h;
       
       
-      UInt_t entry_chan;
-      UInt_t entry_ref_chan;
+      int entry_chan;
+      int entry_ref_chan;
       double entry_t1;
       double entry_tot;
       
@@ -424,7 +431,7 @@ class SecondProc : public base::EventProc {
           spike_rejection,
           spike_rejection,
           spike_rejection,
-          10, // hodoscope
+          29, // hodoscope
           spike_rejection, //10
           spike_rejection,
           spike_rejection,
@@ -561,9 +568,18 @@ class SecondProc : public base::EventProc {
                 
 //                 if( !(TAKE_FIRST_HIT && got_real_hit[chid-1]) ){ // block subsequent hits if TAKE_FIRST_HIT setting is active
                   if(( ((tm - ch0tm)*1e9) > t1_accept_L) && (((tm - ch0tm)*1e9) < t1_accept_R )  || (chid-1) == REFCHAN_A || (chid-1) == REFCHAN_B) { // this condition sets another coincidence window, except for REFCHAN_A
+                    // is there already a hit?
+                    if(got_rising[chid-1]){
+                      // if distance between two subsequent rising edges is greater than PERSISTENT_RISING_DELAY,
+                      // then treat as a new hit, if not, keep the old rising edge
+                      if( (tm - t1_candidate[chid-1] )*1e9 > PERSISTENT_RISING_DELAY){
+                        t1_candidate[chid-1] = tm;
+                      }
+                    }else{
+                      t1_candidate[chid-1] = tm;
+                    }
                     got_rising[chid-1] = true;
                     got_falling[chid-1] = false;
-                    t1_candidate[chid-1] = tm;
                   }
 //                 }
 //               }

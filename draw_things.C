@@ -31,7 +31,7 @@ void draw_things(TString fname){
   
   cout << "contents: "<< endl; 
   f->ls();
-  
+  gStyle->SetOptFit();
   
   TString outdir = gSystem->DirName(fname);
   
