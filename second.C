@@ -5,11 +5,13 @@
 #include <vector>
 
 #include "TTree.h"
+#include "TMath.h"
 #include "TFile.h"
 #include "TSystem.h"
 #include "TString.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "TF1.h"
 #include "TCanvas.h"
 #include "TGo4AnalysisObjectManager.h"
 
@@ -39,8 +41,51 @@
 
 #define PERSISTENT_RISING_DELAY 45
 
+#define enable_walk_correction 0
+#define walk_correction_slope -0.0901558 
+#define walk_correction_mean_tot 150
 
-#define TAKE_FIRST_HIT 1 // has to be 1 for enable_HODO_VETO
+// :w
+// thr 20
+// #define enable_cubic_walk_correction 0
+// #define Par_0         (-729.419+785)
+// #define Par_1        -0.701339   
+// #define Par_2       0.00292951   
+// #define Par_3     -4.04003e-06   
+
+// thr 10
+#define enable_cubic_walk_correction 0
+#define Par_0        -726.76 +785
+#define Par_1      -0.727522 
+#define Par_2     0.00296743 
+#define Par_3   -4.00484e-06 
+
+/*
+#define enable_exp_walk_correction 1
+// #define exp_offset -7.87862e+02
+#define exp_offset 0
+#define exp_slope -2.69912e-02 
+#define exp_const 5.18843e+00
+*/
+
+// big data exp walk correction
+#define enable_exp_walk_correction 1
+// // #define exp_offset -7.87862e+02
+#define exp_offset 0
+#define exp_slope -1.69710e-02
+#define exp_const  4.24679e+00 
+
+
+
+// // bounded exp walk 
+// #define exp_slope -4.39470e-03
+// #define exp_const 3.68190e+00
+
+
+
+#define TAKE_FIRST_HIT 0     // takes the first hit for all channels 
+#define TAKE_FIRST_HIT_HODO 1 // takes the first hit at lesat for HODO chan (ch9)  has to be 1 for enable_HODO_VETO,
+#define TAKE_MAXTOT_HIT 1
 
 
 #define VERBOSE 0
@@ -79,12 +124,26 @@
 //#define spike_rejection 47 //ns for ASD8 thr 37000 with LASER
 // #define spike_rejection 90 //ns for PASTTREC pt20 with LASER
 //#define spike_rejection 90 //ns for PASTTREC pt20 with Fe55
-#define spike_rejection 60
+// #define spike_rejection 60
+#define spike_rejection 30
+#define spike_rejection 60 // for PASTTREC
+#define max_tot 1000
+/*
+// this seems to be perfect for pasttrec fav settings
+#define spike_rejection 120  
+#define max_tot 200 // Muentz-Torte
+
+#define spike_rejection 140  
+#define max_tot 180 // Muentz-Torte
+*/
 
 
 #define individual_spike_rejection 1
 
 //#define ref_spike_rejection 100
+
+
+// the accepance t1 window of the raw data that is processed
 
 //#define t1_accept_L (-250 + ref_channel_offset) //ns // GSI Dlab
 //#define t1_accept_L (-1000000 + ref_channel_offset) //ns // HZDR fe55
@@ -105,11 +164,10 @@
 
 // real cuts on selected data
 
-#define max_tot 10000 // Muentz-Torte
 // #define t1_cut_L -850
 // #define t1_cut_R -700
-#define t1_cut_L -1500 // juelich diamond
-#define t1_cut_R 500 // juelich diamond
+#define t1_cut_L -840 // juelich diamond
+#define t1_cut_R -740 // juelich diamond
 
 
 // #define coincidence_rejection 7
@@ -185,6 +243,8 @@ class SecondProc : public base::EventProc {
       base::H1handle  ref_counts_h;
       base::H1handle  dut_counts_h;
       
+      TF1 *walk_exp	= new TF1 ("walk_exp","expo(0)+pol0(2)",50,300);
+      
       
       int entry_chan;
       int entry_ref_chan;
@@ -218,6 +278,10 @@ class SecondProc : public base::EventProc {
        data_tree[fTdcId]->Branch("chan",&entry_chan);
        data_tree[fTdcId]->Branch("ref_chan",&entry_ref_chan);
        
+  walk_exp->SetParameter(0,exp_const);
+  walk_exp->SetParameter(1,exp_slope);
+  walk_exp->SetParameter(2,exp_offset);
+
          
         for( unsigned i=0; i<CHANNELS; i++ ) {
           char chno[16];
@@ -234,7 +298,8 @@ class SecondProc : public base::EventProc {
           sprintf(chno,"Ch%02d_tot_untrig",i);
           tot_untrig_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_potato",i);
-          potato_h[i] = MakeH2(chno,chno,500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
+          potato_h[i] = MakeH2(chno,chno,1500,t1_L,t1_R,250, tot_L, tot_R, "t1 (ns);tot (ns)");
+//           potato_h[i] = MakeH2(chno,chno,1500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
         }
         
         meta_t1_h = MakeH1("meta_t1","meta_t1", 2000, t1_L, t1_R, "ns");
@@ -572,9 +637,13 @@ class SecondProc : public base::EventProc {
                     if(got_rising[chid-1]){
                       // if distance between two subsequent rising edges is greater than PERSISTENT_RISING_DELAY,
                       // then treat as a new hit, if not, keep the old rising edge
-                      if( (tm - t1_candidate[chid-1] )*1e9 > PERSISTENT_RISING_DELAY){
-                        t1_candidate[chid-1] = tm;
-                      }
+//                       if( (chid-1) == HODO_VETO_CHAN ) {
+                        if( (tm - t1_candidate[chid-1] )*1e9 > PERSISTENT_RISING_DELAY){
+                          t1_candidate[chid-1] = tm;
+                        }
+//                       } else {
+//                           t1_candidate[chid-1] = tm;
+//                       }
                     }else{
                       t1_candidate[chid-1] = tm;
                     }
@@ -647,6 +716,12 @@ class SecondProc : public base::EventProc {
 //      
 //
         double t1_ref = 0; 
+        
+        double tot_highest[CHANNELS];
+        for(Int_t i = 0; i<CHANNELS; ++i){
+          tot_highest[i] = 0;
+        }
+        
         if(got_real_hit[REFCHAN_A] || got_real_hit[REFCHAN_B] ){ 
           // a hit in the reference channel
           t1_ref = MultiHitMem[REFCHAN_A][0].t1;
@@ -667,20 +742,37 @@ class SecondProc : public base::EventProc {
 //             cout << "chan "<< i<< " t1 : " << (MultiHitMem[i][j].t1-t1_ref)*1e9 << endl;
 //           }
           for (UInt_t j = 0; j < MultiHitMem[i].size(); j++){
-            t1[i] = MultiHitMem[i][j].t1;
-            t2[i] = MultiHitMem[i][j].t2;
-            tot[i] = MultiHitMem[i][j].tot;
-            FillH1(t1_mhit_h[i],(t1[i]-t1_ref)*1e9);
-            FillH1(t2_mhit_h[i],(t2[i]-t1_ref)*1e9);
-            FillH1(tot_mhit_h[i],(t2[i]-t1[i])*1e9);
-           
             
-            if(TAKE_FIRST_HIT) { // overwrite again with the value of the first hit
-              t1[i] = MultiHitMem[i][0].t1;
-              t2[i] = MultiHitMem[i][0].t2;
-              tot[i] = MultiHitMem[i][0].tot;
-            }
+            
+            
+            FillH1(t1_mhit_h[i],(MultiHitMem[i][j].t1  -t1_ref)*1e9);
+            FillH1(t2_mhit_h[i],(MultiHitMem[i][j].t2  -t1_ref)*1e9);
+            FillH1(tot_mhit_h[i],(MultiHitMem[i][j].t2 - MultiHitMem[i][j].t1)*1e9);
+            
+            double t1_vs_ref = (MultiHitMem[i][j].t1 -t1_ref)*1e9;
+            
+            if( (i == HODO_VETO_CHAN) || (i == REFCHAN_A) || (i == REFCHAN_B) || ( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R ))) { 
+            
+              if(TAKE_MAXTOT_HIT) {
+                if (MultiHitMem[i][j].tot > tot_highest[i]) {
+                  t1[i] = MultiHitMem[i][j].t1;
+                  t2[i] = MultiHitMem[i][j].t2;
+                  tot[i] = MultiHitMem[i][j].tot;
+                  tot_highest[i] = tot[i];
+                }
+              }else{
+                t1[i] = MultiHitMem[i][j].t1;
+                t2[i] = MultiHitMem[i][j].t2;
+                tot[i] = MultiHitMem[i][j].tot;
+              }
               
+              if(TAKE_FIRST_HIT || ((i== HODO_VETO_CHAN) && TAKE_FIRST_HIT_HODO ) ) { // overwrite again with the value of the first hit
+                t1[i] = MultiHitMem[i][0].t1;
+                t2[i] = MultiHitMem[i][0].t2;
+                tot[i] = MultiHitMem[i][0].tot;
+              }
+                
+            }
             
           }
           
@@ -788,7 +880,26 @@ class SecondProc : public base::EventProc {
 //                   entry_ref_chan = REFCHAN_B;
 //                 }
                 double t1_vs_ref = (t1[i]-t1_ref)*1e9 ;
-                if( ( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) ) || i == entry_ref_chan)  {
+//                 if( ( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) ) || i == entry_ref_chan)  {
+                if(  (tot[i]*1e9 < max_tot)  || i == entry_ref_chan)  {
+                  
+                  
+                  if( (i != HODO_VETO_CHAN) && (i != REFCHAN_A) && (i != REFCHAN_B)){
+                    // try walk correction
+                    if(enable_walk_correction){
+                      t1_vs_ref = t1_vs_ref - (tot[i]*1e9-walk_correction_mean_tot)*(walk_correction_slope);
+                    }
+                    if(enable_cubic_walk_correction){
+                      double x = tot[i]*1e9;
+                      if (x <250)
+                      t1_vs_ref = t1_vs_ref - (Par_0 + (Par_1)*x + (Par_2)*x*x + (Par_3)*x*x*x);
+                    }
+                    if(enable_exp_walk_correction){
+                      double x = tot[i]*1e9;
+                      t1_vs_ref = t1_vs_ref - walk_exp->Eval(x);
+  //                     t1_vs_ref = t1_vs_ref - exp_const*TMath::Exp(exp_slope*x);
+                    }
+                  }
                   
                   // fill histograms
                   FillH1(tot_h[i],tot[i]*1e9);
