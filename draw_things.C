@@ -91,7 +91,7 @@ void draw_things(TString fname){
 //   list.push_back("meta_tot_2d");
   //list.push_back("coinc_matrix");
 //   list.push_back("meta_fish_proj");
-  list.push_back("efficiency");
+//   list.push_back("efficiency");
 //   list.push_back("ref_counts");
 //   list.push_back("Ch03_t1");
 //   list.push_back("Ch03_tot");
@@ -151,8 +151,9 @@ void draw_things(TString fname){
   
   TCanvas *c = new TCanvas("c_fit","c_fit",200,10,1024,786);
   
-//   TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch07_t1")->Clone();
-  TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch17_t1")->Clone();
+  TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch07_t1")->Clone();
+//   TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch17_t1")->Clone();
+//   TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch16_t1")->Clone();
 //   TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_fish_proj_17_vs_07")->Clone();
   Double_t max = cut_around_maximum(t1_clone,peak_hood,peak_hood);
   t1_clone->Draw();
@@ -171,7 +172,8 @@ void draw_things(TString fname){
   par[4] = fit_mean;
   par[5] = fit_sigma;
   t1_clone->GetXaxis()->SetRangeUser(max-peak_hood,max+peak_hood);
-  TF1 *fit	= new TF1 ("fit","gaus(0)+gaus(3)",max-peak_hood,max+peak_hood);
+//   TF1 *fit	= new TF1 ("fit","gaus(0)+gaus(3)",max-peak_hood,max+peak_hood);
+  TF1 *fit	= new TF1 ("fit","[0]*TMath::Gaus(x,[1],[2])+[3]*TMath::Gaus(x,[4],[5])",max-peak_hood,max+peak_hood);
   fit->SetParameters(par);
   t1_clone->Fit(fit);
   
@@ -182,19 +184,20 @@ void draw_things(TString fname){
   par[4] = fit->GetParameter(4);
   par[5] = fit->GetParameter(5);
   
-  TF1 *back = new TF1("back","gaus",max-30,max+30);
+  TF1 *back = new TF1("back","gaus",max-peak_hood,max+peak_hood);
   back->SetLineColor(3);
   back->SetParameter(0,par[0]);
   back->SetParameter(1,par[1]);
   back->SetParameter(2,par[2]);
   back->Draw("same");
   
+  cout << "ratio of function amplitudes (main/backg peak): " << (par[3])/(par[0]) << endl;
   cout << "ratio of function areas (main/backg peak): " << (par[3]*par[5])/(par[0]*par[2]) << endl;
   
   cout << "t1 peak entries: " << t1_clone->Integral() << endl;// /((TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch08_t1"))->GetEntries() << endl;
-  cout << "efficiency: (via counts)" << t1_clone->Integral() /((TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch08_t1"))->Integral() << endl;
+  cout << "efficiency: (via counts)" << t1_clone->Integral() /((TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch09_t1"))->Integral() << endl;
   cout << "Fit integral: " << fit->Integral( max-peak_hood,max+peak_hood ) << endl;
-  cout << "efficiency: (via fit)" << fit->Integral(max-peak_hood,max+peak_hood) / ((TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch08_t1"))->Integral() << endl;
+  cout << "efficiency: (via fit)" << fit->Integral(max-peak_hood,max+peak_hood) / ((TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch09_t1"))->Integral() << endl;
 //   fit->DrawIntegral();
   
   

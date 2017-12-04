@@ -25,6 +25,11 @@
 #define REFCHAN_A 8
 #define REFCHAN_B 11
 
+
+#define IS_ASD8_DATA 
+
+// #define DISABLE_ALL_FILTERS
+
 #define HODO_VETO_CHAN 9
 // #define HODO_VETO_L -716 // sharp
 // #define HODO_VETO_R -714 // sharp
@@ -125,7 +130,7 @@
 // #define spike_rejection 90 //ns for PASTTREC pt20 with LASER
 //#define spike_rejection 90 //ns for PASTTREC pt20 with Fe55
 // #define spike_rejection 60
-#define spike_rejection 30
+// #define spike_rejection 30 // for ASD8
 #define spike_rejection 60 // for PASTTREC
 #define max_tot 1000
 /*
@@ -178,6 +183,28 @@
 #define enable_single_hits       0
 #define enable_one_hit_per_layer 1
 #define enable_two_to_one_hits   0
+
+
+#ifdef IS_ASD8_DATA
+
+#define enable_cubic_walk_correction 0
+#define enable_walk_correction 0
+#define enable_exp_walk_correction 0
+#define spike_rejection 55
+
+#endif
+
+#ifdef DISABLE_ALL_FILTERS
+
+#define enable_cubic_walk_correction 0
+#define enable_walk_correction 0
+#define enable_exp_walk_correction 0
+#define t1_cut_L -1500
+#define t1_cut_R 1000
+#define max_tot 2000
+#define enable_HODO_VETO 0
+
+#endif
 
 
 class MHPulse {
