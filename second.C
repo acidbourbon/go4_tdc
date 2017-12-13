@@ -26,7 +26,7 @@
 #define REFCHAN_B 11
 
 
-#define IS_ASD8_DATA 
+// #define IS_ASD8_DATA 
 
 // #define DISABLE_ALL_FILTERS
 
@@ -250,6 +250,7 @@ class SecondProc : public base::EventProc {
       
       
       base::H1handle  tot_h[CHANNELS]; 
+      base::H1handle  tot_exp_h[CHANNELS]; 
       base::H1handle  tot_untrig_h[CHANNELS]; 
       base::H1handle  t1_h[CHANNELS]; 
       base::H1handle  t1_mhit_h[CHANNELS]; 
@@ -321,7 +322,14 @@ class SecondProc : public base::EventProc {
           sprintf(chno,"Ch%02d_mhit_tot",i);
           tot_mhit_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_tot",i);
-          tot_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
+          tot_h[i] = MakeH1(chno,chno, 1000, tot_L, tot_R, "ns");
+#ifdef IS_ASD8_DATA
+          sprintf(chno,"Ch%02d_tot_exp",i);
+          tot_exp_h[i] = MakeH1(chno,chno, 1000,0,50, "a.u.");
+#else
+          sprintf(chno,"Ch%02d_tot_exp",i);
+          tot_exp_h[i] = MakeH1(chno,chno, 600,0,100, "a.u.");
+#endif
           sprintf(chno,"Ch%02d_tot_untrig",i);
           tot_untrig_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_potato",i);
@@ -930,6 +938,7 @@ class SecondProc : public base::EventProc {
                   
                   // fill histograms
                   FillH1(tot_h[i],tot[i]*1e9);
+                  FillH1(tot_exp_h[i],TMath::Exp(tot[i]*1e7));
                   FillH2(potato_h[i],t1_vs_ref - t1_offsets[i],tot[i]*1e9);
                   FillH1(t1_h[i],t1_vs_ref - t1_offsets[i]);
                   
