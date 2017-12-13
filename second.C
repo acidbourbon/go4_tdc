@@ -26,7 +26,7 @@
 #define REFCHAN_B 11
 
 
-// #define IS_ASD8_DATA 
+#define IS_ASD8_DATA 
 
 // #define DISABLE_ALL_FILTERS
 
@@ -253,6 +253,7 @@ class SecondProc : public base::EventProc {
       base::H1handle  tot_exp_h[CHANNELS]; 
       base::H1handle  tot_untrig_h[CHANNELS]; 
       base::H1handle  t1_h[CHANNELS]; 
+      base::H1handle  t2_h[CHANNELS]; 
       base::H1handle  t1_mhit_h[CHANNELS]; 
       base::H1handle  t2_mhit_h[CHANNELS]; 
       base::H1handle  tot_mhit_h[CHANNELS]; 
@@ -315,6 +316,8 @@ class SecondProc : public base::EventProc {
           char chno[16];
           sprintf(chno,"Ch%02d_t1",i);
           t1_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
+          sprintf(chno,"Ch%02d_t2",i);
+          t2_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
           sprintf(chno,"Ch%02d_mhit_t1",i);
           t1_mhit_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
           sprintf(chno,"Ch%02d_mhit_t2",i);
@@ -915,6 +918,7 @@ class SecondProc : public base::EventProc {
 //                   entry_ref_chan = REFCHAN_B;
 //                 }
                 double t1_vs_ref = (t1[i]-t1_ref)*1e9 ;
+                double t2_vs_ref = (t2[i]-t1_ref)*1e9 ;
 //                 if( ( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) ) || i == entry_ref_chan)  {
                 if(  (tot[i]*1e9 < max_tot)  || i == entry_ref_chan)  {
                   
@@ -941,6 +945,7 @@ class SecondProc : public base::EventProc {
                   FillH1(tot_exp_h[i],TMath::Exp(tot[i]*1e7));
                   FillH2(potato_h[i],t1_vs_ref - t1_offsets[i],tot[i]*1e9);
                   FillH1(t1_h[i],t1_vs_ref - t1_offsets[i]);
+                  FillH1(t2_h[i],t2_vs_ref - t1_offsets[i]);
                   
                   if( (i != REFCHAN_A) && (i != REFCHAN_B) ) {
                     FillH2(meta_potato_h,t1_vs_ref - t1_offsets[i],tot[i]*1e9);
