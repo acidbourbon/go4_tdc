@@ -42,7 +42,7 @@
 // #define HODO_VETO_L -860 // background
 // #define HODO_VETO_R -780 // background
 
-#define enable_HODO_VETO 0
+#define enable_HODO_VETO 1
 
 #define PERSISTENT_RISING_DELAY 45
 
@@ -74,7 +74,7 @@
 */
 
 // big data exp walk correction
-#define enable_exp_walk_correction 0
+#define enable_exp_walk_correction 1
 // // #define exp_offset -7.87862e+02
 #define exp_offset 0
 #define exp_slope -1.69710e-02
@@ -132,7 +132,7 @@
 // #define spike_rejection 60
 // #define spike_rejection 30 // for ASD8
 // #define spike_rejection 60 // for PASTTREC
-#define spike_rejection 30 // After t2 correction
+#define spike_rejection 20 // After t2 correction
 #define max_tot 1000
 /*
 // this seems to be perfect for pasttrec fav settings
@@ -606,7 +606,7 @@ class SecondProc : public base::EventProc {
           spike_rejection,
           spike_rejection,
           spike_rejection,
-          29, // hodoscope
+          1, // hodoscope
           spike_rejection, //10
           spike_rejection,
           spike_rejection,
@@ -1011,8 +1011,8 @@ class SecondProc : public base::EventProc {
                       if (x <250)
                       t1_vs_ref = t1_vs_ref - (Par_0 + (Par_1)*x + (Par_2)*x*x + (Par_3)*x*x*x);
                     }
-                    if(enable_exp_walk_correction){
-                      double x = tot[i]*1e9;
+                    if(enable_exp_walk_correction &&  (fTdcId == "TDC_0351")  ){
+                      double x = tot[i]*1e9 + tot_offset_0351[7];
                       t1_vs_ref = t1_vs_ref - walk_exp->Eval(x);
   //                     t1_vs_ref = t1_vs_ref - exp_const*TMath::Exp(exp_slope*x);
                     }
