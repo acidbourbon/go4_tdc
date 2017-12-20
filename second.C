@@ -26,7 +26,7 @@
 #define REFCHAN_B 11
 
 
-#define IS_ASD8_DATA 
+// #define IS_ASD8_DATA 
 
 // #define DISABLE_ALL_FILTERS
 
@@ -42,7 +42,7 @@
 // #define HODO_VETO_L -860 // background
 // #define HODO_VETO_R -780 // background
 
-#define enable_HODO_VETO 1
+#define enable_HODO_VETO 0
 
 #define PERSISTENT_RISING_DELAY 45
 
@@ -74,7 +74,7 @@
 */
 
 // big data exp walk correction
-#define enable_exp_walk_correction 1
+#define enable_exp_walk_correction 0
 // // #define exp_offset -7.87862e+02
 #define exp_offset 0
 #define exp_slope -1.69710e-02
@@ -131,7 +131,8 @@
 //#define spike_rejection 90 //ns for PASTTREC pt20 with Fe55
 // #define spike_rejection 60
 // #define spike_rejection 30 // for ASD8
-#define spike_rejection 60 // for PASTTREC
+// #define spike_rejection 60 // for PASTTREC
+#define spike_rejection 30 // After t2 correction
 #define max_tot 1000
 /*
 // this seems to be perfect for pasttrec fav settings
@@ -205,6 +206,77 @@
 #define enable_HODO_VETO 0
 
 #endif
+
+float tot_offset_0351[32] = { 
+  37.1182,
+  35.8852,
+  31.8909,
+  33.2588,
+  35.9127,
+  41.6544,
+  33.4058,
+  37.1549,
+  35.4044,
+  36.1788,
+  -50,
+  -50,
+  -50,
+  -50,
+  -50,
+  -50,
+  31.9402,
+  33.664,
+  36.3481,
+  32.0239,
+  33.5003,
+  34.2676,
+  -50,
+  33.4684,
+  -50,
+  -50,
+  -50,
+  -50,
+  -50,
+  -50,
+  -50,
+  -50,
+};
+
+float tot_offset_0353[32] = {                                                                                                                                                                                                                                                                           
+  45.6386,                                                                                                                                                                                                                                                                                        
+  38.7265,                                                                                                                                                                                                                                                                                        
+  45.5499,                                                                                                                                                                                                                                                                                        
+  37.7152,                                                                                                                                                                                                                                                                                        
+  41.5511,                                                                                                                                                                                                                                                                                        
+  40.8898,                                                                                                                                                                                                                                                                                        
+  43.3164,                                                                                                                                                                                                                                                                                        
+  43.0532,                                                                                                                                                                                                                                                                                        
+  38.242,                                                                                                                                                                                                                                                                                         
+  39.8832,                                                                                                                                                                                                                                                                                        
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  42.3039,                                                                                                                                                                                                                                                                                        
+  42.1393,                                                                                                                                                                                                                                                                                        
+  43.826,                                                                                                                                                                                                                                                                                         
+  38.1955,                                                                                                                                                                                                                                                                                        
+  39.6157,                                                                                                                                                                                                                                                                                        
+  38.1767,                                                                                                                                                                                                                                                                                        
+  33.3367,                                                                                                                                                                                                                                                                                        
+  35.3227,                                                                                                                                                                                                                                                                                        
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+  -50,                                                                                                                                                                                                                                                                                            
+};    
+
 
 
 class MHPulse {
@@ -696,6 +768,12 @@ class SecondProc : public base::EventProc {
                 if(not(got_falling[chid-1])){
                   got_falling[chid-1] = true;
                   t2_candidate[chid-1] = tm;
+                  if ( fTdcId == "TDC_0351" ) {
+                    t2_candidate[chid-1] -= tot_offset_0351[chid-1]*1e-9;
+                  } else if ( fTdcId == "TDC_0353" ) {
+                    t2_candidate[chid-1] -= tot_offset_0353[chid-1]*1e-9;
+                  }
+                  
                   Double_t candidate_tot_ns = (t2_candidate[chid-1] - t1_candidate[chid-1])*1e9;
                   
 //                   if( (candidate_tot_ns > spike_rejection) ){

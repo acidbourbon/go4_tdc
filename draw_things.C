@@ -161,6 +161,23 @@ void draw_things(TString fname){
 //                               |___/                 
   
   
+    // default case: is ASD8 data
+  
+    Float_t backgnd_scale_0     = 1.509e-01;
+    Float_t backgnd_shift_1 = 1.0354;
+    Float_t backgnd_scale_2 = 3.124;
+    Float_t x_shift         = 5;
+  
+  
+  if (TDC == "0351") { // is PASTTREC data
+    backgnd_scale_0 = 0.2;
+    backgnd_shift_1 = 1.05;
+    backgnd_scale_2 = 2.6;
+    x_shift         = 0;
+  }    
+  
+  
+  
   
   TCanvas *c = new TCanvas("c_fit","c_fit",200,10,1024,786);
   
@@ -187,7 +204,10 @@ void draw_things(TString fname){
   t1_clone->GetXaxis()->SetRangeUser(max-peak_hood,max+peak_hood);
 //   TF1 *fit	= new TF1 ("fit","gaus(0)+gaus(3)",max-peak_hood,max+peak_hood);
 //   TF1 *fit	= new TF1 ("fit","[0]*TMath::Gaus(x,[1],[2])+[3]*TMath::Gaus(x,[4],[5])",max-peak_hood,max+peak_hood);
-  TF1 *fit	= new TF1 ("fit","[0]*TMath::Gaus(x,[1],[2])+1.509e-01*[0]*TMath::Gaus(x,[1]+1.0354*[2],3.124*[2])",max-peak_hood,max+peak_hood);
+//   TF1 *fit	= new TF1 ("fit","[0]*TMath::Gaus(x,[1],[2])+1.509e-01*[0]*TMath::Gaus(x,[1]+1.0354*[2],3.124*[2])",max-peak_hood,max+peak_hood);
+        TF1 *fit	= new TF1 ("fit",
+                               Form("[0]*TMath::Gaus(x,[1],[2])+%f*[0]*TMath::Gaus(x,[1]+%f*[2],%f*[2])",backgnd_scale_0, backgnd_shift_1, backgnd_scale_2)
+                               ,max-peak_hood,max+peak_hood);
 //   fit->SetParameters(par);
   fit->SetParameter(1,fit_mean);
   fit->SetParameter(2,fit_sigma);
@@ -204,7 +224,10 @@ void draw_things(TString fname){
   float main_peak_sigma = fit->GetParameter(2);
   
 //   TF1 *back = new TF1("back","gaus",max-peak_hood,max+peak_hood);
-  TF1 *back	= new TF1 ("fit","1.509e-01*[0]*TMath::Gaus(x,[1]+1.0354*[2],3.124*[2])",max-peak_hood,max+peak_hood);
+//   TF1 *back	= new TF1 ("fit","1.509e-01*[0]*TMath::Gaus(x,[1]+1.0354*[2],3.124*[2])",max-peak_hood,max+peak_hood);
+        TF1 *back = new TF1 ("fit",
+                               Form("0*[0]*TMath::Gaus(x,[1],[2])+%f*[0]*TMath::Gaus(x,[1]+%f*[2],%f*[2])",backgnd_scale_0, backgnd_shift_1, backgnd_scale_2)
+                               ,max-peak_hood,max+peak_hood);
   back->SetLineColor(3);
   back->SetParameter(0,main_peak_const);
   back->SetParameter(1,main_peak_mean);
