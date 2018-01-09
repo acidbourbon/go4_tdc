@@ -119,6 +119,7 @@ void draw_things(TString fname){
   list.push_back("Ch07_mhit_t1");
 //   list.push_back("Ch07_mhit_tot");
   list.push_back("Ch07_potato");
+  list.push_back("Ch07_potato_walkc");
 //   list.push_back("Ch17_potato");
 //   list.push_back("Ch09_t1");
 //   list.push_back("Ch09_mhit_t1");
@@ -181,7 +182,7 @@ void draw_things(TString fname){
   
   TCanvas *c = new TCanvas("c_fit","c_fit",200,10,1024,786);
   
-  TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch07_t1")->Clone();
+  TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch07_walkc_t1")->Clone();
 //   TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch17_t1")->Clone();
 //   TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_Ch16_t1")->Clone();
 //   TH1F* t1_clone = (TH1F*) f->Get("Histograms/Sec_"+TDC+"/Sec_"+TDC+"_fish_proj_17_vs_07")->Clone();

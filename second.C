@@ -60,10 +60,10 @@
 
 // thr 10
 #define enable_cubic_walk_correction 0
-#define Par_0        -726.76 +785
-#define Par_1      -0.727522 
-#define Par_2     0.00296743 
-#define Par_3   -4.00484e-06 
+// #define Par_0        -726.76 +785
+// #define Par_1      -0.727522 
+// #define Par_2     0.00296743 
+// #define Par_3   -4.00484e-06 
 
 /*
 #define enable_exp_walk_correction 1
@@ -74,12 +74,14 @@
 */
 
 // big data exp walk correction
-#define enable_exp_walk_correction 1
+#define enable_exp_walk_correction 0
 // // #define exp_offset -7.87862e+02
 #define exp_offset 0
 #define exp_slope -1.69710e-02
 #define exp_const  4.24679e+00 
 
+#define enable_pkt20_gain1_thr03_walk_correction 0
+#define enable_pkt10_gain1_thr10_walk_correction 1
 
 
 // // bounded exp walk 
@@ -132,8 +134,9 @@
 // #define spike_rejection 60
 // #define spike_rejection 30 // for ASD8
 // #define spike_rejection 60 // for PASTTREC
-#define spike_rejection 20 // After t2 correction
-#define max_tot 1000
+#define spike_rejection 20 // After t2 correction PASTTREC
+#define spike_rejection 5 // After t2 correction PASTTREC gain 1 pkt 10
+#define max_tot 1500
 /*
 // this seems to be perfect for pasttrec fav settings
 #define spike_rejection 120  
@@ -175,6 +178,9 @@
 #define t1_cut_L -840 // juelich diamond
 #define t1_cut_R -740 // juelich diamond
 
+#define t1_cut_L -900 // juelich diamond // gain 1 pkt 20
+#define t1_cut_R -600 // juelich diamond
+
 
 // #define coincidence_rejection 7
 #define accept_hits_per_layer 2
@@ -206,6 +212,51 @@
 #define enable_HODO_VETO 0
 
 #endif
+
+
+// pkt20 gain1 thr 3 walk correction
+
+float walkc_pkt20_g1_thr03(float tot){
+  
+  float Par_0                     =     -692.018 +780 ;
+  float Par_1                     =     -2.44943;
+  float Par_2                     =     0.035356;
+  float Par_3                     = -0.000276044;
+  float Par_4                     =  1.05086e-06;
+  float Par_5                     = -1.51916e-09;
+  
+  float tot2 = tot * tot;
+  float tot3 = tot2 * tot;
+  float tot4 = tot2 * tot2;
+  float tot5 = tot4 * tot;
+  
+  if (tot < 200) {
+    return Par_0 + Par_1 * tot + Par_2 * tot2 + Par_3 * tot3 + Par_4 * tot4 + Par_5 * tot5;
+  }
+  return 0;
+}
+
+float walkc_pkt10_g1_thr10(float tot){
+
+  float Par_0                     =     -765.654 +798;
+  float Par_1                     =    -0.488103; 
+  float Par_2                     =  -0.00615334; 
+  float Par_3                     =  0.000320988; 
+  float Par_4                     = -3.81769e-06; 
+  float Par_5                     =  1.46971e-08; 
+  
+  float tot2 = tot * tot;
+  float tot3 = tot2 * tot;
+  float tot4 = tot2 * tot2;
+  float tot5 = tot4 * tot;
+  
+  if (tot < 100) {
+    return Par_0 + Par_1 * tot + Par_2 * tot2 + Par_3 * tot3 + Par_4 * tot4 + Par_5 * tot5;
+  }
+  return 0;
+}
+
+
 
 float tot_offset_0351[32] = { 
   37.1182,
@@ -325,11 +376,13 @@ class SecondProc : public base::EventProc {
       base::H1handle  tot_exp_h[CHANNELS]; 
       base::H1handle  tot_untrig_h[CHANNELS]; 
       base::H1handle  t1_h[CHANNELS]; 
+      base::H1handle  t1_walkc_h[CHANNELS]; 
       base::H1handle  t2_h[CHANNELS]; 
       base::H1handle  t1_mhit_h[CHANNELS]; 
       base::H1handle  t2_mhit_h[CHANNELS]; 
       base::H1handle  tot_mhit_h[CHANNELS]; 
       base::H1handle  potato_h[CHANNELS];
+      base::H1handle  potato_walkc_h[CHANNELS];
       base::H1handle  meta_potato_h;
       base::H1handle  meta_t1_h;
       base::H1handle  meta_tot_h;
@@ -385,9 +438,11 @@ class SecondProc : public base::EventProc {
 
          
         for( unsigned i=0; i<CHANNELS; i++ ) {
-          char chno[16];
+          char chno[32];
           sprintf(chno,"Ch%02d_t1",i);
           t1_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
+          sprintf(chno,"Ch%02d_walkc_t1",i);
+          t1_walkc_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
           sprintf(chno,"Ch%02d_t2",i);
           t2_h[i] = MakeH1(chno,chno, 2000, t1_L, t1_R, "ns");
           sprintf(chno,"Ch%02d_mhit_t1",i);
@@ -409,6 +464,8 @@ class SecondProc : public base::EventProc {
           tot_untrig_h[i] = MakeH1(chno,chno, 4000, tot_L, tot_R, "ns");
           sprintf(chno,"Ch%02d_potato",i);
           potato_h[i] = MakeH2(chno,chno,1500,t1_L,t1_R,250, tot_L, tot_R, "t1 (ns);tot (ns)");
+          sprintf(chno,"Ch%02d_potato_walkc",i);
+          potato_walkc_h[i] = MakeH2(chno,chno,1500,t1_L,t1_R,250, tot_L, tot_R, "t1 (ns);tot (ns)");
 //           potato_h[i] = MakeH2(chno,chno,1500,t1_L,t1_R,500, tot_L, tot_R, "t1 (ns);tot (ns)");
         }
         
@@ -1000,21 +1057,28 @@ class SecondProc : public base::EventProc {
 //                 if( ( (t1_vs_ref > t1_cut_L) && (t1_vs_ref < t1_cut_R) && (tot[i]*1e9 < max_tot) ) || i == entry_ref_chan)  {
                 if(  (tot[i]*1e9 < max_tot)  || i == entry_ref_chan)  {
                   
+                  double t1_walkc = t1_vs_ref;
                   
                   if( (i != HODO_VETO_CHAN) && (i != REFCHAN_A) && (i != REFCHAN_B)){
                     // try walk correction
-                    if(enable_walk_correction){
-                      t1_vs_ref = t1_vs_ref - (tot[i]*1e9-walk_correction_mean_tot)*(walk_correction_slope);
-                    }
-                    if(enable_cubic_walk_correction){
-                      double x = tot[i]*1e9;
-                      if (x <250)
-                      t1_vs_ref = t1_vs_ref - (Par_0 + (Par_1)*x + (Par_2)*x*x + (Par_3)*x*x*x);
-                    }
+//                     if(enable_walk_correction){
+//                       t1_vs_ref = t1_vs_ref - (tot[i]*1e9-walk_correction_mean_tot)*(walk_correction_slope);
+//                     }
+//                     if(enable_cubic_walk_correction){
+//                       double x = tot[i]*1e9;
+//                       if (x <250)
+//                       t1_vs_ref = t1_vs_ref - (Par_0 + (Par_1)*x + (Par_2)*x*x + (Par_3)*x*x*x);
+//                     }
                     if(enable_exp_walk_correction &&  (fTdcId == "TDC_0351")  ){
                       double x = tot[i]*1e9 + tot_offset_0351[7];
-                      t1_vs_ref = t1_vs_ref - walk_exp->Eval(x);
+                      t1_walkc -= walk_exp->Eval(x);
   //                     t1_vs_ref = t1_vs_ref - exp_const*TMath::Exp(exp_slope*x);
+                    }
+                    if(enable_pkt20_gain1_thr03_walk_correction &&  (fTdcId == "TDC_0351")  ){
+                      t1_walkc -= walkc_pkt20_g1_thr03(tot[i]*1e9);
+                    }
+                    if(enable_pkt10_gain1_thr10_walk_correction &&  (fTdcId == "TDC_0351")  ){
+                      t1_walkc -= walkc_pkt10_g1_thr10(tot[i]*1e9);
                     }
                   }
                   
@@ -1022,7 +1086,9 @@ class SecondProc : public base::EventProc {
                   FillH1(tot_h[i],tot[i]*1e9);
                   FillH1(tot_exp_h[i],TMath::Exp(tot[i]*1e7));
                   FillH2(potato_h[i],t1_vs_ref - t1_offsets[i],tot[i]*1e9);
+                  FillH2(potato_walkc_h[i],t1_walkc - t1_offsets[i],tot[i]*1e9);
                   FillH1(t1_h[i],t1_vs_ref - t1_offsets[i]);
+                  FillH1(t1_walkc_h[i],t1_walkc - t1_offsets[i]);
                   FillH1(t2_h[i],t2_vs_ref - t1_offsets[i]);
                   
                   if( (i != REFCHAN_A) && (i != REFCHAN_B) ) {
