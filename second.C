@@ -74,14 +74,14 @@
 */
 
 // big data exp walk correction
-#define enable_exp_walk_correction 0
+#define enable_exp_walk_correction 1
 // // #define exp_offset -7.87862e+02
 #define exp_offset 0
 #define exp_slope -1.69710e-02
 #define exp_const  4.24679e+00 
 
 #define enable_pkt20_gain1_thr03_walk_correction 0
-#define enable_pkt10_gain1_thr10_walk_correction 1
+#define enable_pkt10_gain1_thr10_walk_correction 0
 
 
 // // bounded exp walk 
@@ -134,8 +134,8 @@
 // #define spike_rejection 60
 // #define spike_rejection 30 // for ASD8
 // #define spike_rejection 60 // for PASTTREC
-#define spike_rejection 20 // After t2 correction PASTTREC
-#define spike_rejection 5 // After t2 correction PASTTREC gain 1 pkt 10
+#define spike_rejection 30 // After t2 correction PASTTREC
+// #define spike_rejection 5 // After t2 correction PASTTREC gain 1 pkt 10
 #define max_tot 1500
 /*
 // this seems to be perfect for pasttrec fav settings
