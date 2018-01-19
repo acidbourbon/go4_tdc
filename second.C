@@ -26,7 +26,7 @@
 #define HODO_VETO_L -718 
 // #define HODO_VETO_R (-730 + ref_channel_offset)
 #define HODO_VETO_R -710 
-#define enable_HODO_VETO 1
+#define enable_HODO_VETO 0
 
 
 #define TAKE_FIRST_HIT 1 // has to be 1 for enable_HODO_VETO
@@ -45,12 +45,12 @@
 //#define t1_R 300 // GSI Dlab
 //#define t1_L -300 // HZDR
 //#define t1_R 300 // HZDR
-#define t1_L -1500 // juelich diamond
-#define t1_R 500 // juelich diamond
+#define t1_L -2000 // juelich diamond
+#define t1_R 2000 // juelich diamond
 //#define tot_L -10
 //#define tot_R 500
 #define tot_L -10 // HZDR
-#define tot_R 1000 // HZDR
+#define tot_R 2000 // HZDR
 
 #define ref_channel_offset -75 //ns fine measured ref channel relative to coarse measured cts trigger channel
 
@@ -84,7 +84,7 @@
 //#define t1_accept_R (100 + ref_channel_offset)//ns // GSI Dlab
 //#define t1_accept_R (1000000 + ref_channel_offset)//ns // HZDR fe55
 //#define t1_accept_R (300 + ref_channel_offset)//ns // HZDR
-#define t1_accept_R (300 + ref_channel_offset)//ns // juelich diamond
+#define t1_accept_R (2000 + ref_channel_offset)//ns // juelich diamond
 // #define t1_accept_R (-130 + ref_channel_offset)//ns // Muentz-Torte
 // #define t1_accept_R (-90 + ref_channel_offset)//ns // ASD8 with thr 0x52
 
@@ -98,7 +98,7 @@
 // #define t1_cut_L -850
 // #define t1_cut_R -700
 #define t1_cut_L -1500 // juelich diamond
-#define t1_cut_R 500 // juelich diamond
+#define t1_cut_R 2000 // juelich diamond
 
 
 // #define coincidence_rejection 7

@@ -1,4 +1,8 @@
 #!/bin/bash
+TRB3_SERVER=192.168.4.240 trbnetd -i 35
+export DAQOPSERVER=localhost:35
+trbcmd i 0xffff
+
 outfile="data/noise_log/"$(date '+%Y-%m-%d_%H:%M:%S')".txt"
 while true; do
 	oa=$[ $(printf "%d" $(trbcmd r 0x0353 0xc001 | cut -f 3 -d " " ))  ]
@@ -35,7 +39,7 @@ while true; do
 	o=$[ $(printf "%d" $(trbcmd r 0x0353 0xc017 | cut -f 3 -d " " )) - $oo ]
 	p=$[ $(printf "%d" $(trbcmd r 0x0353 0xc018 | cut -f 3 -d " " )) - $op ]
 	echo $(date '+%Y-%m-%d_%H:%M:%S')	$a	$b	$c	$d	$e	$f	$g	$h	$i	$j	$k	$l	$m	$n	$o	$p| tee -a $outfile
-	sleep 9
+	sleep 2
 	#export oa=$a
 	#export ob=$b
 	#export oc=$c
