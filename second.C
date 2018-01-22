@@ -340,6 +340,7 @@ public:
 TFile *tree_out;
 std::map<std::string,int> trig_no;
 std::map<std::string,TTree*> data_tree;
+std::map<std::string,TTree*> mhit_data_tree;
 
 
 
@@ -402,8 +403,11 @@ class SecondProc : public base::EventProc {
       
       int entry_chan;
       int entry_ref_chan;
+      int entry_mhit_no;
       double entry_t1;
       double entry_tot;
+      double entry_mhit_t1;
+      double entry_mhit_tot;
       
       
       
@@ -431,6 +435,14 @@ class SecondProc : public base::EventProc {
        data_tree[fTdcId]->Branch("tot",&entry_tot);
        data_tree[fTdcId]->Branch("chan",&entry_chan);
        data_tree[fTdcId]->Branch("ref_chan",&entry_ref_chan);
+       
+       mhit_data_tree[fTdcId] = new TTree((TString) fTdcId + "_mhit","untriggered data recorded");
+       mhit_data_tree[fTdcId]->Branch("trig_no",&trig_no[fTdcId]);
+       mhit_data_tree[fTdcId]->Branch("mhit_t1",&entry_mhit_t1);
+       mhit_data_tree[fTdcId]->Branch("mhit_tot",&entry_mhit_tot);
+       mhit_data_tree[fTdcId]->Branch("mhit_no",&entry_mhit_no);
+       mhit_data_tree[fTdcId]->Branch("chan",&entry_chan);
+       mhit_data_tree[fTdcId]->Branch("ref_chan",&entry_ref_chan);
        
   walk_exp->SetParameter(0,exp_const);
   walk_exp->SetParameter(1,exp_slope);
@@ -591,6 +603,7 @@ class SecondProc : public base::EventProc {
         cout << "--- User Post Loop " << fTdcId << endl;
         tree_out->cd();
         data_tree[fTdcId]->Write();
+        mhit_data_tree[fTdcId]->Write();
       }
 
 
@@ -921,6 +934,11 @@ class SecondProc : public base::EventProc {
             FillH1(t1_mhit_h[i],(MultiHitMem[i][j].t1  -t1_ref)*1e9);
             FillH1(t2_mhit_h[i],(MultiHitMem[i][j].t2  -t1_ref)*1e9);
             FillH1(tot_mhit_h[i],(MultiHitMem[i][j].t2 - MultiHitMem[i][j].t1)*1e9);
+            entry_mhit_t1 = (MultiHitMem[i][j].t1  -t1_ref)*1e9;
+            entry_mhit_tot = (MultiHitMem[i][j].t2 - MultiHitMem[i][j].t1)*1e9;
+            entry_mhit_no = j;
+            entry_chan = i;
+            mhit_data_tree[fTdcId]->Fill();
             
             double t1_vs_ref = (MultiHitMem[i][j].t1 -t1_ref)*1e9;
             
